@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decision Replay 7c6bca27</title>
+  <style>
+    :root {
+      --bg: #f6f0e4;
+      --ink: #18212b;
+      --muted: #667085;
+      --panel: rgba(255,255,255,0.82);
+      --line: rgba(24,33,43,0.12);
+      --navy: #102d42;
+      --amber: #c86b0a;
+      --amber-soft: #ffe3be;
+      --up: #0f9d58;
+      --down: #c43d2f;
+      --shadow: 0 18px 55px rgba(16,45,66,0.12);
+      --font-sans: "IBM Plex Sans", "Source Han Sans SC", "Noto Sans SC", "Segoe UI Variable", sans-serif;
+      --font-serif: "IBM Plex Serif", "Source Han Serif SC", Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(200,107,10,0.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(16,45,66,0.12), transparent 30%),
+        linear-gradient(180deg, #faf5ea 0%, #efe4d2 100%);
+    }
+    .shell { max-width: 1500px; margin: 0 auto; padding: 24px; }
+    .hero, .panel {
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.44);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .hero {
+      padding: 28px;
+      background:
+        linear-gradient(135deg, rgba(16,45,66,0.96), rgba(200,107,10,0.92));
+      color: #fff;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.84;
+    }
+    .hero h1 {
+      margin: 10px 0 8px;
+      font-size: clamp(28px, 4vw, 52px);
+      font-family: var(--font-serif);
+      line-height: 1.05;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 800px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.7;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .hero-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    .hero-card label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 6px;
+    }
+    .hero-card strong {
+      display: block;
+      line-height: 1.45;
+      font-size: 16px;
+    }
+    .focus-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .focus-box h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .focus-box p {
+      margin: 0;
+      font-size: 14px;
+    }
+    .hero-links {
+      margin-top: 18px;
+    }
+    .hero-links a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+      display: inline-block;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .stack { display: grid; gap: 18px; }
+    .panel { padding: 20px; }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .panel-head h2 {
+      margin: 0;
+      font-size: 20px;
+      font-family: var(--font-serif);
+    }
+    .stage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .stage-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(16,45,66,0.04);
+      border: 1px solid var(--line);
+    }
+    .stage-call { background: rgba(200,107,10,0.08); }
+    .stage-result { background: rgba(16,45,66,0.07); }
+    .stage-done { background: rgba(15,157,88,0.10); }
+    .stage-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .stage-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .stage-body {
+      color: #364152;
+      font-size: 13px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .metric-row label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .metric-row strong {
+      font-size: 20px;
+    }
+    .note-box {
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(200,107,10,0.08);
+      line-height: 1.7;
+      color: #4a3b2d;
+    }
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+    .timeline-item {
+      padding: 12px 14px;
+      border-left: 3px solid rgba(200,107,10,0.32);
+      background: rgba(255,255,255,0.48);
+      border-radius: 0 14px 14px 0;
+    }
+    .timeline-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .timeline-text {
+      font-size: 14px;
+      line-height: 1.65;
+      word-break: break-word;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th, .data-table td {
+      text-align: left;
+      padding: 11px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .data-table th {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .side-buy { color: var(--up); font-weight: 700; }
+    .side-sell { color: var(--down); font-weight: 700; }
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 18px 8px;
+    }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .shell { padding: 16px; }
+      .hero { padding: 20px; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .metric-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    
+    <section class="hero">
+      <div class="eyebrow">Decision Replay</div>
+      <h1>Tick 7c6bca27</h1>
+      <p>把 CIO 这一轮从市场状态、工具链、分析师、专家复审到最终下单的全过程，压缩成一页可回放链路。</p>
+      <div class="hero-grid">
+        <div class="hero-card"><label>开始时间</label><strong>2026-07-14 15:00:00</strong></div>
+        <div class="hero-card"><label>结束时间</label><strong>2026-07-14 15:03:14</strong></div>
+        <div class="hero-card"><label>Checkpoint</label><strong>41</strong></div>
+        <div class="hero-card"><label>Summary</label><strong>rounds=7 elapsed=194.23s fallback=False orders_called=False orders_succeeded=False</strong></div>
+      </div>
+      <div class="focus-box">
+        <h3>最终结论</h3>
+        <p></p>
+      </div>
+      <div class="focus-box">
+        <h3>市场状态触发点</h3>
+        <p>开始本轮决策。请走精简链路，先读持仓前 10 条、新闻前 10 条，尽快形成一版可执行方案。必须：(a) 先 get_portfolio / get_market_overview / get_market_regime / recent_news(limit=10)；(b) 用 search_stocks 围绕主线至少搜 3 次；(c) update_strategy_state 里的 target_position 要参考 get_market_regime；(d) draft_orders 保持 15-20 只票，再 consult_financial_expert；(e) update_strategy_state 必须调用一次；(f) 如果专家 ERROR，不要空仓，按自己的方案继续；(g) SELL 只能卖 available&gt;0 的持仓，BUY 必须满足 100 股整数手。
+[mem_len]=1224</p>
+      </div>
+      <div class="hero-links">
+        <a href="contest_dashboard_latest.html">返回总览看板</a>
+      </div>
+    </section>
+    
+    <section class="layout">
+      <div class="stack">
+        
+    <section class="panel">
+      <div class="panel-head"><h2>Checkpoint Flow</h2></div>
+      <div class="stage-grid">
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:00:00</div>
+              <div class="stage-title">start</div>
+              <div class="stage-body"></div>
+            </article>
+            
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">round_1</div>
+              <div class="stage-body">tools=[&#x27;get_portfolio&#x27;, &#x27;get_market_overview&#x27;, &#x27;get_market_regime&#x27;, &#x27;recent_news&#x27;]; text_len=0</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_call:get_portfolio</div>
+              <div class="stage-body">{}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_result:get_portfolio</div>
+              <div class="stage-body">{&#x27;cash&#x27;: 7656611.74, &#x27;market_value&#x27;: 2250633.0, &#x27;total&#x27;: 9907244.74, &#x27;holdings&#x27;: {&#x27;603259&#x27;: {&#x27;name&#x27;: &#x27;药明康德&#x27;, &#x27;qty&#x27;: 1500, &#x27;available&#x27;: 1300, &#x27;avg_price&#x27;: 122.6958, &#x27;price&#x27;: 127.5, &#x27;mv&#x27;: 191250.0, &#x27;pnl_pct&#x27;: 3.92}, &#x27;300347&#x27;: {&#x27;name&#x27;: &#x27;泰格医药&#x27;, &#x27;qty&#x27;: 3300, &#x27;available&#x27;: 3300, &#x27;avg_price&#x27;: 46.6633, &#x27;price&#x27;: 48.69, &#x27;mv&#x27;: 160677.0, &#x27;pnl_pct&#x27;: 4.34}, &#x27;600900&#x27;: {&#x27;name&#x27;: &#x27;长江电力&#x27;, &#x27;qty&#x27;: 5200, &#x27;available&#x27;: 5200, &#x27;avg_price&#x27;: 28.04, &#x27;price&#x27;: 28.53, &#x27;mv&#x27;: 148356.0, &#x27;pnl_pct&#x27;: 1.75}, &#x27;600036&#x27;: {&#x27;name&#x27;: &#x27;招商银行&#x27;,</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_call:get_market_overview</div>
+              <div class="stage-body">{}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_result:get_market_overview</div>
+              <div class="stage-body">{&#x27;indices&#x27;: {&#x27;上证指数&#x27;: {&#x27;code&#x27;: &#x27;sh000001&#x27;, &#x27;price&#x27;: 3909.27, &#x27;pct&#x27;: -0.12}, &#x27;深证成指&#x27;: {&#x27;code&#x27;: &#x27;sz399001&#x27;, &#x27;price&#x27;: 14532.36, &#x27;pct&#x27;: 0.07}, &#x27;沪深300&#x27;: {&#x27;code&#x27;: &#x27;sh000300&#x27;, &#x27;price&#x27;: 4691.12, &#x27;pct&#x27;: -0.09}, &#x27;创业板指&#x27;: {&#x27;code&#x27;: &#x27;sz399006&#x27;, &#x27;price&#x27;: 3729.61, &#x27;pct&#x27;: 0.16}, &#x27;科创50&#x27;: {&#x27;code&#x27;: &#x27;sh000688&#x27;, &#x27;price&#x27;: 1994.44, &#x27;pct&#x27;: 0.01}}, &#x27;breadth&#x27;: {&#x27;up&#x27;: 3898, &#x27;down&#x27;: 1244, &#x27;flat&#x27;: 57, &#x27;limit_up&#x27;: 118, &#x27;limit_down&#x27;: 42, &#x27;total&#x27;: 5199, &#x27;up_ratio&#x27;: 0.75}}</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_call:get_market_regime</div>
+              <div class="stage-body">{}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_result:get_market_regime</div>
+              <div class="stage-body">{&#x27;ts&#x27;: 1784012410, &#x27;regime&#x27;: &#x27;risk_on&#x27;, &#x27;score&#x27;: 0.55, &#x27;suggested_position&#x27;: {&#x27;min&#x27;: 0.7, &#x27;target&#x27;: 0.82, &#x27;max&#x27;: 0.9}, &#x27;indices&#x27;: {&#x27;上证指数&#x27;: {&#x27;code&#x27;: &#x27;sh000001&#x27;, &#x27;price&#x27;: 3909.27, &#x27;pct&#x27;: -0.12}, &#x27;深证成指&#x27;: {&#x27;code&#x27;: &#x27;sz399001&#x27;, &#x27;price&#x27;: 14532.36, &#x27;pct&#x27;: 0.07}, &#x27;沪深300&#x27;: {&#x27;code&#x27;: &#x27;sh000300&#x27;, &#x27;price&#x27;: 4691.12, &#x27;pct&#x27;: -0.09}, &#x27;创业板指&#x27;: {&#x27;code&#x27;: &#x27;sz399006&#x27;, &#x27;price&#x27;: 3729.61, &#x27;pct&#x27;: 0.16}, &#x27;科创50&#x27;: {&#x27;code&#x27;: &#x27;sh000688&#x27;, &#x27;price&#x27;: 1994.44, &#x27;pct&#x27;: 0.01}}, &#x27;breadth&#x27;: {&#x27;up_ratio&#x27;: 0.75, &#x27;limit_up&#x27;: 118, &#x27;limit_down&#x27;</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_call:recent_news</div>
+              <div class="stage-body">{&quot;limit&quot;: 10, &quot;since_min&quot;: 1440}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:10</div>
+              <div class="stage-title">tool_result:recent_news</div>
+              <div class="stage-body">{&#x27;count&#x27;: 10, &#x27;items&#x27;: [{&#x27;id&#x27;: &#x27;9d3ef8ae4d56c503&#x27;, &#x27;ts&#x27;: 1784009722, &#x27;source&#x27;: &#x27;东财·21世纪经济报道·[300502]&#x27;, &#x27;title&#x27;: &#x27;算力硬件方向反弹！通信设备板块走强，新易盛大涨近10%| 异动情报&#x27;, &#x27;content&#x27;: &#x27;[2026-07-14 13:52:53] 7月14日午后，算力硬件方向反弹，带动创业板盘中大涨3%，通信设备板块截至发稿上涨2.39%，相关成分股中，华脉科技（603042）上涨10.01%，新易盛（300502）上涨9.18%，联特科技（301205）上涨8.54%。&#x27;, &#x27;url&#x27;: &#x27;http://finance.eastmoney.com/a/202607143805430265.html&#x27;}, {&#x27;id&#x27;: &#x27;4e612c53fe6e62c3&#x27;, &#x27;ts&#x27;: 1784004316, &#x27;source&#x27;: &#x27;财新-行业深度&#x27;, &#x27;title&#x27;: &#x27;机构认为，无论海内外，核心AI标的资产，未来几个季度的业绩普遍比较扎实，因为需求层面没问题，在供给范围之内预计能交付</div>
+            </article>
+            
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:00:31</div>
+              <div class="stage-title">round_2</div>
+              <div class="stage-body">tools=[&#x27;search_stocks&#x27;]; text_len=0</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:31</div>
+              <div class="stage-title">tool_call:search_stocks</div>
+              <div class="stage-body">{}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:31</div>
+              <div class="stage-title">tool_result:search_stocks</div>
+              <div class="stage-body">{&#x27;error&#x27;: &quot;bad args: tool_search_stocks() missing 1 required positional argument: &#x27;keyword&#x27;&quot;}</div>
+            </article>
+            
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">round_3</div>
+              <div class="stage-body">tools=[&#x27;search_stocks&#x27;, &#x27;search_stocks&#x27;, &#x27;search_stocks&#x27;]; text_len=0</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_call:search_stocks</div>
+              <div class="stage-body">{&quot;keyword&quot;: &quot;光模块&quot;, &quot;limit&quot;: 15}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_result:search_stocks</div>
+              <div class="stage-body">{&#x27;ok&#x27;: True, &#x27;total&#x27;: 0, &#x27;rows&#x27;: []}</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_call:search_stocks</div>
+              <div class="stage-body">{&quot;keyword&quot;: &quot;半导体设备&quot;, &quot;limit&quot;: 15}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_result:search_stocks</div>
+              <div class="stage-body">{&#x27;ok&#x27;: True, &#x27;total&#x27;: 0, &#x27;rows&#x27;: []}</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_call:search_stocks</div>
+              <div class="stage-body">{&quot;keyword&quot;: &quot;AI算力&quot;, &quot;limit&quot;: 15}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:00:35</div>
+              <div class="stage-title">tool_result:search_stocks</div>
+              <div class="stage-body">{&#x27;ok&#x27;: True, &#x27;total&#x27;: 0, &#x27;rows&#x27;: []}</div>
+            </article>
+            
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:01:07</div>
+              <div class="stage-title">round_4</div>
+              <div class="stage-body">tools=[&#x27;fetch_quotes&#x27;, &#x27;market_top&#x27;]; text_len=0</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:07</div>
+              <div class="stage-title">tool_call:fetch_quotes</div>
+              <div class="stage-body">{&quot;codes&quot;: [&quot;000063&quot;, &quot;002475&quot;, &quot;300308&quot;, &quot;300502&quot;, &quot;601138&quot;, &quot;000725&quot;, &quot;603986&quot;, &quot;688981&quot;, &quot;688008&quot;, &quot;688041&quot;, &quot;688256&quot;, &quot;002230&quot;, &quot;300223&quot;, &quot;603501&quot;, &quot;002241&quot;, &quot;002371&quot;, &quot;603160&quot;, &quot;300433&quot;, &quot;300750&quot;, &quot;002594&quot;, &quot;300274&quot;, &quot;601012&quot;, &quot;300124&quot;, &quot;002747&quot;, &quot;300024&quot;, &quot;002180&quot;, &quot;600276&quot;, &quot;300760&quot;, &quot;603259&quot;, &quot;300347&quot;, &quot;600519&quot;, &quot;000858&quot;, &quot;000333&quot;, &quot;600887&quot;, &quot;600036&quot;, &quot;601318&quot;, &quot;000001&quot;, &quot;300059&quot;, &quot;600030&quot;, &quot;601899&quot;, &quot;601088&quot;, &quot;600900&quot;, &quot;600760&quot;, &quot;002156&quot;, &quot;300475&quot;, &quot;002281&quot;]}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:07</div>
+              <div class="stage-title">tool_result:fetch_quotes</div>
+              <div class="stage-body">{&#x27;ts&#x27;: 1784012467, &#x27;items&#x27;: [{&#x27;code&#x27;: &#x27;000063&#x27;, &#x27;price&#x27;: 39.91, &#x27;pct&#x27;: -0.325, &#x27;volume&#x27;: 307129593.0, &#x27;synthetic&#x27;: False}, {&#x27;code&#x27;: &#x27;002475&#x27;, &#x27;price&#x27;: 61.67, &#x27;pct&#x27;: 4.561, &#x27;volume&#x27;: 139252454.0, &#x27;synthetic&#x27;: False}, {&#x27;code&#x27;: &#x27;300308&#x27;, &#x27;price&#x27;: 1184.05, &#x27;pct&#x27;: 6.864, &#x27;volume&#x27;: 40047572.0, &#x27;synthetic&#x27;: False}, {&#x27;code&#x27;: &#x27;300502&#x27;, &#x27;price&#x27;: 568.82, &#x27;pct&#x27;: 10.989, &#x27;volume&#x27;: 64903856.0, &#x27;synthetic&#x27;: False}, {&#x27;code&#x27;: &#x27;601138&#x27;, &#x27;price&#x27;: 65.6, &#x27;pct&#x27;: 3.995, &#x27;volume&#x27;: 142228469.0, &#x27;synthetic&#x27;: False}, {&#x27;co</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:07</div>
+              <div class="stage-title">tool_call:market_top</div>
+              <div class="stage-body">{&quot;sort&quot;: &quot;pct&quot;, &quot;limit&quot;: 20}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:12</div>
+              <div class="stage-title">tool_result:market_top</div>
+              <div class="stage-body">{&#x27;ok&#x27;: True, &#x27;total&#x27;: 5199, &#x27;rows&#x27;: [{&#x27;code&#x27;: &#x27;300532&#x27;, &#x27;name&#x27;: &#x27;今天国际&#x27;, &#x27;price&#x27;: 7.3, &#x27;pct&#x27;: 20.066, &#x27;amount&#x27;: 409703221.7}, {&#x27;code&#x27;: &#x27;300164&#x27;, &#x27;name&#x27;: &#x27;通源石油&#x27;, &#x27;price&#x27;: 11.38, &#x27;pct&#x27;: 20.042, &#x27;amount&#x27;: 2918632127.8}, {&#x27;code&#x27;: &#x27;300566&#x27;, &#x27;name&#x27;: &#x27;激智科技&#x27;, &#x27;price&#x27;: 33.4, &#x27;pct&#x27;: 20.014, &#x27;amount&#x27;: 1112342077.0}, {&#x27;code&#x27;: &#x27;300937&#x27;, &#x27;name&#x27;: &#x27;药易购&#x27;, &#x27;price&#x27;: 23.21, &#x27;pct&#x27;: 20.01, &#x27;amount&#x27;: 253628040.93}, {&#x27;code&#x27;: &#x27;688216&#x27;, &#x27;name&#x27;: &#x27;气派科技&#x27;, &#x27;price&#x27;: 41.45, &#x27;pct&#x27;: 20.006, &#x27;amount&#x27;: 655520641.4000001}, {&#x27;code&#x27;: </div>
+            </article>
+            
+            <article class="stage-card">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">round_5</div>
+              <div class="stage-body">tools=[&#x27;get_history_indicators&#x27;, &#x27;get_history_indicators&#x27;, &#x27;get_history_indicators&#x27;, &#x27;get_history_indicators&#x27;, &#x27;get_history_indicators&#x27;]; text_len=0</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_call:get_history_indicators</div>
+              <div class="stage-body">{&quot;code&quot;: &quot;300502&quot;, &quot;days&quot;: 60}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_result:get_history_indicators</div>
+              <div class="stage-body">{&#x27;code&#x27;: &#x27;300502&#x27;, &#x27;rows&#x27;: 60, &#x27;tail&#x27;: [{&#x27;date&#x27;: &#x27;2026-07-07&#x27;, &#x27;open&#x27;: 506.89, &#x27;close&#x27;: 510.1, &#x27;high&#x27;: 518.21, &#x27;low&#x27;: 490.1, &#x27;volume&#x27;: 45431318.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-08&#x27;, &#x27;open&#x27;: 515.0, &#x27;close&#x27;: 510.84, &#x27;high&#x27;: 533.38, &#x27;low&#x27;: 498.13, &#x27;volume&#x27;: 44527631.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-09&#x27;, &#x27;open&#x27;: 526.0, &#x27;close&#x27;: 545.5, &#x27;high&#x27;: 549.94, &#x27;low&#x27;: 509.96, &#x27;volume&#x27;: 49199656.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-10&#x27;, &#x27;open&#x27;: 564.0, &#x27;close&#x27;: 523.05, &#x27;high&#x27;: 570.98, &#x27;low&#x27;: 520.58, &#x27;volume&#x27;: 510</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_call:get_history_indicators</div>
+              <div class="stage-body">{&quot;code&quot;: &quot;300308&quot;, &quot;days&quot;: 60}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_result:get_history_indicators</div>
+              <div class="stage-body">{&#x27;code&#x27;: &#x27;300308&#x27;, &#x27;rows&#x27;: 60, &#x27;tail&#x27;: [{&#x27;date&#x27;: &#x27;2026-07-07&#x27;, &#x27;open&#x27;: 1098.0, &#x27;close&#x27;: 1121.9, &#x27;high&#x27;: 1138.2, &#x27;low&#x27;: 1089.0, &#x27;volume&#x27;: 29286443.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-08&#x27;, &#x27;open&#x27;: 1134.8, &#x27;close&#x27;: 1128.35, &#x27;high&#x27;: 1179.3, &#x27;low&#x27;: 1114.56, &#x27;volume&#x27;: 31732800.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-09&#x27;, &#x27;open&#x27;: 1153.0, &#x27;close&#x27;: 1194.9, &#x27;high&#x27;: 1199.99, &#x27;low&#x27;: 1117.01, &#x27;volume&#x27;: 35888423.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-10&#x27;, &#x27;open&#x27;: 1210.0, &#x27;close&#x27;: 1093.98, &#x27;high&#x27;: 1218.0, &#x27;low&#x27;: 1093.98, &#x27;</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_call:get_history_indicators</div>
+              <div class="stage-body">{&quot;code&quot;: &quot;603259&quot;, &quot;days&quot;: 60}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_result:get_history_indicators</div>
+              <div class="stage-body">{&#x27;code&#x27;: &#x27;603259&#x27;, &#x27;rows&#x27;: 60, &#x27;tail&#x27;: [{&#x27;date&#x27;: &#x27;2026-07-07&#x27;, &#x27;open&#x27;: 120.5, &#x27;close&#x27;: 118.3, &#x27;high&#x27;: 122.95, &#x27;low&#x27;: 118.01, &#x27;volume&#x27;: 665947.0, &#x27;pct&#x27;: -3.8}, {&#x27;date&#x27;: &#x27;2026-07-08&#x27;, &#x27;open&#x27;: 118.39, &#x27;close&#x27;: 115.4, &#x27;high&#x27;: 120.25, &#x27;low&#x27;: 115.31, &#x27;volume&#x27;: 509875.0, &#x27;pct&#x27;: -2.45}, {&#x27;date&#x27;: &#x27;2026-07-09&#x27;, &#x27;open&#x27;: 115.01, &#x27;close&#x27;: 121.07, &#x27;high&#x27;: 121.43, &#x27;low&#x27;: 114.52, &#x27;volume&#x27;: 583217.0, &#x27;pct&#x27;: 4.91}, {&#x27;date&#x27;: &#x27;2026-07-10&#x27;, &#x27;open&#x27;: 120.0, &#x27;close&#x27;: 123.3, &#x27;high&#x27;: 126.73, &#x27;low&#x27;: 120.0, &#x27;volume&#x27;: 68307</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:17</div>
+              <div class="stage-title">tool_call:get_history_indicators</div>
+              <div class="stage-body">{&quot;code&quot;: &quot;601899&quot;, &quot;days&quot;: 60}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:19</div>
+              <div class="stage-title">tool_result:get_history_indicators</div>
+              <div class="stage-body">{&#x27;code&#x27;: &#x27;601899&#x27;, &#x27;rows&#x27;: 60, &#x27;tail&#x27;: [{&#x27;date&#x27;: &#x27;2026-07-07&#x27;, &#x27;open&#x27;: 27.8, &#x27;close&#x27;: 27.62, &#x27;high&#x27;: 28.11, &#x27;low&#x27;: 27.43, &#x27;volume&#x27;: 223542243.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-08&#x27;, &#x27;open&#x27;: 27.12, &#x27;close&#x27;: 27.36, &#x27;high&#x27;: 28.03, &#x27;low&#x27;: 26.8, &#x27;volume&#x27;: 196981818.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-09&#x27;, &#x27;open&#x27;: 26.82, &#x27;close&#x27;: 27.62, &#x27;high&#x27;: 27.7, &#x27;low&#x27;: 26.55, &#x27;volume&#x27;: 251499732.0, &#x27;pct&#x27;: 0.0}, {&#x27;date&#x27;: &#x27;2026-07-10&#x27;, &#x27;open&#x27;: 28.0, &#x27;close&#x27;: 27.72, &#x27;high&#x27;: 28.45, &#x27;low&#x27;: 27.08, &#x27;volume&#x27;: 265710031.0, &#x27;</div>
+            </article>
+            
+            <article class="stage-card stage-call">
+              <div class="stage-meta">2026-07-14 15:01:19</div>
+              <div class="stage-title">tool_call:get_history_indicators</div>
+              <div class="stage-body">{&quot;code&quot;: &quot;002475&quot;, &quot;days&quot;: 60}</div>
+            </article>
+            
+            <article class="stage-card stage-result">
+              <div class="stage-meta">2026-07-14 15:01:19</div>
+              <div class="stage-title">tool_result:get_history_indicators</div>
+              <div class="stage-body">{&#x27;code&#x27;: &#x27;002475&#x27;, &#x27;rows&#x27;: 60, &#x27;tail&#x27;: [{&#x27;date&#x27;: &#x27;2026-07-07&#x27;, &#x27;open&#x27;: 62.54, &#x27;close&#x27;: 63.28, &#x27;high&#x27;: 64.9, &#x27;low&#x27;: 62.0, &#x27;volume&#x27;: 1370584.0, &#x27;pct&#x27;: 0.64}, {&#x27;date&#x27;: &#x27;2026-07-08&#x27;, &#x27;open&#x27;: 63.0, &#x27;close&#x27;: 62.47, &#x27;high&#x27;: 64.28, &#x27;low&#x27;: 60.6, &#x27;volume&#x27;: 1281448.0, &#x27;pct&#x27;: -1.28}, {&#x27;date&#x27;: &#x27;2026-07-09&#x27;, &#x27;open&#x27;: 62.8, &#x27;close&#x27;: 64.46, &#x27;high&#x27;: 64.66, &#x27;low&#x27;: 59.7, &#x27;volume&#x27;: 1903541.0, &#x27;pct&#x27;: 3.19}, {&#x27;date&#x27;: &#x27;2026-07-10&#x27;, &#x27;open&#x27;: 64.38, &#x27;close&#x27;: 62.14, &#x27;high&#x27;: 65.66, &#x27;low&#x27;: 62.06, &#x27;volume&#x27;: 1422326.0, &#x27;pct&#x27;: </div>
+            </article>
+            </div>
+    </section>
+    
+        
+    <section class="panel">
+      <div class="panel-head"><h2>Executed Orders In This Replay</h2></div>
+      <table class="data-table">
+        <thead><tr><th>Time</th><th>Code</th><th>Side</th><th>Qty</th><th>Price</th><th>Fee</th><th>Reason</th></tr></thead>
+        <tbody><tr><td colspan="7" class="empty">本轮未检索到订单</td></tr></tbody>
+      </table>
+    </section>
+    
+      </div>
+      <div class="stack">
+        
+    <section class="panel">
+      <div class="panel-head"><h2>Strategy State Update</h2></div>
+      <div class="metric-row">
+        <div><label>View</label><strong></strong></div>
+        <div><label>Target Position</label><strong></strong></div>
+        <div><label>Confidence</label><strong></strong></div>
+      </div>
+      <div class="note-box">null</div>
+      <div class="note-box"></div>
+    </section>
+    
+        
+    <section class="panel">
+      <div class="panel-head"><h2>CIO Tool Replay</h2></div>
+      <div class="timeline">
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:03 · cio_brain · prompt</div>
+              <div class="timeline-text">开始本轮决策。请走精简链路，先读持仓前 10 条、新闻前 10 条，尽快形成一版可执行方案。必须：(a) 先 get_portfolio / get_market_overview / get_market_regime / recent_news(limit=10)；(b) 用 search_stocks 围绕主线至少搜 3 次；(c) update_strategy_state 里的 target_position 要参考 get_market_regime；(d) draft_orders 保持 15-20 只票，再 consult_financial_expert；(e) update_strategy_state 必须调用一次；(f) 如果专家 ERROR，不要空仓，按自己的方案继续；(g) SELL 只能卖 available&gt;0 的持仓，BUY 必须满足 100 股整数手。
+[mem_len]=1224</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_call</div>
+              <div class="timeline-text">get_portfolio({})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_result</div>
+              <div class="timeline-text">get_portfolio -&gt; {&quot;cash&quot;: 7656611.74, &quot;market_value&quot;: 2250633.0, &quot;total&quot;: 9907244.74, &quot;holdings&quot;: {&quot;603259&quot;: {&quot;name&quot;: &quot;药明康德&quot;, &quot;qty&quot;: 1500, &quot;available&quot;: 1300, &quot;avg_price&quot;: 122.6958, &quot;price&quot;: 127.5, &quot;mv&quot;: 191250.0, &quot;pnl_pct&quot;: 3.92}, &quot;300347&quot;: {&quot;name&quot;: &quot;泰格医药&quot;, &quot;qty&quot;: 3300, &quot;available&quot;: 3300, &quot;avg_price&quot;: 46.6633, &quot;price&quot;: 48.69, &quot;mv&quot;: 160677.0, &quot;pnl_pct&quot;: 4.34}, &quot;600900&quot;: {&quot;name&quot;: &quot;长江电力&quot;, &quot;qty&quot;: 5200, &quot;available&quot;: 5200, &quot;avg_price&quot;: 28.04, &quot;price&quot;: 28.53, &quot;mv&quot;: 148356.0, &quot;pnl_pct&quot;: 1.75}, &quot;600036&quot;: {&quot;name&quot;: &quot;招商银行&quot;,</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_call</div>
+              <div class="timeline-text">get_market_overview({})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_result</div>
+              <div class="timeline-text">get_market_overview -&gt; {&quot;indices&quot;: {&quot;上证指数&quot;: {&quot;code&quot;: &quot;sh000001&quot;, &quot;price&quot;: 3909.27, &quot;pct&quot;: -0.12}, &quot;深证成指&quot;: {&quot;code&quot;: &quot;sz399001&quot;, &quot;price&quot;: 14532.36, &quot;pct&quot;: 0.07}, &quot;沪深300&quot;: {&quot;code&quot;: &quot;sh000300&quot;, &quot;price&quot;: 4691.12, &quot;pct&quot;: -0.09}, &quot;创业板指&quot;: {&quot;code&quot;: &quot;sz399006&quot;, &quot;price&quot;: 3729.61, &quot;pct&quot;: 0.16}, &quot;科创50&quot;: {&quot;code&quot;: &quot;sh000688&quot;, &quot;price&quot;: 1994.44, &quot;pct&quot;: 0.01}}, &quot;breadth&quot;: {&quot;up&quot;: 3898, &quot;down&quot;: 1244, &quot;flat&quot;: 57, &quot;limit_up&quot;: 118, &quot;limit_down&quot;: 42, &quot;total&quot;: 5199, &quot;up_ratio&quot;: 0.75}}</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_call</div>
+              <div class="timeline-text">get_market_regime({})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_result</div>
+              <div class="timeline-text">get_market_regime -&gt; {&quot;ts&quot;: 1784012410, &quot;regime&quot;: &quot;risk_on&quot;, &quot;score&quot;: 0.55, &quot;suggested_position&quot;: {&quot;min&quot;: 0.7, &quot;target&quot;: 0.82, &quot;max&quot;: 0.9}, &quot;indices&quot;: {&quot;上证指数&quot;: {&quot;code&quot;: &quot;sh000001&quot;, &quot;price&quot;: 3909.27, &quot;pct&quot;: -0.12}, &quot;深证成指&quot;: {&quot;code&quot;: &quot;sz399001&quot;, &quot;price&quot;: 14532.36, &quot;pct&quot;: 0.07}, &quot;沪深300&quot;: {&quot;code&quot;: &quot;sh000300&quot;, &quot;price&quot;: 4691.12, &quot;pct&quot;: -0.09}, &quot;创业板指&quot;: {&quot;code&quot;: &quot;sz399006&quot;, &quot;price&quot;: 3729.61, &quot;pct&quot;: 0.16}, &quot;科创50&quot;: {&quot;code&quot;: &quot;sh000688&quot;, &quot;price&quot;: 1994.44, &quot;pct&quot;: 0.01}}, &quot;breadth&quot;: {&quot;up_ratio&quot;: 0.75, &quot;limit_up&quot;: 118, &quot;limit_down&quot;</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_call</div>
+              <div class="timeline-text">recent_news({&quot;limit&quot;: 10, &quot;since_min&quot;: 1440})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:10 · cio_brain · tool_result</div>
+              <div class="timeline-text">recent_news -&gt; {&quot;count&quot;: 10, &quot;items&quot;: [{&quot;id&quot;: &quot;9d3ef8ae4d56c503&quot;, &quot;ts&quot;: 1784009722, &quot;source&quot;: &quot;东财·21世纪经济报道·[300502]&quot;, &quot;title&quot;: &quot;算力硬件方向反弹！通信设备板块走强，新易盛大涨近10%| 异动情报&quot;, &quot;content&quot;: &quot;[2026-07-14 13:52:53] 7月14日午后，算力硬件方向反弹，带动创业板盘中大涨3%，通信设备板块截至发稿上涨2.39%，相关成分股中，华脉科技（603042）上涨10.01%，新易盛（300502）上涨9.18%，联特科技（301205）上涨8.54%。&quot;, &quot;url&quot;: &quot;http://finance.eastmoney.com/a/202607143805430265.html&quot;}, {&quot;id&quot;: &quot;4e612c53fe6e62c3&quot;, &quot;ts&quot;: 1784004316, &quot;source&quot;: &quot;财新-行业深度&quot;, &quot;title&quot;: &quot;机构认为，无论海内外，核心AI标的资产，未来几个季度的业绩普遍比较扎实，因为需求层面没问题，在供给范围之内预计能交付</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:31 · cio_brain · tool_call</div>
+              <div class="timeline-text">search_stocks({})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:31 · cio_brain · tool_result</div>
+              <div class="timeline-text">search_stocks -&gt; {&quot;error&quot;: &quot;bad args: tool_search_stocks() missing 1 required positional argument: &#x27;keyword&#x27;&quot;}</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_call</div>
+              <div class="timeline-text">search_stocks({&quot;keyword&quot;: &quot;光模块&quot;, &quot;limit&quot;: 15})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_result</div>
+              <div class="timeline-text">search_stocks -&gt; {&quot;ok&quot;: true, &quot;total&quot;: 0, &quot;rows&quot;: []}</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_call</div>
+              <div class="timeline-text">search_stocks({&quot;keyword&quot;: &quot;半导体设备&quot;, &quot;limit&quot;: 15})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_result</div>
+              <div class="timeline-text">search_stocks -&gt; {&quot;ok&quot;: true, &quot;total&quot;: 0, &quot;rows&quot;: []}</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_call</div>
+              <div class="timeline-text">search_stocks({&quot;keyword&quot;: &quot;AI算力&quot;, &quot;limit&quot;: 15})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:00:35 · cio_brain · tool_result</div>
+              <div class="timeline-text">search_stocks -&gt; {&quot;ok&quot;: true, &quot;total&quot;: 0, &quot;rows&quot;: []}</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:07 · cio_brain · tool_call</div>
+              <div class="timeline-text">fetch_quotes({&quot;codes&quot;: [&quot;000063&quot;, &quot;002475&quot;, &quot;300308&quot;, &quot;300502&quot;, &quot;601138&quot;, &quot;000725&quot;, &quot;603986&quot;, &quot;688981&quot;, &quot;688008&quot;, &quot;688041&quot;, &quot;688256&quot;, &quot;002230&quot;, &quot;300223&quot;, &quot;603501&quot;, &quot;002241&quot;, &quot;002371&quot;, &quot;603160&quot;, &quot;300433&quot;, &quot;300750&quot;, &quot;002594&quot;, &quot;300274&quot;, &quot;601012&quot;, &quot;300124&quot;, &quot;002747&quot;, &quot;300024&quot;, &quot;002180&quot;, &quot;600276&quot;, &quot;300760&quot;, &quot;603259&quot;,)</div>
+            </article>
+            </div>
+    </section>
+    
+        
+    <section class="panel">
+      <div class="panel-head"><h2>Analyst &amp; Expert Side Threads</h2></div>
+      <div class="timeline">
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:33 · analyst_sentiment · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;今日A股 涨停潮 主力资金 情绪 2025年1月&quot;, &quot;limit&quot;: 8})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:34 · analyst_sentiment · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;半导体 光通信 存储芯片 板块大涨 资金流入&quot;, &quot;limit&quot;: 8})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:34 · analyst_sentiment · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;航天电子 航天发展 跌停 军工板块 回调&quot;, &quot;limit&quot;: 8})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;今日A股利好 政策 2026年7月14日&quot;, &quot;limit&quot;: 6})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;寒武纪 688256 2025年最新业绩 公告&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;美股隔夜行情 2026年7月13日 纳斯达克 科技股&quot;, &quot;limit&quot;: 6})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;豪威集团 603501 最新业绩 2025&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;存储芯片板块大跌原因 兆易创新 佰维存储 2026年7月&quot;, &quot;limit&quot;: 6})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:35 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;北京君正 300223 最新业绩 公告 2025&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:36 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;泰格医药 300347 最新业绩 2025&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:36 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;算力硬件 光模块 新易盛 反弹 2026年7月14日&quot;, &quot;limit&quot;: 6})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:36 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;兆易创新 603986 最新业绩 2025 公告&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:36 · analyst_fundamentals · tool_call</div>
+              <div class="timeline-text">web_search({&quot;query&quot;: &quot;澜起科技 688008 最新业绩 2025 公告&quot;, &quot;limit&quot;: 5})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:38 · analyst_sentiment · tool_call</div>
+              <div class="timeline-text">web_search({&quot;limit&quot;: 8, &quot;query&quot;: &quot;7月14日 A股 大盘 三大指数 涨跌 今日行情&quot;})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:39 · analyst_sentiment · tool_call</div>
+              <div class="timeline-text">web_search({&quot;limit&quot;: 8, &quot;query&quot;: &quot;生益科技 涨停 新易盛 大涨 今日 2025年7月14日&quot;})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:40 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;limit&quot;: 6, &quot;query&quot;: &quot;国务院 扩大消费十五五规划 社零60万亿 零售板块 2026年7月&quot;})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:40 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;limit&quot;: 6, &quot;query&quot;: &quot;脑机接口 政策利好 多部门 2026年7月14日&quot;})</div>
+            </article>
+            
+            <article class="timeline-item">
+              <div class="timeline-meta">2026-07-14 15:01:40 · analyst_news · tool_call</div>
+              <div class="timeline-text">web_search({&quot;limit&quot;: 6, &quot;query&quot;: &quot;Meta 400亿美元 数据中心 光模块 CPO 2026年7月&quot;})</div>
+            </article>
+            </div>
+    </section>
+    
+      </div>
+    </section>
+  </main>
+</body>
+</html>
