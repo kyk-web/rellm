@@ -209,6 +209,153 @@
       .metric-value { font-size: 24px; }
       .panel { padding: 17px; }
     }
+    
+    .ai-fab {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 248px;
+      padding: 14px 20px 14px 14px;
+      border: 1px solid rgba(34, 211, 238, 0.52);
+      border-radius: 999px;
+      color: #e9f8ff;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(68, 93, 255, 0.95), transparent 30px),
+        linear-gradient(135deg, #07152a 0%, #0b2446 58%, #092b3d 100%);
+      box-shadow: 0 18px 56px rgba(5, 19, 38, 0.36), 0 0 28px rgba(34, 211, 238, 0.24);
+      cursor: pointer;
+      isolation: isolate;
+    }
+    .ai-orb {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 160deg, #29f2ff, #4f78ff, #172044, #22d3ee, #29f2ff);
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.18), 0 0 22px rgba(34,211,238,0.38);
+    }
+    .ai-fab strong, .ai-fab span { display: block; text-align: left; }
+    .ai-fab strong { font-size: 18px; letter-spacing: 0.12em; }
+    .ai-fab span { margin-top: 2px; color: #91a9ca; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .ai-panel {
+      position: fixed;
+      right: 24px;
+      bottom: 104px;
+      z-index: 41;
+      width: min(480px, calc(100vw - 32px));
+      max-height: min(720px, calc(100vh - 128px));
+      display: none;
+      overflow: hidden;
+      border: 1px solid rgba(34, 211, 238, 0.36);
+      border-radius: 28px;
+      background: #061020;
+      box-shadow: 0 28px 84px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(255,255,255,0.04);
+      color: #dbeafe;
+    }
+    .ai-panel.open { display: grid; grid-template-rows: auto minmax(260px, 1fr) auto; }
+    .ai-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      background: linear-gradient(180deg, rgba(15, 35, 68, 0.96), rgba(6, 16, 32, 0.92));
+    }
+    .ai-brand { display: flex; align-items: center; gap: 13px; }
+    .ai-brand h3 { margin: 0; color: #f8fbff; font-size: 20px; }
+    .ai-brand p { margin: 4px 0 0; color: #9fb4d5; font-size: 13px; line-height: 1.45; }
+    .ai-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #bad2f3;
+      background: rgba(15, 35, 68, 0.58);
+      cursor: pointer;
+      font-size: 24px;
+    }
+    .ai-body {
+      overflow: auto;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 12% 2%, rgba(34, 211, 238, 0.13), transparent 160px),
+        linear-gradient(180deg, #071326, #050b16);
+    }
+    .ai-msg {
+      max-width: 88%;
+      margin: 0 0 12px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid rgba(72, 103, 158, 0.34);
+      background: rgba(11, 27, 52, 0.82);
+      color: #d9e8ff;
+    }
+    .ai-msg.user {
+      margin-left: auto;
+      color: #061020;
+      background: linear-gradient(135deg, #37e2ff, #7aa2ff);
+      border-color: transparent;
+      font-weight: 800;
+    }
+    .ai-msg.assistant strong { color: #35e6ff; }
+    .ai-chips { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0 4px; }
+    .ai-chip {
+      border: 1px solid rgba(61, 122, 206, 0.56);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #bcd4f6;
+      background: rgba(8, 23, 46, 0.76);
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .ai-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      background: #060d1b;
+    }
+    .ai-input {
+      min-width: 0;
+      border: 1px solid rgba(76, 114, 166, 0.54);
+      border-radius: 16px;
+      padding: 13px 14px;
+      color: #eef6ff;
+      background: rgba(5, 12, 24, 0.82);
+      outline: none;
+      font: inherit;
+    }
+    .ai-send {
+      border: 0;
+      border-radius: 999px;
+      padding: 0 20px;
+      color: #03101e;
+      background: linear-gradient(135deg, #37e2ff, #5f8dff);
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .ai-footnote {
+      grid-column: 1 / -1;
+      color: #6f86a8;
+      text-align: center;
+      font-size: 11px;
+    }
+    @media (max-width: 720px) {
+      .ai-fab { right: 16px; bottom: 18px; min-width: 210px; padding-right: 16px; }
+      .ai-panel { right: 12px; bottom: 88px; width: calc(100vw - 24px); }
+      .ai-msg { max-width: 94%; }
+    }
+    
   </style>
 </head>
 <body>
@@ -228,36 +375,36 @@
         
             <article class="metric">
               <div class="metric-label">模拟账户总资产</div>
-              <div class="metric-value">¥9,933,590.37</div>
+              <div class="metric-value">¥9,921,567.77</div>
               <div class="metric-sub">初始资金 ¥10,000,000.00</div>
             </article>
             
 
             <article class="metric">
               <div class="metric-label">今日自然口径盈亏</div>
-              <div class="metric-value" style="color:var(--up)">¥49,154.48</div>
-              <div class="metric-sub">+0.50% · 2026-07-15</div>
+              <div class="metric-value" style="color:var(--up)">¥37,131.88</div>
+              <div class="metric-sub">+0.38% · 2026-07-15</div>
             </article>
             
 
             <article class="metric">
               <div class="metric-label">现金 / 仓位</div>
-              <div class="metric-value">¥8,534,902.37</div>
-              <div class="metric-sub">持仓占比 14.08%</div>
+              <div class="metric-value">¥8,185,510.77</div>
+              <div class="metric-sub">持仓占比 17.50%</div>
             </article>
             
 
             <article class="metric">
               <div class="metric-label">持仓 / 今日订单</div>
-              <div class="metric-value">21</div>
-              <div class="metric-sub">今日订单 32 笔</div>
+              <div class="metric-value">25</div>
+              <div class="metric-sub">今日订单 50 笔</div>
             </article>
             
 
             <article class="metric">
               <div class="metric-label">市场状态</div>
-              <div class="metric-value">偏进攻</div>
-              <div class="metric-sub">状态分 0.4</div>
+              <div class="metric-value">中性</div>
+              <div class="metric-sub">状态分 0.3</div>
             </article>
             
 
@@ -275,11 +422,11 @@
     <svg class="equity-svg" viewBox="0 0 760 220" role="img" aria-label="equity curve">
       <line x1="18" y1="202" x2="742" y2="202" class="axis"/>
       <line x1="18" y1="18" x2="18" y2="202" class="axis"/>
-      <line x1="18" y1="198.6" x2="742" y2="198.6" class="baseline"/>
-      <line x1="18.0" y1="198.6" x2="18.0" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="18.0" y1="198.6" x2="21.0" y2="199.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="21.0" y1="199.5" x2="24.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="24.1" y1="198.6" x2="27.1" y2="199.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="27.1" y1="199.6" x2="29.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="29.3" y1="198.6" x2="30.1" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="30.1" y1="198.2" x2="33.1" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="33.1" y1="198.3" x2="36.2" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="36.2" y1="198.2" x2="38.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="38.4" y1="198.6" x2="39.2" y2="198.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="39.2" y1="198.7" x2="40.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="40.3" y1="198.6" x2="42.2" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="42.2" y1="198.3" x2="42.6" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="42.6" y1="198.6" x2="45.3" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="45.3" y1="200.3" x2="48.2" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="48.2" y1="198.6" x2="48.3" y2="198.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="48.3" y1="198.5" x2="48.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="48.4" y1="198.6" x2="51.3" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="51.3" y1="200.1" x2="54.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="54.3" y1="198.6" x2="54.4" y2="198.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="54.4" y1="198.5" x2="54.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="54.4" y1="198.6" x2="57.4" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="57.4" y1="200.2" x2="60.4" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="60.4" y1="198.6" x2="60.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="60.4" y1="198.6" x2="60.5" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="60.5" y1="198.6" x2="63.4" y2="199.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="63.4" y1="199.1" x2="66.0" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="66.0" y1="198.6" x2="66.5" y2="198.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="66.5" y1="198.5" x2="66.8" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="66.8" y1="198.6" x2="69.5" y2="199.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="69.5" y1="199.3" x2="71.6" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="71.6" y1="198.6" x2="72.5" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="72.5" y1="198.2" x2="75.6" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="75.6" y1="198.2" x2="78.6" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="78.6" y1="198.3" x2="79.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="79.1" y1="198.6" x2="81.6" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="81.6" y1="199.9" x2="84.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="84.1" y1="198.6" x2="84.6" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="84.6" y1="198.3" x2="85.2" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="85.2" y1="198.6" x2="87.7" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="87.7" y1="199.9" x2="89.9" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="89.9" y1="198.6" x2="90.7" y2="198.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="90.7" y1="198.1" x2="91.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="91.3" y1="198.6" x2="93.7" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="93.7" y1="200.5" x2="96.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="96.1" y1="198.6" x2="96.8" y2="198.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="96.8" y1="198.0" x2="97.5" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="97.5" y1="198.6" x2="99.8" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="99.8" y1="200.3" x2="102.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="102.3" y1="198.6" x2="102.8" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="102.8" y1="198.2" x2="103.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="103.1" y1="198.6" x2="105.8" y2="201.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="105.8" y1="201.4" x2="108.6" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="108.6" y1="198.6" x2="108.9" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="108.9" y1="198.3" x2="109.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="109.1" y1="198.6" x2="111.9" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="111.9" y1="201.7" x2="114.7" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="114.7" y1="198.6" x2="114.9" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="114.9" y1="198.4" x2="115.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="115.1" y1="198.6" x2="118.0" y2="201.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="118.0" y1="201.6" x2="120.7" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="120.7" y1="198.6" x2="121.0" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="121.0" y1="198.3" x2="121.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="121.3" y1="198.6" x2="124.0" y2="201.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="124.0" y1="201.8" x2="126.8" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="126.8" y1="198.6" x2="127.1" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="127.1" y1="198.3" x2="127.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="127.3" y1="198.6" x2="130.1" y2="202.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="130.1" y1="202.0" x2="132.9" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="132.9" y1="198.6" x2="133.1" y2="198.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="133.1" y1="198.3" x2="133.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="133.3" y1="198.6" x2="136.1" y2="201.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="136.1" y1="201.8" x2="139.0" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="139.0" y1="198.6" x2="139.2" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="139.2" y1="198.4" x2="139.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="139.4" y1="198.6" x2="142.2" y2="201.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="142.2" y1="201.1" x2="145.0" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="145.0" y1="198.6" x2="145.2" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="145.2" y1="198.4" x2="145.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="145.4" y1="198.6" x2="148.3" y2="202.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="148.3" y1="202.0" x2="151.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="151.1" y1="198.6" x2="151.3" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="151.3" y1="198.4" x2="151.6" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="151.6" y1="198.6" x2="154.3" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="154.3" y1="200.3" x2="156.9" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="156.9" y1="198.6" x2="157.3" y2="198.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="157.3" y1="198.2" x2="157.8" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="157.8" y1="198.6" x2="160.4" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="160.4" y1="200.7" x2="163.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="163.1" y1="198.6" x2="163.4" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="163.4" y1="198.4" x2="163.7" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="163.7" y1="198.6" x2="166.4" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="166.4" y1="200.1" x2="169.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="169.1" y1="198.6" x2="169.5" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="169.5" y1="198.4" x2="169.9" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="169.9" y1="198.6" x2="172.5" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="172.5" y1="199.9" x2="175.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="175.1" y1="198.6" x2="175.5" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="175.5" y1="198.4" x2="175.9" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="175.9" y1="198.6" x2="178.6" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="178.6" y1="199.9" x2="181.2" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="181.2" y1="198.6" x2="181.6" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="181.6" y1="198.4" x2="182.0" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="182.0" y1="198.6" x2="184.6" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="184.6" y1="199.9" x2="187.2" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="187.2" y1="198.6" x2="187.6" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="187.6" y1="198.4" x2="188.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="188.1" y1="198.6" x2="190.7" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="190.7" y1="199.9" x2="193.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="193.3" y1="198.6" x2="193.7" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="193.7" y1="198.4" x2="194.1" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="194.1" y1="198.6" x2="196.7" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="196.7" y1="199.9" x2="199.3" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="199.3" y1="198.6" x2="199.8" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="199.8" y1="198.4" x2="200.2" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="200.2" y1="198.6" x2="202.8" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="202.8" y1="199.9" x2="205.4" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="205.4" y1="198.6" x2="205.8" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="205.8" y1="198.4" x2="206.2" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="206.2" y1="198.6" x2="208.8" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="208.8" y1="199.9" x2="211.5" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="211.5" y1="198.6" x2="211.9" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="211.9" y1="198.4" x2="212.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="212.3" y1="198.6" x2="214.9" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="214.9" y1="199.9" x2="217.5" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="217.5" y1="198.6" x2="217.9" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="217.9" y1="198.4" x2="218.3" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="218.3" y1="198.6" x2="221.0" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="221.0" y1="199.9" x2="223.6" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="223.6" y1="198.6" x2="224.0" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="224.0" y1="198.4" x2="224.4" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="224.4" y1="198.6" x2="227.0" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="227.0" y1="199.9" x2="229.6" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="229.6" y1="198.6" x2="230.1" y2="198.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="230.1" y1="198.4" x2="230.5" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="230.5" y1="198.6" x2="233.1" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="233.1" y1="199.9" x2="236.1" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="236.1" y1="199.9" x2="239.1" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="239.1" y1="200.1" x2="242.2" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="242.2" y1="200.1" x2="245.2" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="245.2" y1="200.1" x2="248.2" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="248.2" y1="200.1" x2="251.3" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="251.3" y1="200.1" x2="254.3" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="254.3" y1="200.1" x2="257.3" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="257.3" y1="200.1" x2="260.3" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="260.3" y1="200.1" x2="263.4" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="263.4" y1="200.2" x2="266.4" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="266.4" y1="199.9" x2="269.4" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="269.4" y1="199.9" x2="272.5" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="272.5" y1="200.6" x2="275.5" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="275.5" y1="200.7" x2="278.5" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="278.5" y1="200.6" x2="281.5" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="281.5" y1="200.6" x2="284.6" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="284.6" y1="200.6" x2="287.6" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="287.6" y1="200.6" x2="290.6" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="290.6" y1="200.7" x2="293.7" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="293.7" y1="200.6" x2="296.7" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="296.7" y1="200.7" x2="299.7" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="299.7" y1="200.5" x2="302.8" y2="200.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="302.8" y1="200.8" x2="305.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="305.8" y1="200.7" x2="308.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="308.8" y1="200.7" x2="311.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="311.8" y1="200.7" x2="314.9" y2="200.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="314.9" y1="200.8" x2="317.9" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="317.9" y1="200.7" x2="320.9" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="320.9" y1="200.9" x2="324.0" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="324.0" y1="200.7" x2="327.0" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="327.0" y1="200.9" x2="330.0" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="330.0" y1="200.7" x2="333.0" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="333.0" y1="200.9" x2="336.1" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="336.1" y1="200.7" x2="339.1" y2="201.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="339.1" y1="201.0" x2="342.1" y2="200.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="342.1" y1="200.8" x2="345.2" y2="201.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="345.2" y1="201.1" x2="348.2" y2="200.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="348.2" y1="200.8" x2="351.2" y2="201.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="351.2" y1="201.1" x2="354.3" y2="200.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="354.3" y1="200.8" x2="357.3" y2="201.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="357.3" y1="201.1" x2="360.3" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="360.3" y1="200.7" x2="363.3" y2="201.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="363.3" y1="201.0" x2="366.4" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="366.4" y1="200.7" x2="369.4" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="369.4" y1="200.9" x2="372.4" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="372.4" y1="200.7" x2="375.5" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="375.5" y1="200.9" x2="378.5" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="378.5" y1="200.7" x2="381.5" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="381.5" y1="200.9" x2="384.5" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="384.5" y1="200.7" x2="387.6" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="387.6" y1="200.9" x2="390.6" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="390.6" y1="200.7" x2="393.6" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="393.6" y1="200.9" x2="396.7" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="396.7" y1="200.7" x2="399.7" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="399.7" y1="200.9" x2="402.7" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="402.7" y1="200.7" x2="405.7" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="405.7" y1="200.9" x2="408.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="408.8" y1="200.7" x2="411.8" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="411.8" y1="200.9" x2="414.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="414.8" y1="200.7" x2="417.9" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="417.9" y1="200.9" x2="420.9" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="420.9" y1="200.7" x2="423.9" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="423.9" y1="200.9" x2="427.0" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="427.0" y1="200.7" x2="430.0" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="430.0" y1="200.9" x2="433.0" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="433.0" y1="200.7" x2="436.0" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="436.0" y1="200.9" x2="439.1" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="439.1" y1="200.7" x2="442.1" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="442.1" y1="200.9" x2="445.1" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="445.1" y1="200.7" x2="448.2" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="448.2" y1="200.9" x2="451.2" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="451.2" y1="200.7" x2="454.2" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="454.2" y1="200.9" x2="457.2" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="457.2" y1="200.7" x2="460.3" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="460.3" y1="200.9" x2="463.3" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="463.3" y1="200.7" x2="466.3" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="466.3" y1="200.9" x2="469.4" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="469.4" y1="200.7" x2="472.4" y2="200.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="472.4" y1="200.9" x2="475.4" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="475.4" y1="200.7" x2="478.5" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="478.5" y1="200.5" x2="481.5" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="481.5" y1="200.7" x2="484.5" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="484.5" y1="200.5" x2="487.5" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="487.5" y1="200.7" x2="490.6" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="490.6" y1="200.2" x2="493.6" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="493.6" y1="200.7" x2="496.6" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="496.6" y1="200.4" x2="499.7" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="499.7" y1="200.7" x2="502.7" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="502.7" y1="200.3" x2="505.7" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="505.7" y1="200.7" x2="508.7" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="508.7" y1="200.1" x2="511.8" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="511.8" y1="200.6" x2="514.8" y2="200.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="514.8" y1="200.0" x2="517.8" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="517.8" y1="200.7" x2="520.9" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="520.9" y1="200.2" x2="523.9" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="523.9" y1="200.7" x2="526.9" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="526.9" y1="200.3" x2="529.9" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="529.9" y1="200.6" x2="533.0" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="533.0" y1="200.2" x2="536.0" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="536.0" y1="200.7" x2="539.0" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="539.0" y1="200.4" x2="542.1" y2="200.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="542.1" y1="200.7" x2="545.1" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="545.1" y1="200.3" x2="548.1" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="548.1" y1="200.6" x2="551.2" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="551.2" y1="200.3" x2="554.2" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="554.2" y1="200.6" x2="557.2" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="557.2" y1="200.1" x2="560.2" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="560.2" y1="200.6" x2="563.3" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="563.3" y1="200.2" x2="566.3" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="566.3" y1="200.6" x2="569.3" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="569.3" y1="200.2" x2="572.4" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="572.4" y1="200.6" x2="575.4" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="575.4" y1="200.2" x2="578.4" y2="200.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="578.4" y1="200.6" x2="581.4" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="581.4" y1="200.2" x2="584.5" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="584.5" y1="200.5" x2="587.5" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="587.5" y1="200.1" x2="590.5" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="590.5" y1="200.5" x2="593.6" y2="200.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="593.6" y1="200.0" x2="596.6" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="596.6" y1="200.5" x2="599.6" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="599.6" y1="199.9" x2="602.7" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="602.7" y1="200.5" x2="605.7" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="605.7" y1="199.9" x2="608.7" y2="200.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="608.7" y1="200.5" x2="611.7" y2="199.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="611.7" y1="199.9" x2="614.8" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="614.8" y1="200.4" x2="617.8" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="617.8" y1="199.8" x2="620.8" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="620.8" y1="200.4" x2="623.9" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="623.9" y1="199.8" x2="626.9" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="626.9" y1="200.4" x2="629.9" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="629.9" y1="199.8" x2="632.9" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="632.9" y1="200.4" x2="636.0" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="636.0" y1="199.8" x2="639.0" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="639.0" y1="200.4" x2="642.0" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="642.0" y1="199.8" x2="645.1" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="645.1" y1="200.4" x2="648.1" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="648.1" y1="199.8" x2="651.1" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="651.1" y1="200.4" x2="654.2" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="654.2" y1="199.8" x2="657.2" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="657.2" y1="200.4" x2="660.2" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="660.2" y1="199.8" x2="663.2" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="663.2" y1="200.4" x2="666.3" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="666.3" y1="199.8" x2="669.3" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="669.3" y1="200.4" x2="672.3" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="672.3" y1="199.8" x2="675.4" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="675.4" y1="200.4" x2="678.4" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="678.4" y1="199.8" x2="681.4" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="681.4" y1="200.4" x2="684.4" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="684.4" y1="199.8" x2="687.5" y2="200.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="687.5" y1="200.4" x2="690.5" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="690.5" y1="199.8" x2="692.1" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="692.1" y1="198.6" x2="693.5" y2="197.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="693.5" y1="197.5" x2="694.9" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="694.9" y1="198.6" x2="696.6" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="696.6" y1="199.8" x2="699.6" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="699.6" y1="200.3" x2="702.6" y2="199.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="702.6" y1="199.4" x2="705.6" y2="199.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="705.6" y1="199.8" x2="708.7" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="708.7" y1="200.1" x2="711.7" y2="199.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="711.7" y1="199.2" x2="714.7" y2="200.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="714.7" y1="200.1" x2="714.8" y2="198.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="714.8" y1="198.6" x2="717.8" y2="18.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="717.8" y1="18.0" x2="720.8" y2="144.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="720.8" y1="144.0" x2="723.8" y2="198.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="723.8" y1="198.6" x2="723.8" y2="199.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="723.8" y1="199.3" x2="726.9" y2="199.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="726.9" y1="199.7" x2="729.9" y2="199.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="729.9" y1="199.3" x2="732.9" y2="199.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="732.9" y1="199.7" x2="735.9" y2="199.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="735.9" y1="199.5" x2="739.0" y2="199.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="739.0" y1="199.7" x2="742.0" y2="199.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/>
-      <circle cx="742.0" cy="199.3" r="3.2" fill="var(--down)"/>
+      <line x1="18" y1="201.7" x2="742" y2="201.7" class="baseline"/>
+      <line x1="18.0" y1="201.7" x2="18.0" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="18.0" y1="201.7" x2="21.0" y2="202.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="21.0" y1="202.0" x2="24.1" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="24.1" y1="201.7" x2="27.1" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="27.1" y1="201.9" x2="30.1" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="30.1" y1="201.7" x2="33.1" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="33.1" y1="201.9" x2="36.2" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="36.2" y1="201.7" x2="39.2" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="39.2" y1="201.9" x2="42.2" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="42.2" y1="201.7" x2="45.3" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="45.3" y1="201.9" x2="48.3" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="48.3" y1="201.7" x2="51.3" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="51.3" y1="201.9" x2="54.4" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="54.4" y1="201.7" x2="57.4" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="57.4" y1="201.9" x2="60.4" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="60.4" y1="201.7" x2="63.4" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="63.4" y1="201.9" x2="66.5" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="66.5" y1="201.7" x2="69.5" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="69.5" y1="201.9" x2="72.5" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="72.5" y1="201.7" x2="75.6" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="75.6" y1="201.9" x2="78.6" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="78.6" y1="201.7" x2="81.6" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="81.6" y1="201.9" x2="84.6" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="84.6" y1="201.7" x2="87.7" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="87.7" y1="201.9" x2="90.7" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="90.7" y1="201.7" x2="93.7" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="93.7" y1="201.9" x2="96.8" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="96.8" y1="201.7" x2="99.8" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="99.8" y1="201.9" x2="102.8" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="102.8" y1="201.7" x2="105.8" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="105.8" y1="201.9" x2="108.9" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="108.9" y1="201.7" x2="111.9" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="111.9" y1="201.9" x2="114.9" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="114.9" y1="201.7" x2="118.0" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="118.0" y1="201.9" x2="121.0" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="121.0" y1="201.7" x2="124.0" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="124.0" y1="201.9" x2="127.1" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="127.1" y1="201.7" x2="130.1" y2="201.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="130.1" y1="201.9" x2="133.1" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="133.1" y1="201.7" x2="133.2" y2="201.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="133.2" y1="201.7" x2="136.1" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="136.1" y1="201.5" x2="139.2" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="139.2" y1="201.7" x2="142.2" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="142.2" y1="201.4" x2="145.2" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="145.2" y1="201.7" x2="148.3" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="148.3" y1="201.2" x2="151.3" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="151.3" y1="201.6" x2="154.3" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="154.3" y1="201.3" x2="157.3" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="157.3" y1="201.6" x2="160.4" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="160.4" y1="201.2" x2="163.4" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="163.4" y1="201.7" x2="166.4" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="166.4" y1="201.1" x2="169.5" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="169.5" y1="201.6" x2="172.5" y2="201.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="172.5" y1="201.0" x2="175.5" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="175.5" y1="201.6" x2="178.6" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="178.6" y1="201.1" x2="181.6" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="181.6" y1="201.7" x2="184.6" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="184.6" y1="201.3" x2="187.6" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="187.6" y1="201.6" x2="190.7" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="190.7" y1="201.2" x2="193.7" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="193.7" y1="201.7" x2="196.7" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="196.7" y1="201.3" x2="199.8" y2="201.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="199.8" y1="201.7" x2="202.8" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="202.8" y1="201.3" x2="205.8" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="205.8" y1="201.6" x2="208.8" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="208.8" y1="201.3" x2="211.9" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="211.9" y1="201.6" x2="214.9" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="214.9" y1="201.1" x2="217.9" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="217.9" y1="201.6" x2="221.0" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="221.0" y1="201.2" x2="224.0" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="224.0" y1="201.6" x2="227.0" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="227.0" y1="201.2" x2="230.1" y2="201.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="230.1" y1="201.6" x2="233.1" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="233.1" y1="201.2" x2="236.1" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="236.1" y1="201.5" x2="239.1" y2="201.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="239.1" y1="201.2" x2="242.2" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="242.2" y1="201.5" x2="245.2" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="245.2" y1="201.1" x2="248.2" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="248.2" y1="201.5" x2="251.3" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="251.3" y1="200.9" x2="254.3" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="254.3" y1="201.5" x2="257.3" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="257.3" y1="200.9" x2="260.3" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="260.3" y1="201.5" x2="263.4" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="263.4" y1="200.9" x2="266.4" y2="201.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="266.4" y1="201.5" x2="269.4" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="269.4" y1="200.9" x2="272.5" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="272.5" y1="201.4" x2="275.5" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="275.5" y1="200.8" x2="278.5" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="278.5" y1="201.4" x2="281.5" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="281.5" y1="200.8" x2="284.6" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="284.6" y1="201.4" x2="287.6" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="287.6" y1="200.8" x2="290.6" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="290.6" y1="201.4" x2="293.7" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="293.7" y1="200.8" x2="296.7" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="296.7" y1="201.4" x2="299.7" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="299.7" y1="200.8" x2="302.8" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="302.8" y1="201.4" x2="305.8" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="305.8" y1="200.8" x2="308.8" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="308.8" y1="201.4" x2="311.8" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="311.8" y1="200.8" x2="314.9" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="314.9" y1="201.4" x2="317.9" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="317.9" y1="200.8" x2="320.9" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="320.9" y1="201.4" x2="324.0" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="324.0" y1="200.8" x2="327.0" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="327.0" y1="201.4" x2="330.0" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="330.0" y1="200.8" x2="333.0" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="333.0" y1="201.4" x2="336.1" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="336.1" y1="200.8" x2="339.1" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="339.1" y1="201.4" x2="342.1" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="342.1" y1="200.8" x2="345.2" y2="201.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="345.2" y1="201.4" x2="348.2" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="348.2" y1="200.8" x2="351.2" y2="198.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="351.2" y1="198.5" x2="354.3" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="354.3" y1="200.8" x2="357.3" y2="201.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="357.3" y1="201.3" x2="360.3" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="360.3" y1="200.4" x2="363.3" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="363.3" y1="200.8" x2="366.4" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="366.4" y1="201.1" x2="369.4" y2="200.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="369.4" y1="200.2" x2="372.4" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="372.4" y1="201.1" x2="375.5" y2="18.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="375.5" y1="18.0" x2="378.5" y2="144.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="378.5" y1="144.7" x2="381.5" y2="200.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="381.5" y1="200.3" x2="384.5" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="384.5" y1="200.7" x2="387.6" y2="200.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="387.6" y1="200.3" x2="390.6" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="390.6" y1="200.7" x2="393.6" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="393.6" y1="200.5" x2="396.7" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="396.7" y1="200.7" x2="399.7" y2="200.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="399.7" y1="200.2" x2="402.7" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="402.7" y1="200.7" x2="405.7" y2="200.2" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="405.7" y1="200.2" x2="408.8" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="408.8" y1="200.7" x2="411.8" y2="200.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="411.8" y1="200.1" x2="414.8" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="414.8" y1="200.6" x2="417.9" y2="200.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="417.9" y1="200.1" x2="420.9" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="420.9" y1="200.7" x2="423.9" y2="200.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="423.9" y1="200.3" x2="427.0" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="427.0" y1="200.7" x2="430.0" y2="200.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="430.0" y1="200.3" x2="433.0" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="433.0" y1="200.7" x2="436.0" y2="200.3" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="436.0" y1="200.3" x2="439.1" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="439.1" y1="200.7" x2="442.1" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="442.1" y1="200.5" x2="445.1" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="445.1" y1="200.7" x2="448.2" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="448.2" y1="200.5" x2="451.2" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="451.2" y1="200.7" x2="454.2" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="454.2" y1="200.6" x2="457.2" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="457.2" y1="200.7" x2="460.3" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="460.3" y1="200.5" x2="463.3" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="463.3" y1="200.6" x2="466.3" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="466.3" y1="200.5" x2="469.4" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="469.4" y1="200.6" x2="472.4" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="472.4" y1="200.5" x2="475.4" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="475.4" y1="200.5" x2="478.5" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="478.5" y1="200.7" x2="481.5" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="481.5" y1="200.4" x2="484.5" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="484.5" y1="200.7" x2="487.5" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="487.5" y1="200.4" x2="490.6" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="490.6" y1="200.6" x2="493.6" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="493.6" y1="200.4" x2="496.6" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="496.6" y1="200.6" x2="499.7" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="499.7" y1="200.4" x2="502.7" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="502.7" y1="200.6" x2="505.7" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="505.7" y1="200.4" x2="508.7" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="508.7" y1="200.6" x2="511.8" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="511.8" y1="200.4" x2="514.8" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="514.8" y1="200.6" x2="517.8" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="517.8" y1="200.4" x2="520.9" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="520.9" y1="200.6" x2="523.9" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="523.9" y1="200.4" x2="526.9" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="526.9" y1="200.6" x2="529.9" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="529.9" y1="200.4" x2="533.0" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="533.0" y1="200.6" x2="536.0" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="536.0" y1="200.4" x2="539.0" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="539.0" y1="200.6" x2="542.1" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="542.1" y1="200.4" x2="545.1" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="545.1" y1="200.6" x2="548.1" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="548.1" y1="200.4" x2="551.2" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="551.2" y1="200.6" x2="554.2" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="554.2" y1="200.4" x2="557.2" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="557.2" y1="200.6" x2="560.2" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="560.2" y1="200.4" x2="563.3" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="563.3" y1="200.6" x2="566.3" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="566.3" y1="200.4" x2="569.3" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="569.3" y1="200.6" x2="572.4" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="572.4" y1="200.4" x2="575.4" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="575.4" y1="200.6" x2="578.4" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="578.4" y1="200.4" x2="581.4" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="581.4" y1="200.6" x2="584.5" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="584.5" y1="200.4" x2="587.5" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="587.5" y1="200.6" x2="590.5" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="590.5" y1="200.4" x2="593.6" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="593.6" y1="200.6" x2="596.6" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="596.6" y1="200.4" x2="599.6" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="599.6" y1="200.7" x2="602.7" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="602.7" y1="200.4" x2="605.7" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="605.7" y1="200.7" x2="608.7" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="608.7" y1="200.4" x2="611.7" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="611.7" y1="200.8" x2="614.8" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="614.8" y1="200.4" x2="617.8" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="617.8" y1="200.6" x2="620.8" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="620.8" y1="200.4" x2="623.9" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="623.9" y1="200.7" x2="626.9" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="626.9" y1="200.4" x2="629.9" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="629.9" y1="200.6" x2="632.9" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="632.9" y1="200.5" x2="636.0" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="636.0" y1="200.6" x2="639.0" y2="200.4" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="639.0" y1="200.4" x2="642.0" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="642.0" y1="200.6" x2="645.1" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="645.1" y1="200.5" x2="648.1" y2="200.6" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="648.1" y1="200.6" x2="651.1" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="651.1" y1="200.5" x2="654.2" y2="200.7" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="654.2" y1="200.7" x2="657.2" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="657.2" y1="200.5" x2="660.2" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="660.2" y1="200.8" x2="663.2" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="663.2" y1="200.5" x2="666.3" y2="200.8" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="666.3" y1="200.8" x2="669.3" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="669.3" y1="200.5" x2="672.3" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="672.3" y1="200.9" x2="675.4" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="675.4" y1="200.5" x2="678.4" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="678.4" y1="200.9" x2="681.4" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="681.4" y1="200.5" x2="684.4" y2="201.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="684.4" y1="201.0" x2="687.5" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="687.5" y1="200.5" x2="690.5" y2="201.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="690.5" y1="201.0" x2="693.5" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="693.5" y1="200.5" x2="696.6" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="696.6" y1="201.1" x2="699.6" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="699.6" y1="200.5" x2="702.6" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="702.6" y1="200.9" x2="705.6" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="705.6" y1="200.5" x2="708.7" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="708.7" y1="201.1" x2="711.7" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="711.7" y1="200.5" x2="714.7" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="714.7" y1="201.1" x2="717.8" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="717.8" y1="200.5" x2="720.8" y2="201.1" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="720.8" y1="201.1" x2="723.8" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="723.8" y1="200.5" x2="726.9" y2="201.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="726.9" y1="201.0" x2="729.9" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="729.9" y1="200.5" x2="732.9" y2="201.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="732.9" y1="201.0" x2="735.9" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="735.9" y1="200.5" x2="739.0" y2="200.9" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="739.0" y1="200.9" x2="742.0" y2="200.5" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/>
+      <circle cx="742.0" cy="200.5" r="3.2" fill="var(--up)"/>
     </svg>
-    <div class="chart-note">最近 240 条净值记录：¥9,966,631.02 → ¥9,933,590.37</div>
+    <div class="chart-note">最近 240 条净值记录：¥9,862,234.49 → ¥9,921,567.77</div>
     
       </section>
       <section class="grid">
@@ -289,7 +436,7 @@
       <div class="panel-title"><h2>最近成交/委托</h2></div>
       <table class="data-table">
         <thead><tr><th>时间</th><th>代码</th><th>方向</th><th>数量</th><th>价格</th><th>原因</th></tr></thead>
-        <tbody><tr><td>2026-07-15 10:13:02</td><td>603538</td><td><span class="side buy">BUY</span></td><td>2000</td><td>¥38.62</td><td>主动追入 涨8.9% 成交额24.5亿</td></tr><tr><td>2026-07-15 10:08:11</td><td>603083</td><td><span class="side buy">BUY</span></td><td>300</td><td>¥211.76</td><td>主动追入 涨5.7% 成交额30.2亿</td></tr><tr><td>2026-07-15 09:57:00</td><td>002281</td><td><span class="side sell">SELL</span></td><td>300</td><td>¥230.33</td><td>跟踪止损 自高位 -31.53%</td></tr><tr><td>2026-07-15 09:57:00</td><td>300475</td><td><span class="side sell">SELL</span></td><td>300</td><td>¥232.10</td><td>跟踪止损 自高位 -43.33%</td></tr><tr><td>2026-07-15 09:57:00</td><td>600487</td><td><span class="side sell">SELL</span></td><td>1000</td><td>¥75.58</td><td>跟踪止损 自高位 -45.78%</td></tr><tr><td>2026-07-15 09:57:00</td><td>688008</td><td><span class="side sell">SELL</span></td><td>200</td><td>¥260.86</td><td>跟踪止损 自高位 -42.29%</td></tr><tr><td>2026-07-15 09:57:00</td><td>603538</td><td><span class="side sell">SELL</span></td><td>2200</td><td>¥38.07</td><td>跟踪止损 自高位 -89.52%</td></tr><tr><td>2026-07-15 09:57:00</td><td>000807</td><td><span class="side sell">SELL</span></td><td>3200</td><td>¥25.08</td><td>跟踪止损 自高位 -94.60%</td></tr><tr><td>2026-07-15 09:57:00</td><td>301217</td><td><span class="side sell">SELL</span></td><td>600</td><td>¥132.33</td><td>跟踪止损 自高位 -43.41%</td></tr><tr><td>2026-07-15 09:57:00</td><td>002245</td><td><span class="side sell">SELL</span></td><td>3800</td><td>¥21.24</td><td>跟踪止损 自高位 -92.16%</td></tr><tr><td>2026-07-15 09:57:00</td><td>000636</td><td><span class="side sell">SELL</span></td><td>1300</td><td>¥56.91</td><td>跟踪止损 自高位 -85.36%</td></tr><tr><td>2026-07-15 09:57:00</td><td>600176</td><td><span class="side sell">SELL</span></td><td>1400</td><td>¥54.07</td><td>跟踪止损 自高位 -78.66%</td></tr><tr><td>2026-07-15 09:57:00</td><td>600036</td><td><span class="side sell">SELL</span></td><td>3500</td><td>¥37.14</td><td>跟踪止损 自高位 -88.55%</td></tr><tr><td>2026-07-15 09:57:00</td><td>600900</td><td><span class="side sell">SELL</span></td><td>5200</td><td>¥28.56</td><td>跟踪止损 自高位 -76.70%</td></tr></tbody>
+        <tbody><tr><td>2026-07-15 13:53:02</td><td>300033</td><td><span class="side buy">BUY</span></td><td>300</td><td>¥230.81</td><td>主动追入 涨6.0% 成交额36.6亿</td></tr><tr><td>2026-07-15 13:48:11</td><td>000807</td><td><span class="side buy">BUY</span></td><td>3000</td><td>¥26.40</td><td>主动追入 涨5.6% 成交额36.0亿</td></tr><tr><td>2026-07-15 13:38:05</td><td>600183</td><td><span class="side buy">BUY</span></td><td>500</td><td>¥155.64</td><td>主动追入 涨5.2% 成交额123.5亿</td></tr><tr><td>2026-07-15 13:23:03</td><td>601888</td><td><span class="side buy">BUY</span></td><td>1400</td><td>¥55.07</td><td>主动追入 涨8.1% 成交额30.1亿</td></tr><tr><td>2026-07-15 13:12:00</td><td>300502</td><td><span class="side sell">SELL</span></td><td>100</td><td>¥556.50</td><td>跟踪止损 自高位 -3.14%</td></tr><tr><td>2026-07-15 13:08:02</td><td>600276</td><td><span class="side buy">BUY</span></td><td>1300</td><td>¥57.74</td><td>主动追入 涨5.3% 成交额81.4亿</td></tr><tr><td>2026-07-15 11:38:00</td><td>002747</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥41.74</td><td>突破加仓 30min涨3.1%</td></tr><tr><td>2026-07-15 11:33:00</td><td>002747</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥41.74</td><td>突破加仓 30min涨3.4%</td></tr><tr><td>2026-07-15 11:23:02</td><td>001389</td><td><span class="side buy">BUY</span></td><td>400</td><td>¥196.95</td><td>主动追入 涨5.8% 成交额30.3亿</td></tr><tr><td>2026-07-15 11:23:02</td><td>603501</td><td><span class="side buy">BUY</span></td><td>700</td><td>¥111.76</td><td>主动追入 涨5.2% 成交额46.0亿</td></tr><tr><td>2026-07-15 11:22:00</td><td>300394</td><td><span class="side sell">SELL</span></td><td>200</td><td>¥261.38</td><td>硬止损 浮亏 -4.57%</td></tr><tr><td>2026-07-15 11:22:00</td><td>001389</td><td><span class="side sell">SELL</span></td><td>400</td><td>¥196.53</td><td>跟踪止损 自高位 -3.44%</td></tr><tr><td>2026-07-15 11:22:00</td><td>002463</td><td><span class="side sell">SELL</span></td><td>500</td><td>¥137.71</td><td>跟踪止损 自高位 -3.08%</td></tr><tr><td>2026-07-15 11:17:00</td><td>002384</td><td><span class="side sell">SELL</span></td><td>300</td><td>¥269.52</td><td>跟踪止损 自高位 -3.00%</td></tr></tbody>
       </table>
     </section>
     
@@ -300,7 +447,7 @@
       <div class="panel-title"><h2>当前持仓</h2></div>
       <table class="data-table">
         <thead><tr><th>代码</th><th>数量</th><th>可卖</th><th>均价</th><th>更新时间</th></tr></thead>
-        <tbody><tr><td>605090</td><td>1900</td><td>0</td><td>¥41.52</td><td>2026-07-15 09:43:04</td></tr><tr><td>300759</td><td>2000</td><td>0</td><td>¥38.94</td><td>2026-07-15 09:38:04</td></tr><tr><td>603127</td><td>1600</td><td>0</td><td>¥48.53</td><td>2026-07-15 09:33:07</td></tr><tr><td>603538</td><td>2000</td><td>0</td><td>¥38.62</td><td>2026-07-15 10:13:02</td></tr><tr><td>002821</td><td>400</td><td>0</td><td>¥188.97</td><td>2026-07-15 09:43:04</td></tr><tr><td>002384</td><td>300</td><td>300</td><td>¥250.59</td><td>2026-07-14 10:13:04</td></tr><tr><td>002484</td><td>800</td><td>0</td><td>¥92.61</td><td>2026-07-15 09:33:07</td></tr><tr><td>600183</td><td>500</td><td>500</td><td>¥146.96</td><td>2026-07-14 10:48:02</td></tr><tr><td>001389</td><td>400</td><td>400</td><td>¥182.59</td><td>2026-07-14 11:08:03</td></tr><tr><td>002938</td><td>700</td><td>700</td><td>¥102.92</td><td>2026-07-14 10:38:02</td></tr><tr><td>002636</td><td>700</td><td>0</td><td>¥102.74</td><td>2026-07-15 09:33:07</td></tr><tr><td>002463</td><td>500</td><td>500</td><td>¥132.52</td><td>2026-07-14 10:13:04</td></tr><tr><td>688627</td><td>100</td><td>0</td><td>¥641.32</td><td>2026-07-15 09:48:03</td></tr><tr><td>603083</td><td>300</td><td>0</td><td>¥211.76</td><td>2026-07-15 10:08:11</td></tr></tbody>
+        <tbody><tr><td>002747</td><td>2100</td><td>0</td><td>¥40.82</td><td>2026-07-15 11:38:00</td></tr><tr><td>000807</td><td>3000</td><td>0</td><td>¥26.40</td><td>2026-07-15 13:48:11</td></tr><tr><td>605090</td><td>1900</td><td>0</td><td>¥41.52</td><td>2026-07-15 09:43:04</td></tr><tr><td>001389</td><td>400</td><td>0</td><td>¥196.95</td><td>2026-07-15 11:23:02</td></tr><tr><td>603501</td><td>700</td><td>0</td><td>¥111.76</td><td>2026-07-15 11:23:02</td></tr><tr><td>300759</td><td>2000</td><td>0</td><td>¥38.94</td><td>2026-07-15 09:38:04</td></tr><tr><td>600183</td><td>500</td><td>0</td><td>¥155.64</td><td>2026-07-15 13:38:05</td></tr><tr><td>603127</td><td>1600</td><td>0</td><td>¥48.53</td><td>2026-07-15 09:33:07</td></tr><tr><td>603538</td><td>2000</td><td>0</td><td>¥38.62</td><td>2026-07-15 10:13:02</td></tr><tr><td>601888</td><td>1400</td><td>0</td><td>¥55.07</td><td>2026-07-15 13:23:03</td></tr><tr><td>002821</td><td>400</td><td>0</td><td>¥188.97</td><td>2026-07-15 09:43:04</td></tr><tr><td>600276</td><td>1300</td><td>0</td><td>¥57.74</td><td>2026-07-15 13:08:02</td></tr><tr><td>002156</td><td>900</td><td>0</td><td>¥82.39</td><td>2026-07-15 10:28:04</td></tr><tr><td>002484</td><td>800</td><td>0</td><td>¥92.61</td><td>2026-07-15 09:33:07</td></tr></tbody>
       </table>
     </section>
     
@@ -371,11 +518,11 @@
           <div class="section-kicker">市场状态</div>
           <h2>市场状态引擎</h2>
         </div>
-        <span class="status good">偏进攻</span>
+        <span class="status neutral">中性</span>
       </div>
       <div class="score-row">
-        <div class="score">0.4</div>
-        <div><strong>建议仓位区间</strong><br>0.7 - 0.9</div>
+        <div class="score">0.3</div>
+        <div><strong>建议仓位区间</strong><br>0.5 - 0.78</div>
       </div>
       <div class="index-grid">
         <div class="index-card">
@@ -409,8 +556,8 @@
         </div>
         </div>
       <h3>判定依据</h3>
-      <ul class="evidence-list"><li>全市场上涨占比 68.8%，情绪偏强</li><li>涨停扩散值 1.02%，赚钱效应较好</li></ul>
-      <div class="tag-row"><span>暂无风险标签</span></div>
+      <ul class="evidence-list"><li>全市场上涨占比 61.5%，情绪偏强</li><li>近 48h 利好新闻命中 8，多于利空 2</li><li>当前持仓亏损占比 68.0%，组合承压</li></ul>
+      <div class="tag-row"><span>portfolio_stress</span></div>
     </section>
     
     </section>
@@ -425,14 +572,14 @@
           <h3>智能体活跃统计</h3>
           <table class="data-table">
             <thead><tr><th>智能体</th><th>事件数</th><th>最后记录</th></tr></thead>
-            <tbody><tr><td>机会捕手</td><td>8</td><td>2026-07-15 10:13:02</td></tr><tr><td>新闻处理器</td><td>8</td><td>2026-07-15 10:15:54</td></tr><tr><td>风控守护者</td><td>8</td><td>2026-07-15 10:17:00</td></tr><tr><td>行情更新器</td><td>7</td><td>2026-07-15 10:15:00</td></tr></tbody>
+            <tbody><tr><td>CIO 决策大脑</td><td>225</td><td>2026-07-15 15:05:19</td></tr><tr><td>新闻处理器</td><td>84</td><td>2026-07-15 15:00:57</td></tr><tr><td>机会捕手</td><td>68</td><td>2026-07-15 15:13:02</td></tr><tr><td>风控守护者</td><td>67</td><td>2026-07-15 15:12:00</td></tr><tr><td>行情更新器</td><td>66</td><td>2026-07-15 15:10:00</td></tr><tr><td>基本面分析师</td><td>54</td><td>2026-07-15 15:01:32</td></tr><tr><td>新闻分析师</td><td>50</td><td>2026-07-15 15:01:36</td></tr><tr><td>情绪分析师</td><td>29</td><td>2026-07-15 15:01:11</td></tr><tr><td>技术分析师</td><td>6</td><td>2026-07-15 15:01:13</td></tr><tr><td>主决策任务</td><td>5</td><td>2026-07-15 15:05:19</td></tr></tbody>
           </table>
         </div>
         <div>
           <h3>大模型调用证据</h3>
           <table class="data-table">
             <thead><tr><th>智能体</th><th>提示词</th><th>原始返回</th><th>摘要</th><th>最后记录</th></tr></thead>
-            <tbody><tr><td>新闻处理器</td><td>2</td><td>2</td><td>4</td><td>2026-07-15 10:15:54</td></tr><tr><td>风控守护者</td><td>0</td><td>0</td><td>8</td><td>2026-07-15 10:17:00</td></tr><tr><td>机会捕手</td><td>0</td><td>0</td><td>8</td><td>2026-07-15 10:13:02</td></tr><tr><td>行情更新器</td><td>0</td><td>0</td><td>7</td><td>2026-07-15 10:15:00</td></tr></tbody>
+            <tbody><tr><td>新闻处理器</td><td>21</td><td>21</td><td>42</td><td>2026-07-15 15:00:57</td></tr><tr><td>CIO 决策大脑</td><td>5</td><td>0</td><td>5</td><td>2026-07-15 15:05:19</td></tr><tr><td>机会捕手</td><td>0</td><td>0</td><td>68</td><td>2026-07-15 15:13:02</td></tr><tr><td>风控守护者</td><td>0</td><td>0</td><td>67</td><td>2026-07-15 15:12:00</td></tr><tr><td>行情更新器</td><td>0</td><td>0</td><td>66</td><td>2026-07-15 15:10:00</td></tr><tr><td>主决策任务</td><td>0</td><td>0</td><td>5</td><td>2026-07-15 15:05:19</td></tr><tr><td>基本面分析师</td><td>0</td><td>3</td><td>3</td><td>2026-07-15 15:01:32</td></tr><tr><td>新闻分析师</td><td>0</td><td>3</td><td>3</td><td>2026-07-15 15:01:36</td></tr><tr><td>情绪分析师</td><td>0</td><td>3</td><td>3</td><td>2026-07-15 15:01:11</td></tr><tr><td>复盘任务</td><td>0</td><td>0</td><td>1</td><td>2026-07-15 15:11:38</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -443,69 +590,103 @@
       <div class="panel-title"><h2>智能体流水</h2></div>
       <div class="timeline">
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:17:00 · 风控守护者 · 摘要</div>
-          <p>风控检查 21 个持仓，触发 1 个风险事件。</p>
+          <div class="timeline-meta">2026-07-15 15:24:50 · system · audit</div>
+          <p>voided post-close simulated orders after 2026-07-15 15:00:00</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:15:54 · 新闻处理器 · 摘要</div>
-          <p>新闻处理完成，抓取 150 条，排序 37 条。</p>
+          <div class="timeline-meta">2026-07-15 15:13:02 · 机会捕手 · 摘要</div>
+          <p>机会扫描完成，候选/检查 38 项，产生 0 个动作。</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:15:54 · 新闻处理器 · 摘要</div>
-          <p>fetched=150 saved_imp3+=20 ranked=37</p>
+          <div class="timeline-meta">2026-07-15 15:12:00 · 风控守护者 · 摘要</div>
+          <p>{&#x27;triggered&#x27;: [{&#x27;code&#x27;: &#x27;002636&#x27;, &#x27;rule&#x27;: &#x27;hard_stop_pending_t1&#x27;, &#x27;pct&#x27;: -7.74, &#x27;qty&#x27;: 0, &#x27;ok&#x27;: False, &#x27;msg&#x27;: &#x27;T+1 not yet available&#x27;}, {&#x27;code&#x27;: &#x27;002484&#x27;, &#x27;rule&#x27;: &#x27;hard_stop_pending_t1&#x27;, &#x27;pct&#x27;: -5.13, &#x27;qty&#x27;: 0, &#x27;ok&#x27;: False, &#x27;msg&#x27;: &#x27;T+1 not yet available&#x27;}, {&#x27;c...</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:15:54 · 新闻处理器 · 原始返回</div>
-          <p>{ &quot;items&quot;: [ { &quot;id&quot;: &quot;2d3ab101ebbc982f&quot;, &quot;importance&quot;: 2, &quot;reason&quot;: &quot;OpenAI消费硬件计划，对A股AI概念情绪有微弱映射，但非直接影响盘面的产业信息。&quot;, &quot;affects&quot;: [&quot;AI硬件&quot;, &quot;消费电子&quot;] }, { &quot;id&quot;: &quot;02386c40a42ed8a0&quot;, &quot;importance&quot;: 5, &quot;reason&quot;: &quot;美国通胀意外降温、加息押注消退，直接影响全球流动性预期与美债收益率，对全球资产定价有重大影响。&quot;, &quot;affects&quot;...</p>
+          <div class="timeline-meta">2026-07-15 15:11:38 · 复盘任务 · 摘要</div>
+          <p>{&quot;date&quot;: &quot;2026-07-15&quot;,&quot;pnl_pct&quot;: 0.16293322329390403,&quot;alpha&quot;: 0.13,&quot;reflection&quot;: {},&quot;trades&quot;: 63}</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:15:17 · 新闻处理器 · 提示词</div>
-          <p>新闻列表（id|源|标题）： 2d3ab101ebbc982f | 财新-市场动态 | 知情人士透露，OpenAI备受期待的首款硬件设备将是一台可移动、无屏幕的智能音箱，定位人工智能(AI)时代的新型家用电脑 02386c40a42ed8a0 | 财新-市场动态 | 通胀的意外大幅下降激发了美国债券市场一波涨势，交易员纷纷放弃了对美联储最早本月就可能加息的押注 4710e0ffb2886f83 | 财新-市场动态 | 在霍尔木兹海峡再次发生袭击事件后，美伊两国谈判破裂，美国加大了对伊朗的经济制裁力度，并恢复了对伊朗...</p>
-        </article>
-        
-        <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:15:00 · 行情更新器 · 摘要</div>
+          <div class="timeline-meta">2026-07-15 15:10:00 · 行情更新器 · 摘要</div>
           <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:13:02 · 机会捕手 · 摘要</div>
-          <p>机会扫描完成，候选/检查 20 项，产生 0 个动作。</p>
+          <div class="timeline-meta">2026-07-15 15:08:02 · 机会捕手 · 摘要</div>
+          <p>机会扫描完成，候选/检查 38 项，产生 0 个动作。</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:12:00 · 风控守护者 · 摘要</div>
-          <p>风控检查 20 个持仓，触发 1 个风险事件。</p>
+          <div class="timeline-meta">2026-07-15 15:07:00 · 风控守护者 · 摘要</div>
+          <p>{&#x27;triggered&#x27;: [{&#x27;code&#x27;: &#x27;002636&#x27;, &#x27;rule&#x27;: &#x27;hard_stop_pending_t1&#x27;, &#x27;pct&#x27;: -7.74, &#x27;qty&#x27;: 0, &#x27;ok&#x27;: False, &#x27;msg&#x27;: &#x27;T+1 not yet available&#x27;}, {&#x27;code&#x27;: &#x27;002484&#x27;, &#x27;rule&#x27;: &#x27;hard_stop_pending_t1&#x27;, &#x27;pct&#x27;: -5.13, &#x27;qty&#x27;: 0, &#x27;ok&#x27;: False, &#x27;msg&#x27;: &#x27;T+1 not yet available&#x27;}, {&#x27;c...</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:10:00 · 行情更新器 · 摘要</div>
-          <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
+          <div class="timeline-meta">2026-07-15 15:05:19 · 主决策任务 · 摘要</div>
+          <p>{&quot;tick_id&quot;: &quot;4fc7cff1&quot;,&quot;rounds&quot;: 15,&quot;elapsed_sec&quot;: 319.91,&quot;thesis&quot;: &quot;本轮已完成决策链路。下单已触发：成功 13 笔，失败 1 笔。成功标的：002463, 002384, 300308, 300502, 300760, 300750, 002594, 600519。失败原因：600183:qty&lt;100, skipped。当前 orders_succeeded=True。&quot;,&quot;fallback_used&quot;: false,&quot;fallback_ord...</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:08:11 · 机会捕手 · 摘要</div>
-          <p>机会扫描完成，候选/检查 19 项，产生 0 个动作。</p>
+          <div class="timeline-meta">2026-07-15 15:05:19 · CIO 决策大脑 · 摘要</div>
+          <p>rounds=15 elapsed=319.91s fallback=False orders_called=True orders_succeeded=True</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:07:00 · 风控守护者 · 摘要</div>
-          <p>风控检查 19 个持仓，触发 1 个风险事件。</p>
+          <div class="timeline-meta">2026-07-15 15:05:19 · CIO 决策大脑 · 决策说明</div>
+          <p>本轮已完成决策链路。下单已触发：成功 13 笔，失败 1 笔。成功标的：002463, 002384, 300308, 300502, 300760, 300750, 002594, 600519。失败原因：600183:qty&lt;100, skipped。当前 orders_succeeded=True。</p>
         </article>
         
         <article class="timeline-item">
-          <div class="timeline-meta">2026-07-15 10:05:00 · 行情更新器 · 摘要</div>
-          <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
+          <div class="timeline-meta">2026-07-15 15:05:19 · CIO 决策大脑 · 工具结果</div>
+          <p>place_orders(auto_from_expert_error) -&gt; {&quot;results&quot;: [{&quot;code&quot;: &quot;002463&quot;, &quot;side&quot;: &quot;BUY&quot;, &quot;ok&quot;: true, &quot;qty&quot;: 900, &quot;price&quot;: 137.3, &quot;fee&quot;: 30.89}, {&quot;code&quot;: &quot;002384&quot;, &quot;side&quot;: &quot;BUY&quot;, &quot;ok&quot;: true, &quot;qty&quot;: 400, &quot;price&quot;: 262.62, &quot;fee&quot;: 26.26}, {&quot;code&quot;: &quot;600183&quot;, &quot;side&quot;: &quot;...</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-15 15:05:19 · CIO 决策大脑 · 工具调用</div>
+          <p>place_orders(auto_from_expert_error)({&quot;orders&quot;: [{&quot;code&quot;: &quot;002463&quot;, &quot;side&quot;: &quot;BUY&quot;, &quot;target_weight&quot;: 0.02, &quot;reason&quot;: &quot;PCB 龙头，2026H1 净利润预增 68%-78%，AI 服务器/高速交换机结构性需求，泰国产能规模化，业绩确定性极强&quot;}, {&quot;code&quot;: &quot;002384&quot;, &quot;side&quot;: &quot;BUY&quot;, &quot;target_weight&quot;: 0.02, &quot;reason&quot;: &quot;PCB+光模块整合，...</p>
         </article>
         </div>
     </section>
     
     </section>
   </main>
+  
+  <button class="ai-fab" id="aiFab" type="button" aria-label="打开量化智问">
+    <span class="ai-orb" aria-hidden="true"></span>
+    <span><strong>量化智问</strong><span>RELLM MULTI-AGENT</span></span>
+  </button>
+  <aside class="ai-panel" id="aiPanel" aria-label="量化智问问答界面">
+    <header class="ai-head">
+      <div class="ai-brand">
+        <span class="ai-orb" aria-hidden="true"></span>
+        <div>
+          <h3>量化智问</h3>
+          <p>多智能体 · 运行记录 · 策略解释</p>
+        </div>
+      </div>
+      <button class="ai-close" id="aiClose" type="button" aria-label="关闭">×</button>
+    </header>
+    <div class="ai-body" id="aiBody">
+      <div class="ai-msg assistant">你好，我是 <strong>量化智问</strong>。我可以解释当前账户收益、持仓、订单、智能体链路、模型接入和交易时段。公开页面不会暴露 API Key；如配置后端代理，我会自动切换到真实大模型回答。</div>
+      <div class="ai-chips" id="aiChips">
+        <button class="ai-chip" type="button">今天赚了吗？</button>
+        <button class="ai-chip" type="button">当前持仓是什么？</button>
+        <button class="ai-chip" type="button">用了哪些智能体？</button>
+        <button class="ai-chip" type="button">大模型怎么接入？</button>
+        <button class="ai-chip" type="button">交易时间怎么控制？</button>
+      </div>
+    </div>
+    <form class="ai-form" id="aiForm">
+      <input class="ai-input" id="aiInput" autocomplete="off" placeholder="问问收益、持仓、策略或智能体记录..." />
+      <button class="ai-send" type="submit">发送</button>
+      <div class="ai-footnote">默认基于本页运行证据回答；后端代理可接入 CodeBuddy / Kimi / DeepSeek。</div>
+    </form>
+  </aside>
+  <script id="rellm-chat-context" type="application/json">{"generated_at": "2026-07-15 16:46:19", "title": "A 股多智能体量化系统", "runtime": {"cash": 8185510.769999997, "latest_total": 9921567.769999996, "latest_time": "2026-07-15 15:00:00", "daily_pnl": 37131.88, "daily_return_pct": 0.3757, "daily_order_count": 50, "position_count": 25}, "strategy": {"view": "中性", "target_position": 0.32, "confidence": 0.6}, "market_regime": {"regime": "中性", "score": 0.3, "risk_flags": ["portfolio_stress"]}, "positions": [{"code": "002747", "qty": 2100, "avg_price": 40.8171, "available": 0, "updated_at": 1784086680, "updated_at_readable": "2026-07-15 11:38:00"}, {"code": "000807", "qty": 3000, "avg_price": 26.4, "available": 0, "updated_at": 1784094491, "updated_at_readable": "2026-07-15 13:48:11"}, {"code": "605090", "qty": 1900, "avg_price": 41.52, "available": 0, "updated_at": 1784079784, "updated_at_readable": "2026-07-15 09:43:04"}, {"code": "001389", "qty": 400, "avg_price": 196.95, "available": 0, "updated_at": 1784085782, "updated_at_readable": "2026-07-15 11:23:02"}, {"code": "603501", "qty": 700, "avg_price": 111.76, "available": 0, "updated_at": 1784085782, "updated_at_readable": "2026-07-15 11:23:02"}, {"code": "300759", "qty": 2000, "avg_price": 38.94, "available": 0, "updated_at": 1784079484, "updated_at_readable": "2026-07-15 09:38:04"}, {"code": "600183", "qty": 500, "avg_price": 155.64, "available": 0, "updated_at": 1784093885, "updated_at_readable": "2026-07-15 13:38:05"}, {"code": "603127", "qty": 1600, "avg_price": 48.53, "available": 0, "updated_at": 1784079187, "updated_at_readable": "2026-07-15 09:33:07"}, {"code": "603538", "qty": 2000, "avg_price": 38.62, "available": 0, "updated_at": 1784081582, "updated_at_readable": "2026-07-15 10:13:02"}, {"code": "601888", "qty": 1400, "avg_price": 55.07, "available": 0, "updated_at": 1784092983, "updated_at_readable": "2026-07-15 13:23:03"}], "orders": [{"id": 250, "ts": 1784094782, "code": "300033", "side": "BUY", "qty": 300, "price": 230.81, "status": "FILLED", "fee": 17.31, "reason": "主动追入 涨6.0% 成交额36.6亿", "ts_readable": "2026-07-15 13:53:02"}, {"id": 249, "ts": 1784094491, "code": "000807", "side": "BUY", "qty": 3000, "price": 26.4, "status": "FILLED", "fee": 19.8, "reason": "主动追入 涨5.6% 成交额36.0亿", "ts_readable": "2026-07-15 13:48:11"}, {"id": 248, "ts": 1784093885, "code": "600183", "side": "BUY", "qty": 500, "price": 155.64, "status": "FILLED", "fee": 19.46, "reason": "主动追入 涨5.2% 成交额123.5亿", "ts_readable": "2026-07-15 13:38:05"}, {"id": 247, "ts": 1784092983, "code": "601888", "side": "BUY", "qty": 1400, "price": 55.07, "status": "FILLED", "fee": 19.27, "reason": "主动追入 涨8.1% 成交额30.1亿", "ts_readable": "2026-07-15 13:23:03"}, {"id": 246, "ts": 1784092320, "code": "300502", "side": "SELL", "qty": 100, "price": 556.5, "status": "FILLED", "fee": 41.74, "reason": "跟踪止损 自高位 -3.14%", "ts_readable": "2026-07-15 13:12:00"}, {"id": 245, "ts": 1784092082, "code": "600276", "side": "BUY", "qty": 1300, "price": 57.74, "status": "FILLED", "fee": 18.77, "reason": "主动追入 涨5.3% 成交额81.4亿", "ts_readable": "2026-07-15 13:08:02"}, {"id": 244, "ts": 1784086680, "code": "002747", "side": "BUY", "qty": 100, "price": 41.74, "status": "FILLED", "fee": 5.0, "reason": "突破加仓 30min涨3.1%", "ts_readable": "2026-07-15 11:38:00"}, {"id": 243, "ts": 1784086380, "code": "002747", "side": "BUY", "qty": 100, "price": 41.74, "status": "FILLED", "fee": 5.0, "reason": "突破加仓 30min涨3.4%", "ts_readable": "2026-07-15 11:33:00"}, {"id": 242, "ts": 1784085782, "code": "001389", "side": "BUY", "qty": 400, "price": 196.95, "status": "FILLED", "fee": 19.7, "reason": "主动追入 涨5.8% 成交额30.3亿", "ts_readable": "2026-07-15 11:23:02"}, {"id": 241, "ts": 1784085782, "code": "603501", "side": "BUY", "qty": 700, "price": 111.76, "status": "FILLED", "fee": 19.56, "reason": "主动追入 涨5.2% 成交额46.0亿", "ts_readable": "2026-07-15 11:23:02"}], "agent_activity": [{"agent": "cio_brain", "events": 225, "last_ts": 1784099119, "last_ts_readable": "2026-07-15 15:05:19"}, {"agent": "news_worker", "events": 84, "last_ts": 1784098857, "last_ts_readable": "2026-07-15 15:00:57"}, {"agent": "opportunity", "events": 68, "last_ts": 1784099582, "last_ts_readable": "2026-07-15 15:13:02"}, {"agent": "guardian", "events": 67, "last_ts": 1784099520, "last_ts_readable": "2026-07-15 15:12:00"}, {"agent": "quote_worker", "events": 66, "last_ts": 1784099400, "last_ts_readable": "2026-07-15 15:10:00"}, {"agent": "analyst_fundamentals", "events": 54, "last_ts": 1784098892, "last_ts_readable": "2026-07-15 15:01:32"}, {"agent": "analyst_news", "events": 50, "last_ts": 1784098896, "last_ts_readable": "2026-07-15 15:01:36"}, {"agent": "analyst_sentiment", "events": 29, "last_ts": 1784098871, "last_ts_readable": "2026-07-15 15:01:11"}, {"agent": "analyst_technical", "events": 6, "last_ts": 1784098873, "last_ts_readable": "2026-07-15 15:01:13"}, {"agent": "brain_worker", "events": 5, "last_ts": 1784099119, "last_ts_readable": "2026-07-15 15:05:19"}], "llm_activity": [{"agent": "news_worker", "prompts": 21, "raws": 21, "summaries": 42, "last_ts": 1784098857, "last_ts_readable": "2026-07-15 15:00:57"}, {"agent": "cio_brain", "prompts": 5, "raws": 0, "summaries": 5, "last_ts": 1784099119, "last_ts_readable": "2026-07-15 15:05:19"}, {"agent": "opportunity", "prompts": 0, "raws": 0, "summaries": 68, "last_ts": 1784099582, "last_ts_readable": "2026-07-15 15:13:02"}, {"agent": "guardian", "prompts": 0, "raws": 0, "summaries": 67, "last_ts": 1784099520, "last_ts_readable": "2026-07-15 15:12:00"}, {"agent": "quote_worker", "prompts": 0, "raws": 0, "summaries": 66, "last_ts": 1784099400, "last_ts_readable": "2026-07-15 15:10:00"}, {"agent": "brain_worker", "prompts": 0, "raws": 0, "summaries": 5, "last_ts": 1784099119, "last_ts_readable": "2026-07-15 15:05:19"}, {"agent": "analyst_fundamentals", "prompts": 0, "raws": 3, "summaries": 3, "last_ts": 1784098892, "last_ts_readable": "2026-07-15 15:01:32"}, {"agent": "analyst_news", "prompts": 0, "raws": 3, "summaries": 3, "last_ts": 1784098896, "last_ts_readable": "2026-07-15 15:01:36"}], "agent_models": {"cio_brain": "kimi-k2.7", "financial_expert": "kimi-k2.7", "daily_reflection": "kimi-k2.7", "news_worker": "deepseek-v4-pro", "news_analyst": "deepseek-v4-pro", "sentiment_analyst": "deepseek-v4-pro", "fundamentals_analyst": "deepseek-v4-pro", "technical_analyst": "deepseek-v4-pro"}, "trading_sessions": [["09:30", "11:30"], ["13:00", "15:00"]], "design": ["调度层按 A 股交易时段触发行情、新闻、决策、风控、复盘任务。", "CIO 决策大脑整合行情、新闻、持仓和市场状态，生成交易草案。", "金融专家复审订单，策略编译器处理仓位、T+1、整手、费用和滑点约束。", "机会捕手负责盘中强势机会扫描，风控守护者负责止损、回撤和异常检查。", "所有账户、订单、持仓、净值和智能体日志都写入本地 SQLite 证据库。"]}</script>
+    
   <script>
     const buttons = document.querySelectorAll('.tab-button');
     const panels = document.querySelectorAll('.tab-panel');
@@ -517,6 +698,108 @@
         document.getElementById(button.dataset.tab).classList.add('active');
       });
     });
+    
+    const chatContext = JSON.parse(document.getElementById('rellm-chat-context').textContent);
+    const aiFab = document.getElementById('aiFab');
+    const aiPanel = document.getElementById('aiPanel');
+    const aiClose = document.getElementById('aiClose');
+    const aiBody = document.getElementById('aiBody');
+    const aiForm = document.getElementById('aiForm');
+    const aiInput = document.getElementById('aiInput');
+    const aiChips = document.getElementById('aiChips');
+
+    function fmtMoney(value) {
+      const n = Number(value || 0);
+      return '¥' + n.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    function fmtPct(value) {
+      const n = Number(value || 0);
+      return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+    }
+    function addMsg(role, text) {
+      const div = document.createElement('div');
+      div.className = 'ai-msg ' + role;
+      div.textContent = text;
+      aiBody.appendChild(div);
+      aiBody.scrollTop = aiBody.scrollHeight;
+      return div;
+    }
+    function localAnswer(question) {
+      const q = question.toLowerCase();
+      const r = chatContext.runtime || {};
+      const strategy = chatContext.strategy || {};
+      const regime = chatContext.market_regime || {};
+      if (q.includes('赚') || q.includes('亏') || q.includes('收益') || q.includes('盈亏')) {
+        return `截至 ${r.latest_time || '最新记录'}，账户总资产 ${fmtMoney(r.latest_total)}，今日自然口径盈亏 ${fmtMoney(r.daily_pnl)}，收益率 ${fmtPct(r.daily_return_pct)}。今日订单 ${r.daily_order_count || 0} 笔。`;
+      }
+      if (q.includes('持仓') || q.includes('仓位') || q.includes('股票')) {
+        const rows = (chatContext.positions || []).slice(0, 8);
+        const holding = rows.map((x) => `${x.code} ${x.qty}股，均价${fmtMoney(x.avg_price)}，可卖${x.available}`).join('\n');
+        return `当前持仓数量 ${r.position_count || rows.length} 个，现金 ${fmtMoney(r.cash)}，策略目标仓位 ${strategy.target_position == null ? '暂无' : (Number(strategy.target_position) * 100).toFixed(2) + '%'}。\n${holding || '暂无持仓。'}`;
+      }
+      if (q.includes('订单') || q.includes('交易') || q.includes('买') || q.includes('卖')) {
+        const rows = (chatContext.orders || []).slice(0, 8);
+        const orderText = rows.map((x) => `${x.ts_readable || ''} ${x.side} ${x.code} ${x.qty}股 @ ${fmtMoney(x.price)}：${x.reason || '-'}`).join('\n');
+        return `最近订单如下：\n${orderText || '暂无订单。'}\n系统会检查 T+1、整手、现金、费用、滑点和交易时段边界。`;
+      }
+      if (q.includes('智能体') || q.includes('架构') || q.includes('流程') || q.includes('agent')) {
+        const activity = (chatContext.agent_activity || []).slice(0, 6).map((x) => `${x.agent}: ${x.events}条记录`).join('，');
+        return `系统由调度层、数据层、CIO 决策大脑、金融专家复审、机会捕手、风控守护者和模拟券商组成。\n近期智能体活跃：${activity || '暂无统计'}。`;
+      }
+      if (q.includes('模型') || q.includes('llm') || q.includes('大模型') || q.includes('deepseek') || q.includes('kimi')) {
+        const models = Object.entries(chatContext.agent_models || {}).map(([k, v]) => `${k}: ${v}`).join('\n');
+        return `当前模型配置：\n${models || '暂无模型配置'}\n公开静态网页不会直接携带 API Key；真正的大模型问答应通过后端代理转发。`;
+      }
+      if (q.includes('时间') || q.includes('交易时段') || q.includes('收盘') || q.includes('15')) {
+        const sessions = (chatContext.trading_sessions || []).map((x) => x.join('-')).join('，');
+        return `系统交易窗口按 A 股时间控制：${sessions || '09:30-11:30，13:00-15:00'}。收盘后不会再触发交易任务。`;
+      }
+      if (q.includes('风险') || q.includes('风控') || q.includes('稳定')) {
+        const flags = (regime.risk_flags || []).join('，') || '暂无显著风险标签';
+        return `当前市场状态：${regime.regime || '-'}，状态分 ${regime.score || '-'}。风险标签：${flags}。系统通过目标仓位、T+1、止损、回撤检查和订单编译来降低不稳定交易。`;
+      }
+      return `我可以基于当前页面证据回答。当前总资产 ${fmtMoney(r.latest_total)}，今日盈亏 ${fmtMoney(r.daily_pnl)}，持仓 ${r.position_count || 0} 个。你也可以问：今天赚了吗、当前持仓、用了哪些智能体、模型怎么接入、交易时段怎么控制。`;
+    }
+    async function answer(question) {
+      const endpoint = window.RELLM_CHAT_ENDPOINT;
+      if (endpoint) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question, context: chatContext})
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return data.answer || data.content || localAnswer(question);
+          }
+        } catch (err) {
+          return localAnswer(question) + '\n\n后端大模型接口暂时不可用，已切换为本页证据回答。';
+        }
+      }
+      return localAnswer(question);
+    }
+    aiFab.addEventListener('click', () => {
+      aiPanel.classList.add('open');
+      setTimeout(() => aiInput.focus(), 80);
+    });
+    aiClose.addEventListener('click', () => aiPanel.classList.remove('open'));
+    aiChips.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      aiInput.value = button.textContent.trim();
+      aiForm.requestSubmit();
+    });
+    aiForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const question = aiInput.value.trim();
+      if (!question) return;
+      aiInput.value = '';
+      addMsg('user', question);
+      const pending = addMsg('assistant', '正在读取运行证据...');
+      pending.textContent = await answer(question);
+    });
+    
   </script>
 </body>
 </html>
