@@ -1,0 +1,9 @@
+{
+  "name": "rellm-dashboard",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A-share multi-agent quant dashboard with secure LLM chat proxy.",
+  "engines": {
+    "node": ">=18"
+  }
+}
