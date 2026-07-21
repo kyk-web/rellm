@@ -1,0 +1,1261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 量化智能体系统提交总览</title>
+  <style>
+    :root {
+      --bg: #f4efe4;
+      --paper: rgba(255,255,255,0.86);
+      --paper-strong: #fff9ed;
+      --ink: #192532;
+      --muted: #667085;
+      --line: rgba(25,37,50,0.12);
+      --navy: #102a43;
+      --rust: #b55225;
+      --gold: #d6a545;
+      --teal: #0d766e;
+      --up: #d33f32;
+      --down: #07935f;
+      --shadow: 0 20px 60px rgba(16,42,67,0.13);
+      --sans: "IBM Plex Sans", "Source Han Sans SC", "Noto Sans SC", "Segoe UI Variable", sans-serif;
+      --serif: "IBM Plex Serif", "Source Han Serif SC", Georgia, serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(214,165,69,0.24), transparent 24rem),
+        radial-gradient(circle at 90% 0%, rgba(13,118,110,0.16), transparent 26rem),
+        linear-gradient(180deg, #f7f1e7 0%, #efe4d2 100%);
+    }
+    .shell { max-width: 1480px; margin: 0 auto; padding: 28px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      padding: 30px 34px;
+      color: var(--ink);
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(16,42,67,0.10);
+      box-shadow: 0 16px 44px rgba(16,42,67,0.08);
+    }
+    .hero:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(180deg, var(--navy), var(--rust));
+    }
+    .eyebrow, .section-kicker {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rust);
+      font-weight: 800;
+    }
+    .hero .eyebrow { color: var(--muted); }
+    h1, h2 { font-family: var(--serif); letter-spacing: -0.03em; }
+    h1 { margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.12; max-width: 980px; }
+    h2 { margin: 6px 0 14px; font-size: 26px; }
+    h3 { margin: 14px 0 8px; font-size: 16px; }
+    p { line-height: 1.75; }
+    .hero p { max-width: 880px; margin: 0; color: rgba(255,255,255,0.86); font-size: 16px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tabbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
+      padding: 10px;
+      border-radius: 22px;
+      background: rgba(247,241,231,0.82);
+      border: 1px solid rgba(255,255,255,0.64);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 40px rgba(16,42,67,0.08);
+    }
+    .tab-button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      padding: 12px 18px;
+      border-radius: 16px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+    }
+    .tab-button.active {
+      color: white;
+      background: linear-gradient(135deg, var(--navy), var(--rust));
+      box-shadow: 0 10px 24px rgba(16,42,67,0.18);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .metric, .panel {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,0.56);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .metric { min-height: 128px; border-radius: 24px; padding: 18px; min-width: 0; }
+    .metric-label { color: var(--muted); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .metric-value {
+      margin-top: 14px;
+      font-size: clamp(20px, 1.85vw, 28px);
+      font-weight: 900;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+    .metric-sub { margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .panel { border-radius: 26px; padding: 22px; overflow: hidden; }
+    .grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 18px; margin-top: 18px; }
+    .stack { display: grid; gap: 18px; }
+    .wide { margin-top: 18px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .two-col.tight { margin-top: 16px; }
+    .panel-title { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .status {
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid transparent;
+    }
+    .status.good { color: var(--up); background: rgba(15,157,88,0.12); border-color: rgba(15,157,88,0.22); }
+    .status.neutral { color: var(--navy); background: rgba(16,42,67,0.10); border-color: rgba(16,42,67,0.16); }
+    .status.bad { color: var(--down); background: rgba(196,61,47,0.12); border-color: rgba(196,61,47,0.22); }
+    .equity-svg { width: 100%; height: auto; display: block; }
+    .axis { stroke: rgba(25,37,50,0.16); stroke-width: 1; }
+    .baseline { stroke: rgba(25,37,50,0.20); stroke-width: 0.8; stroke-dasharray: 4 5; }
+    .chart-note, .muted { color: var(--muted); font-size: 13px; }
+    .flow, .innovation-grid { display: grid; gap: 12px; }
+    .flow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .flow div, .callout, .innovation-card, .index-card, .blank-grid div {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.60);
+      border: 1px solid var(--line);
+      padding: 15px;
+    }
+    .flow strong, .flow span { display: block; }
+    .flow span { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .innovation-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .innovation-card p { color: var(--muted); font-size: 13px; margin-bottom: 0; }
+    .score-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; align-items: center; }
+    .score {
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--rust) 0 220deg, rgba(16,42,67,0.12) 220deg 360deg);
+      box-shadow: inset 0 0 0 12px rgba(255,255,255,0.76);
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 14px 0; }
+    .index-card span, .index-card em { display: block; color: var(--muted); font-style: normal; font-size: 12px; }
+    .index-card strong { display: block; margin: 8px 0 5px; font-size: 21px; }
+    .market-strategy {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,249,237,0.86)),
+        radial-gradient(circle at 8% 0%, rgba(13,118,110,0.12), transparent 320px);
+    }
+    .market-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+    .cycle-code {
+      min-width: 132px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      color: var(--muted);
+      text-align: right;
+      background: rgba(255,255,255,0.68);
+      border: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .cycle-code strong { color: var(--ink); }
+    .market-hero-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+    .market-stance, .market-block, .market-index, .market-side-facts div {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.68);
+      border-radius: 20px;
+    }
+    .market-stance { padding: 20px; }
+    .market-stance span, .market-side-facts span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .market-stance strong {
+      display: block;
+      font-size: clamp(28px, 4.2vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+    }
+    .market-stance strong.good { color: var(--up); }
+    .market-stance strong.neutral { color: var(--navy); }
+    .market-stance strong.bad { color: var(--down); }
+    .market-stance p {
+      margin: 14px 0 0;
+      color: #4d5d6b;
+      line-height: 1.78;
+    }
+    .market-side-facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .market-side-facts div { padding: 15px; min-width: 0; }
+    .market-side-facts strong {
+      display: block;
+      font-size: 19px;
+      overflow-wrap: anywhere;
+    }
+    .market-index-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .market-index { padding: 14px; min-width: 0; }
+    .market-index span, .market-index em {
+      display: block;
+      color: var(--muted);
+      font-style: normal;
+      font-size: 12px;
+    }
+    .market-index strong {
+      display: block;
+      margin: 8px 0 5px;
+      font-size: clamp(17px, 1.8vw, 22px);
+      overflow-wrap: anywhere;
+    }
+    .market-block { padding: 16px; margin-top: 12px; }
+    .market-block.flat { margin-top: 0; }
+    .market-block h3 { margin-top: 0; }
+    .strategy-chip-row, .candidate-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+    .theme-chip, .keyword-chip, .candidate-pool span {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .theme-chip {
+      color: #075e52;
+      background: rgba(13,118,110,0.12);
+      border: 1px solid rgba(13,118,110,0.16);
+    }
+    .keyword-chip {
+      color: #725415;
+      background: rgba(214,165,69,0.20);
+      border: 1px solid rgba(214,165,69,0.22);
+    }
+    .candidate-pool span {
+      color: var(--navy);
+      background: rgba(16,42,67,0.08);
+      border: 1px solid rgba(16,42,67,0.10);
+    }
+    .tag-row.compact { margin-top: 12px; }
+    .news-brief {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .news-brief li {
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.55;
+    }
+    .news-brief strong { display: block; font-size: 13px; }
+    .news-brief span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .evidence-list { margin: 0; padding-left: 18px; line-height: 1.65; }
+    .tag-row span {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(16,42,67,0.08);
+      border: 1px solid rgba(16,42,67,0.12);
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .table-scroll { width: 100%; overflow-x: auto; }
+    .data-table, .mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th, .data-table td, .mini-table td {
+      text-align: left;
+      padding: 11px 9px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+    .data-table th { color: var(--muted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .data-table th:nth-child(1), .data-table td:nth-child(1) { white-space: nowrap; }
+    .data-table th:nth-child(2), .data-table td:nth-child(2),
+    .data-table th:nth-child(3), .data-table td:nth-child(3),
+    .data-table th:nth-child(4), .data-table td:nth-child(4),
+    .data-table th:nth-child(5), .data-table td:nth-child(5) { white-space: nowrap; }
+    .side { font-weight: 900; }
+    .side.buy { color: var(--up); }
+    .side.sell { color: var(--down); }
+    .timeline { display: grid; gap: 10px; }
+    .timeline-item {
+      padding: 11px 13px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.58);
+      border-left: 4px solid rgba(181,82,37,0.32);
+    }
+    .timeline-item.warn { border-left-color: rgba(196,61,47,0.45); }
+    .timeline-meta { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .timeline-item p { margin: 0; font-size: 13px; word-break: break-word; }
+    .todo-list { line-height: 1.85; }
+    .blank-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .blank-grid span, .blank-grid strong { display: block; }
+    .blank-grid span { color: var(--muted); font-size: 12px; }
+    .blank-grid strong { margin-top: 8px; }
+    .audit-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0 8px;
+    }
+    .audit-strip div {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid var(--line);
+    }
+    .audit-strip span, .audit-strip strong { display: block; }
+    .audit-strip span { color: var(--muted); font-size: 12px; }
+    .audit-strip strong { margin-top: 8px; font-size: 16px; }
+    .audit-strip div, .audit-strip strong { min-width: 0; overflow-wrap: anywhere; }
+    .empty { color: var(--muted); text-align: center; padding: 16px 8px; }
+    @media (max-width: 1180px) {
+      .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid, .two-col { grid-template-columns: 1fr; }
+      .flow, .innovation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .blank-grid, .audit-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .market-hero-card { grid-template-columns: 1fr; }
+      .market-index-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .shell { padding: 16px; }
+      .hero { padding: 24px; border-radius: 24px; }
+      .metric-grid, .flow, .innovation-grid, .blank-grid, .audit-strip { grid-template-columns: 1fr; }
+      .market-head { display: block; }
+      .cycle-code { margin-top: 12px; text-align: left; }
+      .market-side-facts, .market-index-grid { grid-template-columns: 1fr; }
+      .metric-value { font-size: 24px; }
+      .panel { padding: 17px; }
+    }
+    
+    .ai-fab {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 248px;
+      padding: 14px 20px 14px 14px;
+      border: 1px solid rgba(34, 211, 238, 0.52);
+      border-radius: 999px;
+      color: #e9f8ff;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(68, 93, 255, 0.95), transparent 30px),
+        linear-gradient(135deg, #07152a 0%, #0b2446 58%, #092b3d 100%);
+      box-shadow: 0 18px 56px rgba(5, 19, 38, 0.36), 0 0 28px rgba(34, 211, 238, 0.24);
+      cursor: pointer;
+      isolation: isolate;
+    }
+    .ai-orb {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 160deg, #29f2ff, #4f78ff, #172044, #22d3ee, #29f2ff);
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.18), 0 0 22px rgba(34,211,238,0.38);
+    }
+    .ai-fab strong, .ai-fab span { display: block; text-align: left; }
+    .ai-fab strong { font-size: 18px; letter-spacing: 0.12em; }
+    .ai-fab span { margin-top: 2px; color: #91a9ca; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
+    .ai-panel {
+      position: fixed;
+      right: 24px;
+      bottom: 104px;
+      z-index: 41;
+      width: min(480px, calc(100vw - 32px));
+      max-height: min(720px, calc(100vh - 128px));
+      display: none;
+      overflow: hidden;
+      border: 1px solid rgba(34, 211, 238, 0.36);
+      border-radius: 28px;
+      background: #061020;
+      box-shadow: 0 28px 84px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(255,255,255,0.04);
+      color: #dbeafe;
+    }
+    .ai-panel.open { display: grid; grid-template-rows: auto minmax(260px, 1fr) auto; }
+    .ai-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      background: linear-gradient(180deg, rgba(15, 35, 68, 0.96), rgba(6, 16, 32, 0.92));
+    }
+    .ai-brand { display: flex; align-items: center; gap: 13px; }
+    .ai-brand h3 { margin: 0; color: #f8fbff; font-size: 20px; }
+    .ai-brand p { margin: 4px 0 0; color: #9fb4d5; font-size: 13px; line-height: 1.45; }
+    .ai-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #bad2f3;
+      background: rgba(15, 35, 68, 0.58);
+      cursor: pointer;
+      font-size: 24px;
+    }
+    .ai-body {
+      overflow: auto;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 12% 2%, rgba(34, 211, 238, 0.13), transparent 160px),
+        linear-gradient(180deg, #071326, #050b16);
+    }
+    .ai-msg {
+      max-width: 88%;
+      margin: 0 0 12px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid rgba(72, 103, 158, 0.34);
+      background: rgba(11, 27, 52, 0.82);
+      color: #d9e8ff;
+    }
+    .ai-msg.user {
+      margin-left: auto;
+      color: #061020;
+      background: linear-gradient(135deg, #37e2ff, #7aa2ff);
+      border-color: transparent;
+      font-weight: 800;
+    }
+    .ai-msg.assistant strong { color: #35e6ff; }
+    .ai-chips { display: flex; flex-wrap: wrap; gap: 9px; margin: 14px 0 4px; }
+    .ai-chip {
+      border: 1px solid rgba(61, 122, 206, 0.56);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #bcd4f6;
+      background: rgba(8, 23, 46, 0.76);
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .ai-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      background: #060d1b;
+    }
+    .ai-input {
+      min-width: 0;
+      border: 1px solid rgba(76, 114, 166, 0.54);
+      border-radius: 16px;
+      padding: 13px 14px;
+      color: #eef6ff;
+      background: rgba(5, 12, 24, 0.82);
+      outline: none;
+      font: inherit;
+    }
+    .ai-send {
+      border: 0;
+      border-radius: 999px;
+      padding: 0 20px;
+      color: #03101e;
+      background: linear-gradient(135deg, #37e2ff, #5f8dff);
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .ai-footnote {
+      grid-column: 1 / -1;
+      color: #6f86a8;
+      text-align: center;
+      font-size: 11px;
+    }
+    @media (max-width: 720px) {
+      .ai-fab { right: 16px; bottom: 18px; min-width: 210px; padding-right: 16px; }
+      .ai-panel { right: 12px; bottom: 88px; width: calc(100vw - 24px); }
+      .ai-msg { max-width: 94%; }
+    }
+    
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>A 股多智能体量化系统</h1>
+    </section>
+
+    <nav class="tabbar" aria-label="页面分类">
+      <button class="tab-button active" data-tab="tab-result">运行结果</button>
+      <button class="tab-button" data-tab="tab-market">大盘策略</button>
+      <button class="tab-button" data-tab="tab-design">设计方案</button>
+      <button class="tab-button" data-tab="tab-agents">智能体记录</button>
+      <button class="tab-button" data-tab="tab-audit">交易审计</button>
+    </nav>
+
+    <section id="tab-result" class="tab-panel active">
+      
+    <section class="panel wide" id="live-runtime-panel">
+      <div class="panel-title">
+        <div>
+          <div class="section-kicker">实时数据</div>
+          <h2>盘中自动刷新</h2>
+        </div>
+        <span class="status neutral" id="liveConnectionBadge">等待实时接口</span>
+      </div>
+      <div class="blank-grid">
+        <div><span>最新权益时间</span><strong id="liveLatestTime">2026-07-21 14:20:49</strong></div>
+        <div><span>当前总资产</span><strong id="liveLatestTotal">¥9,674,893.18</strong></div>
+        <div><span>今日盈亏</span><strong id="liveDailyPnl" style="color:var(--down)">¥-196,268.51</strong></div>
+        <div><span>刷新状态</span><strong id="liveRefreshNote">当前为页面快照，连接后自动更新</strong></div>
+      </div>
+    </section>
+    
+      <section class="metric-grid">
+        
+            <article class="metric" data-metric="latest-total">
+              <div class="metric-label">模拟账户总资产</div>
+              <div class="metric-value" id="metric-latest-total-value">¥9,674,893.18</div>
+              <div class="metric-sub" id="metric-latest-total-sub">初始资金 ¥10,000,000.00</div>
+            </article>
+            
+
+            <article class="metric" data-metric="daily-pnl">
+              <div class="metric-label">今日自然口径盈亏</div>
+              <div class="metric-value" id="metric-daily-pnl-value" style="color:var(--down)">¥-196,268.51</div>
+              <div class="metric-sub" id="metric-daily-pnl-sub">-1.99% · 2026-07-21</div>
+            </article>
+            
+
+            <article class="metric" data-metric="cash-position">
+              <div class="metric-label">现金 / 仓位</div>
+              <div class="metric-value" id="metric-cash-position-value">¥7,091,746.18</div>
+              <div class="metric-sub" id="metric-cash-position-sub">持仓占比 26.70%</div>
+            </article>
+            
+
+            <article class="metric" data-metric="position-order">
+              <div class="metric-label">持仓 / 今日订单</div>
+              <div class="metric-value" id="metric-position-order-value">30</div>
+              <div class="metric-sub" id="metric-position-order-sub">今日订单 58 笔</div>
+            </article>
+            
+
+            <article class="metric" data-metric="market-regime">
+              <div class="metric-label">市场状态</div>
+              <div class="metric-value" id="metric-market-regime-value">偏进攻</div>
+              <div class="metric-sub" id="metric-market-regime-sub">状态分 0.4</div>
+            </article>
+            
+
+            <article class="metric" data-metric="target-position">
+              <div class="metric-label">策略目标仓位</div>
+              <div class="metric-value" id="metric-target-position-value">25.00%</div>
+              <div class="metric-sub" id="metric-target-position-sub">策略视图 中性</div>
+            </article>
+            
+      </section>
+      <section class="panel wide">
+        <div class="section-kicker">运行结果</div>
+        <h2>净值与账户状态</h2>
+        
+    <svg class="equity-svg" viewBox="0 0 760 220" role="img" aria-label="equity curve">
+      <line x1="18" y1="202" x2="742" y2="202" class="axis"/>
+      <line x1="18" y1="18" x2="18" y2="202" class="axis"/>
+      <line x1="18" y1="18.0" x2="742" y2="18.0" class="baseline"/>
+      <line x1="18.0" y1="18.0" x2="18.0" y2="18.0" stroke="var(--up)" stroke-width="1.65" stroke-linecap="round"/><line x1="18.0" y1="18.0" x2="21.0" y2="21.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="21.0" y1="21.9" x2="24.1" y2="19.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="24.1" y1="19.6" x2="27.1" y2="22.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="27.1" y1="22.8" x2="30.1" y2="20.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="30.1" y1="20.9" x2="33.1" y2="23.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="33.1" y1="23.0" x2="36.2" y2="23.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="36.2" y1="23.4" x2="39.2" y2="24.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="39.2" y1="24.8" x2="42.2" y2="22.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="42.2" y1="22.5" x2="45.3" y2="24.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="45.3" y1="24.4" x2="48.3" y2="24.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="48.3" y1="24.9" x2="51.3" y2="24.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="51.3" y1="24.5" x2="54.4" y2="24.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="54.4" y1="24.7" x2="57.4" y2="20.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="57.4" y1="20.5" x2="60.4" y2="26.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="60.4" y1="26.4" x2="63.4" y2="25.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="63.4" y1="25.8" x2="66.5" y2="24.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="66.5" y1="24.7" x2="69.5" y2="24.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="69.5" y1="24.2" x2="72.5" y2="24.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="72.5" y1="24.4" x2="75.6" y2="22.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="75.6" y1="22.7" x2="78.6" y2="24.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="78.6" y1="24.7" x2="81.6" y2="25.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="81.6" y1="25.7" x2="84.6" y2="25.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="84.6" y1="25.8" x2="87.7" y2="30.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="87.7" y1="30.5" x2="90.7" y2="28.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="90.7" y1="28.3" x2="93.7" y2="31.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="93.7" y1="31.8" x2="96.8" y2="28.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="96.8" y1="28.0" x2="99.8" y2="28.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="99.8" y1="28.8" x2="102.8" y2="28.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="102.8" y1="28.2" x2="105.8" y2="32.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="105.8" y1="32.4" x2="108.9" y2="29.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="108.9" y1="29.6" x2="111.9" y2="32.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="111.9" y1="32.2" x2="114.9" y2="29.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="114.9" y1="29.2" x2="118.0" y2="34.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="118.0" y1="34.0" x2="121.0" y2="29.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="121.0" y1="29.6" x2="124.0" y2="34.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="124.0" y1="34.1" x2="127.1" y2="36.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="127.1" y1="36.3" x2="130.1" y2="31.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="130.1" y1="31.7" x2="133.1" y2="32.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="133.1" y1="32.7" x2="136.1" y2="31.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="136.1" y1="31.6" x2="139.2" y2="37.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="139.2" y1="37.7" x2="142.2" y2="32.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="142.2" y1="32.5" x2="145.2" y2="41.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="145.2" y1="41.6" x2="148.3" y2="33.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="148.3" y1="33.2" x2="151.3" y2="45.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="151.3" y1="45.7" x2="154.3" y2="33.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="154.3" y1="33.6" x2="157.3" y2="44.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="157.3" y1="44.5" x2="160.4" y2="33.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="160.4" y1="33.6" x2="163.4" y2="48.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="163.4" y1="48.3" x2="166.4" y2="35.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="166.4" y1="35.5" x2="169.5" y2="50.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="169.5" y1="50.2" x2="172.5" y2="37.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="172.5" y1="37.7" x2="175.5" y2="52.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="175.5" y1="52.1" x2="178.6" y2="36.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="178.6" y1="36.6" x2="181.6" y2="52.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="181.6" y1="52.0" x2="184.6" y2="37.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="184.6" y1="37.8" x2="187.6" y2="56.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="187.6" y1="56.0" x2="190.7" y2="36.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="190.7" y1="36.1" x2="193.7" y2="50.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="193.7" y1="50.2" x2="196.7" y2="40.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="196.7" y1="40.2" x2="199.8" y2="79.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="199.8" y1="79.0" x2="202.8" y2="75.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="202.8" y1="75.4" x2="205.8" y2="84.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="205.8" y1="84.0" x2="208.8" y2="88.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="208.8" y1="88.4" x2="211.9" y2="92.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="211.9" y1="92.3" x2="214.9" y2="89.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="214.9" y1="89.5" x2="217.9" y2="93.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="217.9" y1="93.6" x2="221.0" y2="90.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="221.0" y1="90.2" x2="224.0" y2="98.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="224.0" y1="98.9" x2="227.0" y2="91.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="227.0" y1="91.3" x2="230.1" y2="101.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="230.1" y1="101.2" x2="233.1" y2="91.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="233.1" y1="91.4" x2="236.1" y2="107.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="236.1" y1="107.8" x2="239.1" y2="98.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="239.1" y1="98.2" x2="242.2" y2="106.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="242.2" y1="106.1" x2="245.2" y2="98.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="245.2" y1="98.1" x2="248.2" y2="111.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="248.2" y1="111.1" x2="251.3" y2="100.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="251.3" y1="100.2" x2="254.3" y2="108.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="254.3" y1="108.6" x2="257.3" y2="100.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="257.3" y1="100.2" x2="260.3" y2="112.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="260.3" y1="112.8" x2="263.4" y2="100.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="263.4" y1="100.1" x2="266.4" y2="114.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="266.4" y1="114.3" x2="269.4" y2="100.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="269.4" y1="100.1" x2="272.5" y2="116.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="272.5" y1="116.5" x2="275.5" y2="100.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="275.5" y1="100.0" x2="278.5" y2="116.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="278.5" y1="116.3" x2="281.5" y2="100.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="281.5" y1="100.2" x2="284.6" y2="117.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="284.6" y1="117.0" x2="287.6" y2="99.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="287.6" y1="99.8" x2="290.6" y2="118.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="290.6" y1="118.2" x2="293.7" y2="101.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="293.7" y1="101.9" x2="296.7" y2="117.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="296.7" y1="117.8" x2="299.7" y2="101.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="299.7" y1="101.9" x2="302.8" y2="118.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="302.8" y1="118.3" x2="305.8" y2="102.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="305.8" y1="102.3" x2="308.8" y2="113.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="308.8" y1="113.9" x2="311.8" y2="116.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="311.8" y1="116.5" x2="314.9" y2="97.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="314.9" y1="97.3" x2="317.9" y2="116.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="317.9" y1="116.9" x2="320.9" y2="97.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="320.9" y1="97.2" x2="324.0" y2="117.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="324.0" y1="117.6" x2="327.0" y2="97.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="327.0" y1="97.2" x2="330.0" y2="117.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="330.0" y1="117.8" x2="333.0" y2="97.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="333.0" y1="97.5" x2="336.1" y2="120.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="336.1" y1="120.5" x2="339.1" y2="97.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="339.1" y1="97.6" x2="342.1" y2="120.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="342.1" y1="120.8" x2="345.2" y2="97.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="345.2" y1="97.7" x2="348.2" y2="122.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="348.2" y1="122.2" x2="351.2" y2="98.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="351.2" y1="98.2" x2="354.3" y2="127.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="354.3" y1="127.2" x2="357.3" y2="97.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="357.3" y1="97.9" x2="360.3" y2="126.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="360.3" y1="126.4" x2="363.3" y2="97.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="363.3" y1="97.6" x2="366.4" y2="129.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="366.4" y1="129.8" x2="369.4" y2="97.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="369.4" y1="97.7" x2="372.4" y2="130.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="372.4" y1="130.9" x2="375.5" y2="98.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="375.5" y1="98.0" x2="378.5" y2="129.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="378.5" y1="129.4" x2="381.5" y2="98.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="381.5" y1="98.2" x2="384.5" y2="130.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="384.5" y1="130.2" x2="387.6" y2="98.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="387.6" y1="98.3" x2="390.6" y2="137.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="390.6" y1="137.1" x2="393.6" y2="98.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="393.6" y1="98.5" x2="396.7" y2="134.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="396.7" y1="134.8" x2="399.7" y2="98.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="399.7" y1="98.8" x2="402.7" y2="144.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="402.7" y1="144.7" x2="405.7" y2="98.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="405.7" y1="98.7" x2="408.8" y2="135.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="408.8" y1="135.4" x2="411.8" y2="98.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="411.8" y1="98.7" x2="414.8" y2="133.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="414.8" y1="133.7" x2="417.9" y2="98.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="417.9" y1="98.5" x2="420.9" y2="120.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="420.9" y1="120.4" x2="423.9" y2="119.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="423.9" y1="119.0" x2="427.0" y2="98.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="427.0" y1="98.7" x2="430.0" y2="123.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="430.0" y1="123.5" x2="433.0" y2="98.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="433.0" y1="98.4" x2="436.0" y2="119.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="436.0" y1="119.7" x2="439.1" y2="98.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="439.1" y1="98.4" x2="442.1" y2="125.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="442.1" y1="125.4" x2="445.1" y2="98.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="445.1" y1="98.0" x2="448.2" y2="123.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="448.2" y1="123.3" x2="451.2" y2="97.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="451.2" y1="97.8" x2="454.2" y2="124.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="454.2" y1="124.5" x2="457.2" y2="97.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="457.2" y1="97.4" x2="460.3" y2="127.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="460.3" y1="127.9" x2="463.3" y2="97.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="463.3" y1="97.5" x2="466.3" y2="123.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="466.3" y1="123.8" x2="469.4" y2="97.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="469.4" y1="97.3" x2="472.4" y2="126.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="472.4" y1="126.3" x2="475.4" y2="97.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="475.4" y1="97.4" x2="478.5" y2="130.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="478.5" y1="130.2" x2="481.5" y2="97.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="481.5" y1="97.5" x2="484.5" y2="134.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="484.5" y1="134.5" x2="487.5" y2="98.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="487.5" y1="98.1" x2="490.6" y2="135.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="490.6" y1="135.8" x2="493.6" y2="93.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="493.6" y1="93.2" x2="496.6" y2="90.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="496.6" y1="90.7" x2="499.7" y2="188.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="499.7" y1="188.3" x2="502.7" y2="201.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="502.7" y1="201.1" x2="505.7" y2="181.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="505.7" y1="181.6" x2="508.7" y2="202.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="508.7" y1="202.0" x2="511.8" y2="190.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="511.8" y1="190.8" x2="514.8" y2="197.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="514.8" y1="197.5" x2="517.8" y2="191.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="517.8" y1="191.6" x2="520.9" y2="197.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="520.9" y1="197.4" x2="523.9" y2="194.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="523.9" y1="194.2" x2="526.9" y2="196.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="526.9" y1="196.8" x2="529.9" y2="196.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="529.9" y1="196.3" x2="533.0" y2="196.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="533.0" y1="196.6" x2="536.0" y2="200.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="536.0" y1="200.2" x2="539.0" y2="195.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="539.0" y1="195.7" x2="542.1" y2="198.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="542.1" y1="198.1" x2="545.1" y2="195.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="545.1" y1="195.6" x2="548.1" y2="199.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="548.1" y1="199.5" x2="551.2" y2="196.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="551.2" y1="196.5" x2="554.2" y2="196.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="554.2" y1="196.6" x2="557.2" y2="196.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="557.2" y1="196.5" x2="560.2" y2="192.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="560.2" y1="192.4" x2="563.3" y2="197.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="563.3" y1="197.1" x2="566.3" y2="191.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="566.3" y1="191.1" x2="569.3" y2="196.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="569.3" y1="196.9" x2="572.4" y2="186.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="572.4" y1="186.8" x2="575.4" y2="196.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="575.4" y1="196.8" x2="578.4" y2="184.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="578.4" y1="184.9" x2="581.4" y2="197.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="581.4" y1="197.3" x2="584.5" y2="189.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="584.5" y1="189.5" x2="587.5" y2="194.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="587.5" y1="194.8" x2="590.5" y2="187.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="590.5" y1="187.0" x2="593.6" y2="195.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="593.6" y1="195.0" x2="596.6" y2="184.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="596.6" y1="184.7" x2="599.6" y2="194.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="599.6" y1="194.9" x2="602.7" y2="183.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="602.7" y1="183.6" x2="605.7" y2="193.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="605.7" y1="193.6" x2="608.7" y2="182.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="608.7" y1="182.5" x2="611.7" y2="179.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="611.7" y1="179.8" x2="614.8" y2="194.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="614.8" y1="194.2" x2="617.8" y2="181.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="617.8" y1="181.9" x2="620.8" y2="193.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="620.8" y1="193.6" x2="623.9" y2="178.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="623.9" y1="178.3" x2="626.9" y2="194.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="626.9" y1="194.0" x2="629.9" y2="175.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="629.9" y1="175.0" x2="632.9" y2="194.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="632.9" y1="194.3" x2="636.0" y2="176.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="636.0" y1="176.3" x2="639.0" y2="194.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="639.0" y1="194.2" x2="642.0" y2="170.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="642.0" y1="170.6" x2="645.1" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="645.1" y1="200.3" x2="648.1" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="648.1" y1="200.3" x2="651.1" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="651.1" y1="200.3" x2="654.2" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="654.2" y1="200.3" x2="657.2" y2="200.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="657.2" y1="200.3" x2="660.2" y2="163.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="660.2" y1="163.5" x2="663.2" y2="193.3" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="663.2" y1="193.3" x2="666.3" y2="168.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="666.3" y1="168.7" x2="669.3" y2="194.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="669.3" y1="194.0" x2="672.3" y2="169.4" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="672.3" y1="169.4" x2="675.4" y2="194.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="675.4" y1="194.2" x2="678.4" y2="166.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="678.4" y1="166.0" x2="681.4" y2="194.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="681.4" y1="194.0" x2="684.4" y2="162.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="684.4" y1="162.8" x2="687.5" y2="194.2" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="687.5" y1="194.2" x2="690.5" y2="165.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="690.5" y1="165.6" x2="693.5" y2="193.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="693.5" y1="193.9" x2="696.6" y2="164.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="696.6" y1="164.0" x2="699.6" y2="193.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="699.6" y1="193.7" x2="702.6" y2="163.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="702.6" y1="163.1" x2="705.6" y2="193.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="705.6" y1="193.1" x2="708.7" y2="162.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="708.7" y1="162.0" x2="711.7" y2="193.0" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="711.7" y1="193.0" x2="714.7" y2="161.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="714.7" y1="161.6" x2="717.8" y2="193.8" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="717.8" y1="193.8" x2="720.8" y2="160.6" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="720.8" y1="160.6" x2="723.8" y2="192.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="723.8" y1="192.7" x2="726.9" y2="158.1" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="726.9" y1="158.1" x2="729.9" y2="192.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="729.9" y1="192.5" x2="732.9" y2="155.9" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="732.9" y1="155.9" x2="735.9" y2="192.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="735.9" y1="192.7" x2="739.0" y2="153.7" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/><line x1="739.0" y1="153.7" x2="742.0" y2="192.5" stroke="var(--down)" stroke-width="1.65" stroke-linecap="round"/>
+      <circle cx="742.0" cy="192.5" r="3.2" fill="var(--down)"/>
+    </svg>
+    <div class="chart-note">最近 240 条净值记录：¥10,011,409.44 → ¥9,674,893.18</div>
+    
+      </section>
+      <section class="grid">
+        <div class="stack">
+          
+    <section class="panel">
+      <div class="panel-title"><h2>最近成交/委托</h2></div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>时间</th><th>代码 / 名称</th><th>方向</th><th>数量</th><th>价格</th><th>原因</th></tr></thead>
+          <tbody id="latestOrdersBody"><tr><td>2026-07-21 14:18:37</td><td>600487 亨通光电</td><td><span class="side buy">BUY</span></td><td>1300</td><td>¥59.58</td><td>主动追入 涨5.3% 成交额176.8亿</td></tr><tr><td>2026-07-21 14:13:29</td><td>001309 德明利</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥509.06</td><td>主动追入 涨5.4% 成交额186.0亿</td></tr><tr><td>2026-07-21 13:58:19</td><td>002384 东山精密</td><td><span class="side buy">BUY</span></td><td>300</td><td>¥230.22</td><td>主动追入 涨5.7% 成交额304.6亿</td></tr><tr><td>2026-07-21 13:53:26</td><td>688981 中芯国际</td><td><span class="side buy">BUY</span></td><td>400</td><td>¥156.03</td><td>主动追入 涨8.3% 成交额140.2亿</td></tr><tr><td>2026-07-21 13:12:00</td><td>600519 贵州茅台</td><td><span class="side sell">SELL</span></td><td>100</td><td>¥1,299.84</td><td>跟踪止损 自高位 -3.24%</td></tr><tr><td>2026-07-21 11:18:18</td><td>000938 紫光股份</td><td><span class="side buy">BUY</span></td><td>1900</td><td>¥40.64</td><td>主动追入 涨7.8% 成交额144.2亿</td></tr><tr><td>2026-07-21 11:18:18</td><td>000725 京东方Ａ</td><td><span class="side buy">BUY</span></td><td>1000</td><td>¥6.11</td><td>突破加仓 30min涨4.1%</td></tr><tr><td>2026-07-21 11:13:10</td><td>000725 京东方Ａ</td><td><span class="side buy">BUY</span></td><td>12700</td><td>¥6.11</td><td>主动追入 涨5.5% 成交额115.2亿</td></tr><tr><td>2026-07-21 11:08:13</td><td>300502 新易盛</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥540.24</td><td>主动追入 涨5.9% 成交额236.0亿</td></tr><tr><td>2026-07-21 11:07:00</td><td>601016 节能风电</td><td><span class="side sell">SELL</span></td><td>22400</td><td>¥3.57</td><td>跟踪止损 自高位 -3.25%</td></tr><tr><td>2026-07-21 11:03:54</td><td>300383 光环新网</td><td><span class="side sell">SELL</span></td><td>6000</td><td>¥12.93</td><td>光环新网微亏，IDC无主线催化，调仓 | policy=risk_reduce_sell</td></tr><tr><td>2026-07-21 11:03:54</td><td>300766 每日互动</td><td><span class="side sell">SELL</span></td><td>3400</td><td>¥22.55</td><td>每日互动浮盈仅0.22%，技术面无优势，持仓小市值，调仓至主线龙头 | policy=risk_reduce_sell</td></tr><tr><td>2026-07-21 11:03:11</td><td>600584 长电科技</td><td><span class="side buy">BUY</span></td><td>900</td><td>¥81.05</td><td>主动追入 涨5.2% 成交额133.4亿</td></tr><tr><td>2026-07-21 10:58:11</td><td>603986 兆易创新</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥454.74</td><td>主动追入 涨5.1% 成交额215.1亿</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    
+        </div>
+        <div class="stack">
+          
+    <section class="panel">
+      <div class="panel-title"><h2>当前持仓</h2></div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>代码 / 名称</th><th>数量</th><th>可卖</th><th>均价</th><th>更新时间</th></tr></thead>
+          <tbody id="positionsBody"><tr><td>000725 京东方Ａ</td><td>13700</td><td>0</td><td>¥6.11</td><td>2026-07-21 11:18:18</td></tr><tr><td>000676 智度股份</td><td>11900</td><td>11900</td><td>¥6.59</td><td>2026-07-17 09:38:07</td></tr><tr><td>600227 赤天化</td><td>26800</td><td>26800</td><td>¥2.92</td><td>2026-07-17 13:38:06</td></tr><tr><td>001896 豫能控股</td><td>5500</td><td>5500</td><td>¥14.22</td><td>2026-07-17 09:53:03</td></tr><tr><td>600487 亨通光电</td><td>1300</td><td>0</td><td>¥59.58</td><td>2026-07-21 14:18:37</td></tr><tr><td>600396 华电辽能</td><td>5700</td><td>0</td><td>¥13.56</td><td>2026-07-21 10:23:12</td></tr><tr><td>000938 紫光股份</td><td>1900</td><td>0</td><td>¥40.64</td><td>2026-07-21 11:18:18</td></tr><tr><td>300408 三环集团</td><td>800</td><td>0</td><td>¥96.12</td><td>2026-07-21 09:38:15</td></tr><tr><td>600744 华银电力</td><td>11000</td><td>0</td><td>¥6.99</td><td>2026-07-21 10:03:12</td></tr><tr><td>600415 小商品城</td><td>6600</td><td>0</td><td>¥11.64</td><td>2026-07-21 09:58:12</td></tr><tr><td>600126 杭钢股份</td><td>11500</td><td>0</td><td>¥6.67</td><td>2026-07-21 09:53:11</td></tr><tr><td>603799 华友钴业</td><td>2000</td><td>0</td><td>¥38.34</td><td>2026-07-21 09:33:12</td></tr><tr><td>001258 立新能源</td><td>7900</td><td>0</td><td>¥9.70</td><td>2026-07-21 09:48:12</td></tr><tr><td>688110 东芯股份</td><td>700</td><td>0</td><td>¥108.71</td><td>2026-07-21 09:48:12</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    
+        </div>
+      </section>
+    </section>
+
+    <section id="tab-market" class="tab-panel">
+      
+    <section class="panel wide market-strategy" id="market-strategy">
+      <div class="market-head">
+        <div>
+          <div class="section-kicker">大盘策略</div>
+          <h2>市场状态 → 主线判断 → 候选筛选</h2>
+        </div>
+        <div class="cycle-code">周期<br><strong>cyc_20260721</strong></div>
+      </div>
+
+      <div class="market-hero-card">
+        <div class="market-stance">
+          <span>CIO 执行策略 / 目标总仓位</span>
+          <strong class="neutral">中性 · 总仓位 25.00%</strong>
+          <p>政策底明确（证监会稳市+央企超600亿增持），但全市场上涨比31.8%、跌停79家，风险偏好仍偏弱。成长赛道（半导体/光模块）短期超跌反弹，但技术面仍弱；高股息红利（银行/电力/保险/消费）防御属性突出，符合neutral regime下25%目标仓位。组合当前仓位约25%，以再平衡为主，汰弱留强，避免高位追涨。</p>
+        </div>
+        <div class="market-side-facts">
+          <div><span>当前实际仓位</span><strong>26.70%</strong></div>
+          <div><span>市场引擎状态</span><strong>偏进攻</strong></div>
+          <div><span>引擎建议区间</span><strong>30.00% - 55.00%</strong></div>
+          <div><span>现金余额</span><strong>¥7,091,746.18</strong></div>
+        </div>
+      </div>
+
+      <div class="market-index-grid">
+        <div class="market-index">
+          <span>上证指数</span>
+          <strong>3,812.16</strong>
+          <em style="color:var(--up)">+0.42%</em>
+        </div>
+        
+        <div class="market-index">
+          <span>深证成指</span>
+          <strong>13,656.08</strong>
+          <em style="color:var(--up)">+0.34%</em>
+        </div>
+        
+        <div class="market-index">
+          <span>沪深300</span>
+          <strong>4,630.85</strong>
+          <em style="color:var(--up)">+0.71%</em>
+        </div>
+        
+        <div class="market-index">
+          <span>创业板指</span>
+          <strong>3,469.22</strong>
+          <em style="color:var(--up)">+0.76%</em>
+        </div>
+        
+        <div class="market-index">
+          <span>科创50</span>
+          <strong>1,747.49</strong>
+          <em style="color:var(--up)">+1.68%</em>
+        </div>
+        </div>
+
+      <div class="market-block">
+        <h3>当前投资主线</h3>
+        <div class="strategy-chip-row"><span class="theme-chip">高股息红利</span><span class="theme-chip">央企增持</span><span class="theme-chip">金融蓝筹</span><span class="theme-chip">AI半导体反弹</span><span class="theme-chip">防御消费</span></div>
+      </div>
+
+      <div class="market-block">
+        <h3>全市场检索关键词</h3>
+        <div class="strategy-chip-row"><span class="keyword-chip">高股息红利</span><span class="keyword-chip">央企增持</span><span class="keyword-chip">金融蓝筹</span><span class="keyword-chip">AI半导体反弹</span><span class="keyword-chip">防御消费</span><span class="keyword-chip">高股息</span><span class="keyword-chip">银行</span><span class="keyword-chip">电力</span><span class="keyword-chip">央企</span><span class="keyword-chip">AI算力</span><span class="keyword-chip">半导体</span><span class="keyword-chip">科创50</span></div>
+      </div>
+
+      <div class="market-block">
+        <h3>候选池 / 当前持仓与近期交易标的</h3>
+        <div class="candidate-pool"><span>000725 京东方Ａ</span><span>000676 智度股份</span><span>600227 赤天化</span><span>001896 豫能控股</span><span>600487 亨通光电</span><span>600396 华电辽能</span><span>000938 紫光股份</span><span>300408 三环集团</span><span>600744 华银电力</span><span>600415 小商品城</span><span>600126 杭钢股份</span><span>603799 华友钴业</span><span>001258 立新能源</span><span>688110 东芯股份</span><span>300503 昊志机电</span><span>002396 星网锐捷</span></div>
+      </div>
+
+      <div class="two-col tight">
+        <div class="market-block flat">
+          <h3>大盘判定依据</h3>
+          <ul class="evidence-list"><li>涨停扩散值 4.42%，赚钱效应较好</li><li>成长指数均值 1.22% ，风险偏好抬升</li><li>当前持仓平均浮盈 3.35% ，策略顺风</li></ul>
+          <div class="tag-row compact"><span>暂无显著风险标签</span></div>
+        </div>
+        <div class="market-block flat">
+          <h3>新闻与主线输入</h3>
+          <ul class="news-brief"><li><strong>科技股早盘上演V型反转 跌停潮后半导体领涨反弹</strong><span>东财·第一财经·[688981]</span></li><li><strong>央行：保持流动性合理充裕</strong><span>新闻缓存</span></li><li><strong>美联储官员鸽派表态，A 股北向资金流入扩大</strong><span>新闻缓存</span></li><li><strong>AI 算力板块强势反弹</strong><span>新闻缓存</span></li><li><strong>安联集团首席经济顾问穆罕默德·埃尔-埃里安（Mohamed El-Erian）认为，最严重的通胀时期已经过去，预计美联储不会再进行三次加息</strong><span>财新-华尔街原声</span></li><li><strong>在守成思想浓厚的日本传统家族企业圈层，远藤是罕见的激进改革派</strong><span>财新-商圈</span></li></ul>
+        </div>
+      </div>
+    </section>
+    
+    </section>
+
+    <section id="tab-design" class="tab-panel">
+      
+    <section class="panel wide" id="design">
+      <div class="section-kicker">方案设计</div>
+      <h2>多智能体量化交易架构</h2>
+      <div class="flow">
+        <div><strong>调度层</strong><span>按交易时段触发行情、新闻、决策、风控、复盘任务</span></div>
+        <div><strong>工作流层</strong><span>新闻处理、CIO 决策、风控守护、机会扫描、收盘复盘</span></div>
+        <div><strong>大模型智能体</strong><span>CIO 大脑整合信息，分析师补充证据，金融专家复审下单草案</span></div>
+        <div><strong>策略编译与模拟券商</strong><span>仓位上限、T+1、最小 100 股、费用、滑点和模拟撮合</span></div>
+        <div><strong>本地证据库</strong><span>账户、持仓、订单、净值、智能体日志、异常与恢复记录</span></div>
+      </div>
+      <div class="two-col tight">
+        <div class="callout">
+          <h3>数据应用</h3>
+          <p>行情、历史日线、市场快照与新闻由公开数据源提供；账户、订单、持仓和净值由本地账本记录。</p>
+        </div>
+        <div class="callout">
+          <h3>国产模型接入</h3>
+          <table class="mini-table"><tbody><tr><td>CIO 决策大脑</td><td>kimi-k2.7</td></tr><tr><td>金融专家复审</td><td>kimi-k2.7</td></tr><tr><td>收盘复盘</td><td>kimi-k2.7</td></tr><tr><td>新闻处理器</td><td>deepseek-v4-pro</td></tr><tr><td>新闻分析师</td><td>deepseek-v4-pro</td></tr><tr><td>情绪分析师</td><td>deepseek-v4-pro</td></tr><tr><td>基本面分析师</td><td>deepseek-v4-pro</td></tr><tr><td>技术分析师</td><td>deepseek-v4-pro</td></tr></tbody></table>
+        </div>
+      </div>
+    </section>
+    
+      
+    <section class="panel wide" id="innovation">
+      <div class="section-kicker">系统改进</div>
+      <h2>稳定优先的执行增强</h2>
+      <div class="innovation-grid">
+        <article class="innovation-card">
+          <h3>市场状态引擎</h3>
+          <p>根据指数、涨跌分布和风险标签生成仓位区间。</p>
+        </article>
+        
+        <article class="innovation-card">
+          <h3>策略编译器</h3>
+          <p>将交易草案转换为满足资金、T+1、费用和整手约束的订单。</p>
+        </article>
+        
+        <article class="innovation-card">
+          <h3>机会捕手 + 风控守护</h3>
+          <p>盘中小仓位扫描强势机会，周期检查账户风险和异常持仓。</p>
+        </article>
+        
+        <article class="innovation-card">
+          <h3>决策回放证据链</h3>
+          <p>保存关键决策、工具调用、专家复审和执行结果。</p>
+        </article>
+        
+        <article class="innovation-card">
+          <h3>异常降级机制</h3>
+          <p>外部数据或模型返回异常时记录状态并进入降级流程。</p>
+        </article>
+        </div>
+    </section>
+    
+      
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <div class="section-kicker">市场状态</div>
+          <h2>市场状态引擎</h2>
+        </div>
+        <span class="status good">偏进攻</span>
+      </div>
+      <div class="score-row">
+        <div class="score">0.4</div>
+        <div><strong>建议仓位区间</strong><br>0.3 - 0.55</div>
+      </div>
+      <div class="index-grid">
+        <div class="index-card">
+          <span>上证指数</span>
+          <strong>3,812.16</strong>
+          <em style="color:var(--up)">0.42%</em>
+        </div>
+        
+        <div class="index-card">
+          <span>深证成指</span>
+          <strong>13,656.08</strong>
+          <em style="color:var(--up)">0.34%</em>
+        </div>
+        
+        <div class="index-card">
+          <span>沪深300</span>
+          <strong>4,630.85</strong>
+          <em style="color:var(--up)">0.71%</em>
+        </div>
+        
+        <div class="index-card">
+          <span>创业板指</span>
+          <strong>3,469.22</strong>
+          <em style="color:var(--up)">0.76%</em>
+        </div>
+        
+        <div class="index-card">
+          <span>科创50</span>
+          <strong>1,747.49</strong>
+          <em style="color:var(--up)">1.68%</em>
+        </div>
+        </div>
+      <h3>判定依据</h3>
+      <ul class="evidence-list"><li>涨停扩散值 4.42%，赚钱效应较好</li><li>成长指数均值 1.22% ，风险偏好抬升</li><li>当前持仓平均浮盈 3.35% ，策略顺风</li></ul>
+      <div class="tag-row"><span>暂无风险标签</span></div>
+    </section>
+    
+    </section>
+
+    <section id="tab-agents" class="tab-panel">
+      
+    <section class="panel wide" id="records">
+      <div class="section-kicker">运行记录</div>
+      <h2>智能体活动与模型调用</h2>
+      <div class="two-col">
+        <div>
+          <h3>智能体活跃统计</h3>
+          <table class="data-table">
+            <thead><tr><th>智能体</th><th>事件数</th><th>最后记录</th></tr></thead>
+            <tbody><tr><td>CIO 决策大脑</td><td>132</td><td>2026-07-21 14:01:38</td></tr><tr><td>新闻处理器</td><td>56</td><td>2026-07-21 14:16:43</td></tr><tr><td>行情更新器</td><td>41</td><td>2026-07-21 14:20:49</td></tr><tr><td>风控守护者</td><td>41</td><td>2026-07-21 14:22:01</td></tr><tr><td>机会捕手</td><td>40</td><td>2026-07-21 14:18:37</td></tr><tr><td>基本面分析师</td><td>40</td><td>2026-07-21 11:02:15</td></tr><tr><td>新闻分析师</td><td>29</td><td>2026-07-21 11:02:06</td></tr><tr><td>情绪分析师</td><td>21</td><td>2026-07-21 11:01:46</td></tr><tr><td>主决策任务</td><td>4</td><td>2026-07-21 14:01:38</td></tr><tr><td>技术分析师</td><td>4</td><td>2026-07-21 11:01:31</td></tr></tbody>
+          </table>
+        </div>
+        <div>
+          <h3>大模型调用证据</h3>
+          <table class="data-table">
+            <thead><tr><th>智能体</th><th>提示词</th><th>原始返回</th><th>摘要</th><th>最后记录</th></tr></thead>
+            <tbody><tr><td>新闻处理器</td><td>14</td><td>14</td><td>28</td><td>2026-07-21 14:16:43</td></tr><tr><td>CIO 决策大脑</td><td>4</td><td>0</td><td>4</td><td>2026-07-21 14:01:38</td></tr><tr><td>风控守护者</td><td>0</td><td>0</td><td>41</td><td>2026-07-21 14:22:01</td></tr><tr><td>行情更新器</td><td>0</td><td>0</td><td>41</td><td>2026-07-21 14:20:49</td></tr><tr><td>机会捕手</td><td>0</td><td>0</td><td>40</td><td>2026-07-21 14:18:37</td></tr><tr><td>主决策任务</td><td>0</td><td>0</td><td>4</td><td>2026-07-21 14:01:38</td></tr><tr><td>基本面分析师</td><td>0</td><td>2</td><td>2</td><td>2026-07-21 11:02:15</td></tr><tr><td>新闻分析师</td><td>0</td><td>2</td><td>2</td><td>2026-07-21 11:02:06</td></tr><tr><td>情绪分析师</td><td>0</td><td>2</td><td>2</td><td>2026-07-21 11:01:46</td></tr><tr><td>技术分析师</td><td>0</td><td>2</td><td>0</td><td>2026-07-21 11:01:31</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    
+      
+    <section class="panel">
+      <div class="panel-title"><h2>智能体流水</h2></div>
+      <div class="timeline">
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:20:49 · 行情更新器 · 摘要</div>
+          <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:18:37 · 机会捕手 · 摘要</div>
+          <p>机会扫描完成，候选/检查 35 项，产生 0 个动作。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:17:00 · 风控守护者 · 摘要</div>
+          <p>风控检查 35 个持仓，触发 0 个风险事件。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:16:43 · 新闻处理器 · 摘要</div>
+          <p>新闻处理完成，抓取 150 条，排序 44 条。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:16:43 · 新闻处理器 · 摘要</div>
+          <p>fetched=150 saved_imp3+=27 ranked=44</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:16:43 · 新闻处理器 · 原始返回</div>
+          <p>{ &quot;items&quot;: [ { &quot;id&quot;: &quot;0759cd86176d2701&quot;, &quot;importance&quot;: 3, &quot;reason&quot;: &quot;美联储加息预期降温的权威声音，影响全球资产定价，但非官方决策&quot;, &quot;affects&quot;: [&quot;宏观&quot;] }, { &quot;id&quot;: &quot;7ed483421fc8ad31&quot;, &quot;importance&quot;: 1, &quot;reason&quot;: &quot;日本企业家人特写，无直接市场影响&quot;, &quot;affects&quot;: [] }, { &quot;id&quot;: &quot;3f7d9ed40fc1f51a&quot;, &quot;importance&quot;: 4, ...</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:16:05 · 新闻处理器 · 提示词</div>
+          <p>新闻列表（id|源|标题）： 0759cd86176d2701 | 财新-华尔街原声 | 安联集团首席经济顾问穆罕默德·埃尔-埃里安（Mohamed El-Erian）认为，最严重的通胀时期已经过去，预计美联储不会再进行三次加息 7ed483421fc8ad31 | 财新-商圈 | 在守成思想浓厚的日本传统家族企业圈层，远藤是罕见的激进改革派 3f7d9ed40fc1f51a | 财新-权益周观察 | 成长赛道估值集体深度调整，石油、煤炭等防御板块逆势走强，市场风险偏好快速从乐观转向谨慎避险。资金面呈现杠杆资金恐慌...</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:15:00 · 行情更新器 · 摘要</div>
+          <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:13:29 · 机会捕手 · 摘要</div>
+          <p>机会扫描完成，候选/检查 34 项，产生 0 个动作。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:12:00 · 风控守护者 · 摘要</div>
+          <p>风控检查 34 个持仓，触发 0 个风险事件。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:10:00 · 行情更新器 · 摘要</div>
+          <p>行情更新完成，刷新 43 个标的，是否使用模拟行情：否。</p>
+        </article>
+        
+        <article class="timeline-item">
+          <div class="timeline-meta">2026-07-21 14:08:23 · 机会捕手 · 摘要</div>
+          <p>机会扫描完成，候选/检查 34 项，产生 0 个动作。</p>
+        </article>
+        </div>
+    </section>
+    
+    </section>
+
+    <section id="tab-audit" class="tab-panel">
+      
+    <section class="panel wide" id="trade-audit">
+      <div class="panel-title">
+        <div>
+          <div class="section-kicker">交易审计</div>
+          <h2>交易审计与单票盈亏</h2>
+        </div>
+        <span class="status good">账本审计通过</span>
+      </div>
+      <div class="audit-strip">
+        <div><span>保留订单</span><strong>261 笔</strong></div>
+        <div><span>非交易时段订单</span><strong>0 笔</strong></div>
+        <div><span>最新权益时间</span><strong>2026-07-21 14:20:49</strong></div>
+        <div><span>当前总资产</span><strong>¥9,674,893.18</strong></div>
+        <div><span>单票贡献最高</span><strong>603259 药明康德 ¥26,695.35</strong></div>
+      </div>
+      <div class="two-col tight">
+        <div>
+          <h3>单票盈亏榜</h3>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>代码 / 名称</th><th>总盈亏</th><th>已实现</th><th>未实现</th><th>持仓</th><th>收益率</th></tr></thead>
+              <tbody><tr><td>603259 药明康德</td><td style="color:var(--up)">¥26,695.35</td><td>¥26,695.35</td><td>¥0.00</td><td>0</td><td>+5.08%</td></tr><tr><td>300347 泰格医药</td><td style="color:var(--up)">¥26,164.25</td><td>¥26,164.25</td><td>¥0.00</td><td>0</td><td>+6.06%</td></tr><tr><td>002384 东山精密</td><td style="color:var(--up)">¥5,618.36</td><td>¥5,618.36</td><td>¥0.00</td><td>300</td><td>+8.13%</td></tr><tr><td>002432 九安医疗</td><td style="color:var(--up)">¥4,768.39</td><td>¥4,768.39</td><td>¥0.00</td><td>900</td><td>+6.69%</td></tr><tr><td>600021 上海电力</td><td style="color:var(--up)">¥4,601.87</td><td>¥4,601.87</td><td>¥0.00</td><td>0</td><td>+5.89%</td></tr><tr><td>600519 贵州茅台</td><td style="color:var(--up)">¥3,582.51</td><td>¥3,582.51</td><td>¥0.00</td><td>0</td><td>+2.84%</td></tr><tr><td>301526 国际复材</td><td style="color:var(--up)">¥3,488.03</td><td>¥3,488.03</td><td>¥0.00</td><td>0</td><td>+4.49%</td></tr><tr><td>301217 铜冠铜箔</td><td style="color:var(--up)">¥3,300.45</td><td>¥3,300.45</td><td>¥0.00</td><td>0</td><td>+4.34%</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>最近完整交易流水</h3>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>时间</th><th>代码 / 名称</th><th>方向</th><th>数量</th><th>价格</th><th>原因</th></tr></thead>
+              <tbody><tr><td>2026-07-21 14:18:37</td><td>600487 亨通光电</td><td><span class="side buy">BUY</span></td><td>1300</td><td>¥59.58</td><td>主动追入 涨5.3% 成交额176.8亿</td></tr><tr><td>2026-07-21 14:13:29</td><td>001309 德明利</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥509.06</td><td>主动追入 涨5.4% 成交额186.0亿</td></tr><tr><td>2026-07-21 13:58:19</td><td>002384 东山精密</td><td><span class="side buy">BUY</span></td><td>300</td><td>¥230.22</td><td>主动追入 涨5.7% 成交额304.6亿</td></tr><tr><td>2026-07-21 13:53:26</td><td>688981 中芯国际</td><td><span class="side buy">BUY</span></td><td>400</td><td>¥156.03</td><td>主动追入 涨8.3% 成交额140.2亿</td></tr><tr><td>2026-07-21 13:12:00</td><td>600519 贵州茅台</td><td><span class="side sell">SELL</span></td><td>100</td><td>¥1,299.84</td><td>跟踪止损 自高位 -3.24%</td></tr><tr><td>2026-07-21 11:18:18</td><td>000938 紫光股份</td><td><span class="side buy">BUY</span></td><td>1900</td><td>¥40.64</td><td>主动追入 涨7.8% 成交额144.2亿</td></tr><tr><td>2026-07-21 11:18:18</td><td>000725 京东方Ａ</td><td><span class="side buy">BUY</span></td><td>1000</td><td>¥6.11</td><td>突破加仓 30min涨4.1%</td></tr><tr><td>2026-07-21 11:13:10</td><td>000725 京东方Ａ</td><td><span class="side buy">BUY</span></td><td>12700</td><td>¥6.11</td><td>主动追入 涨5.5% 成交额115.2亿</td></tr><tr><td>2026-07-21 11:08:13</td><td>300502 新易盛</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥540.24</td><td>主动追入 涨5.9% 成交额236.0亿</td></tr><tr><td>2026-07-21 11:07:00</td><td>601016 节能风电</td><td><span class="side sell">SELL</span></td><td>22400</td><td>¥3.57</td><td>跟踪止损 自高位 -3.25%</td></tr><tr><td>2026-07-21 11:03:54</td><td>300383 光环新网</td><td><span class="side sell">SELL</span></td><td>6000</td><td>¥12.93</td><td>光环新网微亏，IDC无主线催化，调仓 | policy=risk_reduce_sell</td></tr><tr><td>2026-07-21 11:03:54</td><td>300766 每日互动</td><td><span class="side sell">SELL</span></td><td>3400</td><td>¥22.55</td><td>每日互动浮盈仅0.22%，技术面无优势，持仓小市值，调仓至主线龙头 | policy=risk_reduce_sell</td></tr><tr><td>2026-07-21 11:03:11</td><td>600584 长电科技</td><td><span class="side buy">BUY</span></td><td>900</td><td>¥81.05</td><td>主动追入 涨5.2% 成交额133.4亿</td></tr><tr><td>2026-07-21 10:58:11</td><td>603986 兆易创新</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥454.74</td><td>主动追入 涨5.1% 成交额215.1亿</td></tr><tr><td>2026-07-21 10:57:00</td><td>300164 通源石油</td><td><span class="side sell">SELL</span></td><td>7500</td><td>¥10.82</td><td>跟踪止损 自高位 -3.48%</td></tr><tr><td>2026-07-21 10:43:11</td><td>688012 中微公司</td><td><span class="side buy">BUY</span></td><td>200</td><td>¥369.41</td><td>主动追入 涨7.8% 成交额82.9亿</td></tr><tr><td>2026-07-21 10:42:00</td><td>600021 上海电力</td><td><span class="side sell">SELL</span></td><td>5300</td><td>¥15.63</td><td>跟踪止损 自高位 -3.34%</td></tr><tr><td>2026-07-21 10:28:12</td><td>002371 北方华创</td><td><span class="side buy">BUY</span></td><td>100</td><td>¥712.24</td><td>主动追入 涨5.2% 成交额63.2亿</td></tr><tr><td>2026-07-21 10:23:12</td><td>600396 华电辽能</td><td><span class="side buy">BUY</span></td><td>5700</td><td>¥13.56</td><td>主动追入 涨5.7% 成交额26.4亿</td></tr><tr><td>2026-07-21 10:13:10</td><td>600436 片仔癀</td><td><span class="side buy">BUY</span></td><td>500</td><td>¥147.50</td><td>主动追入 涨5.3% 成交额14.1亿</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    </section>
+  </main>
+  
+  
+  <button class="ai-fab" id="aiFab" type="button" aria-label="打开量化智问">
+    <span class="ai-orb" aria-hidden="true"></span>
+    <span><strong>量化智问</strong><span>RELLM MULTI-AGENT</span></span>
+  </button>
+  <aside class="ai-panel" id="aiPanel" aria-label="量化智问问答界面">
+    <header class="ai-head">
+      <div class="ai-brand">
+        <span class="ai-orb" aria-hidden="true"></span>
+        <div>
+          <h3>量化智问</h3>
+          <p>多智能体 · 运行记录 · 策略解释</p>
+        </div>
+      </div>
+      <button class="ai-close" id="aiClose" type="button" aria-label="关闭">×</button>
+    </header>
+    <div class="ai-body" id="aiBody">
+      <div class="ai-msg assistant">你好，我是 <strong>量化智问</strong>。我可以解释当前账户收益、持仓、订单、智能体链路、模型接入和交易时段。如果页面由聊天后端服务打开，我会调用真实大模型；静态页面则使用本页运行证据回答。</div>
+      <div class="ai-chips" id="aiChips">
+        <button class="ai-chip" type="button">今天赚了吗？</button>
+        <button class="ai-chip" type="button">当前持仓是什么？</button>
+        <button class="ai-chip" type="button">用了哪些智能体？</button>
+        <button class="ai-chip" type="button">大模型怎么接入？</button>
+        <button class="ai-chip" type="button">交易时间怎么控制？</button>
+      </div>
+    </div>
+    <form class="ai-form" id="aiForm">
+      <input class="ai-input" id="aiInput" autocomplete="off" placeholder="问问收益、持仓、策略或智能体记录..." />
+      <button class="ai-send" type="submit">发送</button>
+      <div class="ai-footnote">API Key 只在后端读取，不写入网页；后端可接入 CodeBuddy / Kimi / DeepSeek。</div>
+    </form>
+  </aside>
+  <script id="rellm-chat-context" type="application/json">{"generated_at": "2026-07-21 14:22:22", "title": "A 股多智能体量化系统", "runtime": {"cash": 7091746.179999996, "market_value": 2583147.0, "latest_total": 9674893.179999996, "latest_time": "2026-07-21 14:20:49", "daily_pnl": -196268.51, "daily_return_pct": -1.9883, "daily_date": "2026-07-21", "daily_order_count": 58, "position_count": 30}, "strategy": {"view": "中性", "target_position": 0.25, "confidence": 0.6}, "market_regime": {"regime": "偏进攻", "score": 0.4, "risk_flags": []}, "positions": [{"code": "000725", "qty": 13700, "avg_price": 6.11, "available": 0, "updated_at": 1784603898, "updated_at_readable": "2026-07-21 11:18:18", "name": "京东方Ａ", "label": "000725 京东方Ａ"}, {"code": "000676", "qty": 11900, "avg_price": 6.59, "available": 11900, "updated_at": 1784252287, "updated_at_readable": "2026-07-17 09:38:07", "name": "智度股份", "label": "000676 智度股份"}, {"code": "600227", "qty": 26800, "avg_price": 2.92, "available": 26800, "updated_at": 1784266686, "updated_at_readable": "2026-07-17 13:38:06", "name": "赤天化", "label": "600227 赤天化"}, {"code": "001896", "qty": 5500, "avg_price": 14.22, "available": 5500, "updated_at": 1784253183, "updated_at_readable": "2026-07-17 09:53:03", "name": "豫能控股", "label": "001896 豫能控股"}, {"code": "600487", "qty": 1300, "avg_price": 59.58, "available": 0, "updated_at": 1784614717, "updated_at_readable": "2026-07-21 14:18:37", "name": "亨通光电", "label": "600487 亨通光电"}, {"code": "600396", "qty": 5700, "avg_price": 13.56, "available": 0, "updated_at": 1784600592, "updated_at_readable": "2026-07-21 10:23:12", "name": "华电辽能", "label": "600396 华电辽能"}, {"code": "000938", "qty": 1900, "avg_price": 40.64, "available": 0, "updated_at": 1784603898, "updated_at_readable": "2026-07-21 11:18:18", "name": "紫光股份", "label": "000938 紫光股份"}, {"code": "300408", "qty": 800, "avg_price": 96.12, "available": 0, "updated_at": 1784597895, "updated_at_readable": "2026-07-21 09:38:15", "name": "三环集团", "label": "300408 三环集团"}, {"code": "600744", "qty": 11000, "avg_price": 6.99, "available": 0, "updated_at": 1784599392, "updated_at_readable": "2026-07-21 10:03:12", "name": "华银电力", "label": "600744 华银电力"}, {"code": "600415", "qty": 6600, "avg_price": 11.64, "available": 0, "updated_at": 1784599092, "updated_at_readable": "2026-07-21 09:58:12", "name": "小商品城", "label": "600415 小商品城"}], "orders": [{"id": 447, "ts": 1784614717, "code": "600487", "side": "BUY", "qty": 1300, "price": 59.58, "status": "FILLED", "fee": 19.36, "reason": "主动追入 涨5.3% 成交额176.8亿", "ts_readable": "2026-07-21 14:18:37", "name": "亨通光电", "label": "600487 亨通光电"}, {"id": 446, "ts": 1784614409, "code": "001309", "side": "BUY", "qty": 100, "price": 509.06, "status": "FILLED", "fee": 12.73, "reason": "主动追入 涨5.4% 成交额186.0亿", "ts_readable": "2026-07-21 14:13:29", "name": "德明利", "label": "001309 德明利"}, {"id": 445, "ts": 1784613499, "code": "002384", "side": "BUY", "qty": 300, "price": 230.22, "status": "FILLED", "fee": 17.27, "reason": "主动追入 涨5.7% 成交额304.6亿", "ts_readable": "2026-07-21 13:58:19", "name": "东山精密", "label": "002384 东山精密"}, {"id": 444, "ts": 1784613206, "code": "688981", "side": "BUY", "qty": 400, "price": 156.03, "status": "FILLED", "fee": 15.6, "reason": "主动追入 涨8.3% 成交额140.2亿", "ts_readable": "2026-07-21 13:53:26", "name": "中芯国际", "label": "688981 中芯国际"}, {"id": 443, "ts": 1784610720, "code": "600519", "side": "SELL", "qty": 100, "price": 1299.84, "status": "FILLED", "fee": 97.49, "reason": "跟踪止损 自高位 -3.24%", "ts_readable": "2026-07-21 13:12:00", "name": "贵州茅台", "label": "600519 贵州茅台"}, {"id": 442, "ts": 1784603898, "code": "000938", "side": "BUY", "qty": 1900, "price": 40.64, "status": "FILLED", "fee": 19.3, "reason": "主动追入 涨7.8% 成交额144.2亿", "ts_readable": "2026-07-21 11:18:18", "name": "紫光股份", "label": "000938 紫光股份"}, {"id": 441, "ts": 1784603898, "code": "000725", "side": "BUY", "qty": 1000, "price": 6.11, "status": "FILLED", "fee": 5.0, "reason": "突破加仓 30min涨4.1%", "ts_readable": "2026-07-21 11:18:18", "name": "京东方Ａ", "label": "000725 京东方Ａ"}, {"id": 440, "ts": 1784603590, "code": "000725", "side": "BUY", "qty": 12700, "price": 6.11, "status": "FILLED", "fee": 19.4, "reason": "主动追入 涨5.5% 成交额115.2亿", "ts_readable": "2026-07-21 11:13:10", "name": "京东方Ａ", "label": "000725 京东方Ａ"}, {"id": 439, "ts": 1784603293, "code": "300502", "side": "BUY", "qty": 100, "price": 540.24, "status": "FILLED", "fee": 13.51, "reason": "主动追入 涨5.9% 成交额236.0亿", "ts_readable": "2026-07-21 11:08:13", "name": "新易盛", "label": "300502 新易盛"}, {"id": 438, "ts": 1784603220, "code": "601016", "side": "SELL", "qty": 22400, "price": 3.57, "status": "FILLED", "fee": 59.98, "reason": "跟踪止损 自高位 -3.25%", "ts_readable": "2026-07-21 11:07:00", "name": "节能风电", "label": "601016 节能风电"}], "trade_audit": {"order_count": 261, "invalid_order_count": 0, "latest_equity": {"ts": 1784614849, "cash": 7091746.179999996, "market_value": 2583147.0, "total": 9674893.179999996, "time": "2026-07-21 14:20:49"}, "top_winners": [{"code": "603259", "buy_qty": 4300, "sell_qty": 4300, "buy_amount": 525745.0, "sell_amount": 552855.0, "fees": 549.86, "realized_pnl": 26695.35, "open_qty": 0, "open_cost": 0, "latest_price": 125.88, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 26695.35, "total_pnl_pct": 5.0776, "name": "药明康德", "label": "603259 药明康德"}, {"code": "300347", "buy_qty": 8900, "sell_qty": 8900, "buy_amount": 431829.0, "sell_amount": 458337.0, "fees": 459.01, "realized_pnl": 26164.25, "open_qty": 0, "open_cost": 0, "latest_price": 50.25, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 26164.25, "total_pnl_pct": 6.0589, "name": "泰格医药", "label": "300347 泰格医药"}, {"code": "002384", "buy_qty": 600, "sell_qty": 300, "buy_amount": 144243.0, "sell_amount": 80856.0, "fees": 96.7, "realized_pnl": 5618.36, "open_qty": 300, "open_cost": 69066.0, "latest_price": 230.22, "market_value": 69066.0, "unrealized_pnl": 0.0, "total_pnl": 5618.36, "total_pnl_pct": 8.1348, "name": "东山精密", "label": "002384 东山精密"}, {"code": "002432", "buy_qty": 3000, "sell_qty": 2100, "buy_amount": 227233.0, "sell_amount": 160806.0, "fees": 177.42, "realized_pnl": 4768.39, "open_qty": 900, "open_cost": 71316.0, "latest_price": 79.24, "market_value": 71316.0, "unrealized_pnl": 0.0, "total_pnl": 4768.39, "total_pnl_pct": 6.6863, "name": "九安医疗", "label": "002432 九安医疗"}, {"code": "600021", "buy_qty": 5300, "sell_qty": 5300, "buy_amount": 78175.0, "sell_amount": 82839.0, "fees": 81.67, "realized_pnl": 4601.87, "open_qty": 0, "open_cost": 0, "latest_price": null, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 4601.87, "total_pnl_pct": 5.8866, "name": "上海电力", "label": "600021 上海电力"}, {"code": "600519", "buy_qty": 100, "sell_qty": 100, "buy_amount": 126304.0, "sell_amount": 129984.0, "fees": 129.07, "realized_pnl": 3582.51, "open_qty": 0, "open_cost": 0, "latest_price": 1302.79, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 3582.51, "total_pnl_pct": 2.8364, "name": "贵州茅台", "label": "600519 贵州茅台"}, {"code": "301526", "buy_qty": 2100, "sell_qty": 2100, "buy_amount": 77742.0, "sell_amount": 81291.0, "fees": 80.41, "realized_pnl": 3488.03, "open_qty": 0, "open_cost": 0, "latest_price": null, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 3488.03, "total_pnl_pct": 4.4867, "name": "国际复材", "label": "301526 国际复材"}, {"code": "301217", "buy_qty": 600, "sell_qty": 600, "buy_amount": 76038.0, "sell_amount": 79398.0, "fees": 78.56, "realized_pnl": 3300.45, "open_qty": 0, "open_cost": 0, "latest_price": null, "market_value": 0.0, "unrealized_pnl": 0.0, "total_pnl": 3300.45, "total_pnl_pct": 4.3405, "name": "铜冠铜箔", "label": "301217 铜冠铜箔"}], "recent_orders": [{"id": 447, "time": "2026-07-21 14:18:37", "code": "600487", "side": "BUY", "qty": 1300, "price": 59.58, "fee": 19.36, "amount": 77454.0, "trading_session_ok": true, "reason": "主动追入 涨5.3% 成交额176.8亿", "name": "亨通光电", "label": "600487 亨通光电"}, {"id": 446, "time": "2026-07-21 14:13:29", "code": "001309", "side": "BUY", "qty": 100, "price": 509.06, "fee": 12.73, "amount": 50906.0, "trading_session_ok": true, "reason": "主动追入 涨5.4% 成交额186.0亿", "name": "德明利", "label": "001309 德明利"}, {"id": 445, "time": "2026-07-21 13:58:19", "code": "002384", "side": "BUY", "qty": 300, "price": 230.22, "fee": 17.27, "amount": 69066.0, "trading_session_ok": true, "reason": "主动追入 涨5.7% 成交额304.6亿", "name": "东山精密", "label": "002384 东山精密"}, {"id": 444, "time": "2026-07-21 13:53:26", "code": "688981", "side": "BUY", "qty": 400, "price": 156.03, "fee": 15.6, "amount": 62412.0, "trading_session_ok": true, "reason": "主动追入 涨8.3% 成交额140.2亿", "name": "中芯国际", "label": "688981 中芯国际"}, {"id": 443, "time": "2026-07-21 13:12:00", "code": "600519", "side": "SELL", "qty": 100, "price": 1299.84, "fee": 97.49, "amount": 129984.0, "trading_session_ok": true, "reason": "跟踪止损 自高位 -3.24%", "name": "贵州茅台", "label": "600519 贵州茅台"}, {"id": 442, "time": "2026-07-21 11:18:18", "code": "000938", "side": "BUY", "qty": 1900, "price": 40.64, "fee": 19.3, "amount": 77216.0, "trading_session_ok": true, "reason": "主动追入 涨7.8% 成交额144.2亿", "name": "紫光股份", "label": "000938 紫光股份"}, {"id": 441, "time": "2026-07-21 11:18:18", "code": "000725", "side": "BUY", "qty": 1000, "price": 6.11, "fee": 5.0, "amount": 6110.0, "trading_session_ok": true, "reason": "突破加仓 30min涨4.1%", "name": "京东方Ａ", "label": "000725 京东方Ａ"}, {"id": 440, "time": "2026-07-21 11:13:10", "code": "000725", "side": "BUY", "qty": 12700, "price": 6.11, "fee": 19.4, "amount": 77597.0, "trading_session_ok": true, "reason": "主动追入 涨5.5% 成交额115.2亿", "name": "京东方Ａ", "label": "000725 京东方Ａ"}, {"id": 439, "time": "2026-07-21 11:08:13", "code": "300502", "side": "BUY", "qty": 100, "price": 540.24, "fee": 13.51, "amount": 54024.0, "trading_session_ok": true, "reason": "主动追入 涨5.9% 成交额236.0亿", "name": "新易盛", "label": "300502 新易盛"}, {"id": 438, "time": "2026-07-21 11:07:00", "code": "601016", "side": "SELL", "qty": 22400, "price": 3.57, "fee": 59.98, "amount": 79968.0, "trading_session_ok": true, "reason": "跟踪止损 自高位 -3.25%", "name": "节能风电", "label": "601016 节能风电"}, {"id": 437, "time": "2026-07-21 11:03:54", "code": "300383", "side": "SELL", "qty": 6000, "price": 12.93, "fee": 58.19, "amount": 77580.0, "trading_session_ok": true, "reason": "光环新网微亏，IDC无主线催化，调仓 | policy=risk_reduce_sell", "name": "光环新网", "label": "300383 光环新网"}, {"id": 436, "time": "2026-07-21 11:03:54", "code": "300766", "side": "SELL", "qty": 3400, "price": 22.55, "fee": 57.5, "amount": 76670.0, "trading_session_ok": true, "reason": "每日互动浮盈仅0.22%，技术面无优势，持仓小市值，调仓至主线龙头 | policy=risk_reduce_sell", "name": "每日互动", "label": "300766 每日互动"}]}, "agent_activity": [{"agent": "cio_brain", "events": 132, "last_ts": 1784613698, "last_ts_readable": "2026-07-21 14:01:38"}, {"agent": "news_worker", "events": 56, "last_ts": 1784614603, "last_ts_readable": "2026-07-21 14:16:43"}, {"agent": "quote_worker", "events": 41, "last_ts": 1784614849, "last_ts_readable": "2026-07-21 14:20:49"}, {"agent": "guardian", "events": 41, "last_ts": 1784614921, "last_ts_readable": "2026-07-21 14:22:01"}, {"agent": "opportunity", "events": 40, "last_ts": 1784614717, "last_ts_readable": "2026-07-21 14:18:37"}, {"agent": "analyst_fundamentals", "events": 40, "last_ts": 1784602935, "last_ts_readable": "2026-07-21 11:02:15"}, {"agent": "analyst_news", "events": 29, "last_ts": 1784602926, "last_ts_readable": "2026-07-21 11:02:06"}, {"agent": "analyst_sentiment", "events": 21, "last_ts": 1784602906, "last_ts_readable": "2026-07-21 11:01:46"}, {"agent": "brain_worker", "events": 4, "last_ts": 1784613698, "last_ts_readable": "2026-07-21 14:01:38"}, {"agent": "analyst_technical", "events": 4, "last_ts": 1784602891, "last_ts_readable": "2026-07-21 11:01:31"}], "llm_activity": [{"agent": "news_worker", "prompts": 14, "raws": 14, "summaries": 28, "last_ts": 1784614603, "last_ts_readable": "2026-07-21 14:16:43"}, {"agent": "cio_brain", "prompts": 4, "raws": 0, "summaries": 4, "last_ts": 1784613698, "last_ts_readable": "2026-07-21 14:01:38"}, {"agent": "guardian", "prompts": 0, "raws": 0, "summaries": 41, "last_ts": 1784614921, "last_ts_readable": "2026-07-21 14:22:01"}, {"agent": "quote_worker", "prompts": 0, "raws": 0, "summaries": 41, "last_ts": 1784614849, "last_ts_readable": "2026-07-21 14:20:49"}, {"agent": "opportunity", "prompts": 0, "raws": 0, "summaries": 40, "last_ts": 1784614717, "last_ts_readable": "2026-07-21 14:18:37"}, {"agent": "brain_worker", "prompts": 0, "raws": 0, "summaries": 4, "last_ts": 1784613698, "last_ts_readable": "2026-07-21 14:01:38"}, {"agent": "analyst_fundamentals", "prompts": 0, "raws": 2, "summaries": 2, "last_ts": 1784602935, "last_ts_readable": "2026-07-21 11:02:15"}, {"agent": "analyst_news", "prompts": 0, "raws": 2, "summaries": 2, "last_ts": 1784602926, "last_ts_readable": "2026-07-21 11:02:06"}], "agent_models": {"cio_brain": "kimi-k2.7", "financial_expert": "kimi-k2.7", "daily_reflection": "kimi-k2.7", "news_worker": "deepseek-v4-pro", "news_analyst": "deepseek-v4-pro", "sentiment_analyst": "deepseek-v4-pro", "fundamentals_analyst": "deepseek-v4-pro", "technical_analyst": "deepseek-v4-pro"}, "trading_sessions": [["09:30", "11:30"], ["13:00", "15:00"]], "design": ["调度层按 A 股交易时段触发行情、新闻、决策、风控、复盘任务。", "CIO 决策大脑整合行情、新闻、持仓和市场状态，生成交易草案。", "金融专家复审订单，策略编译器处理仓位、T+1、整手、费用和滑点约束。", "机会捕手负责盘中强势机会扫描，风控守护者负责止损、回撤和异常检查。", "所有账户、订单、持仓、净值和智能体日志都写入本地 SQLite 证据库。"]}</script>
+    
+  <script>
+    const buttons = document.querySelectorAll('.tab-button');
+    const panels = document.querySelectorAll('.tab-panel');
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((item) => item.classList.remove('active'));
+        panels.forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+      });
+    });
+    
+    const chatContext = JSON.parse(document.getElementById('rellm-chat-context').textContent);
+    const aiFab = document.getElementById('aiFab');
+    const aiPanel = document.getElementById('aiPanel');
+    const aiClose = document.getElementById('aiClose');
+    const aiBody = document.getElementById('aiBody');
+    const aiForm = document.getElementById('aiForm');
+    const aiInput = document.getElementById('aiInput');
+    const aiChips = document.getElementById('aiChips');
+    const liveConnectionBadge = document.getElementById('liveConnectionBadge');
+    const liveRefreshNote = document.getElementById('liveRefreshNote');
+
+    function fmtMoney(value) {
+      const n = Number(value || 0);
+      return '¥' + n.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    function fmtPct(value) {
+      const n = Number(value || 0);
+      return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+    }
+    function addMsg(role, text) {
+      const div = document.createElement('div');
+      div.className = 'ai-msg ' + role;
+      div.textContent = text;
+      aiBody.appendChild(div);
+      aiBody.scrollTop = aiBody.scrollHeight;
+      return div;
+    }
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+    function setHtml(id, html) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    }
+    function setBadge(text, cls) {
+      if (!liveConnectionBadge) return;
+      liveConnectionBadge.textContent = text;
+      liveConnectionBadge.className = 'status ' + (cls || 'neutral');
+    }
+    function renderOrdersRows(rows) {
+      if (!Array.isArray(rows) || !rows.length) return '<tr><td colspan="6" class="empty">暂无订单</td></tr>';
+      return rows.slice(0, 14).map((row) => {
+        const side = String(row.side || '');
+        const sideClass = side === 'BUY' ? 'buy' : 'sell';
+        return '<tr>'
+          + `<td>${row.ts_readable || row.time || '-'}</td>`
+          + `<td>${row.label || row.code || '-'}</td>`
+          + `<td><span class="side ${sideClass}">${side || '-'}</span></td>`
+          + `<td>${row.qty ?? '-'}</td>`
+          + `<td>${fmtMoney(row.price)}</td>`
+          + `<td>${row.reason || '-'}</td>`
+          + '</tr>';
+      }).join('');
+    }
+    function renderPositionRows(rows) {
+      if (!Array.isArray(rows) || !rows.length) return '<tr><td colspan="5" class="empty">暂无持仓</td></tr>';
+      return rows.slice(0, 14).map((row) => (
+        '<tr>'
+        + `<td>${row.label || row.code || '-'}</td>`
+        + `<td>${row.qty ?? '-'}</td>`
+        + `<td>${row.available ?? '-'}</td>`
+        + `<td>${fmtMoney(row.avg_price)}</td>`
+        + `<td>${row.updated_at_readable || '-'}</td>`
+        + '</tr>'
+      )).join('');
+    }
+    function syncChatContext(data) {
+      Object.keys(chatContext).forEach((key) => delete chatContext[key]);
+      Object.assign(chatContext, data || {});
+      const script = document.getElementById('rellm-chat-context');
+      if (script) script.textContent = JSON.stringify(chatContext);
+    }
+    function updateRuntimeView(data) {
+      const runtime = data.runtime || {};
+      const strategy = data.strategy || {};
+      const regime = data.market_regime || {};
+      const total = Number(runtime.latest_total || 0);
+      const marketValue = Number(runtime.market_value || 0);
+      const ratio = total ? (marketValue / total) * 100 : 0;
+      const pnlColor = Number(runtime.daily_pnl || 0) > 0 ? 'var(--up)' : Number(runtime.daily_pnl || 0) < 0 ? 'var(--down)' : 'var(--muted)';
+      setText('metric-latest-total-value', fmtMoney(runtime.latest_total));
+      setText('metric-daily-pnl-value', fmtMoney(runtime.daily_pnl));
+      setText('metric-daily-pnl-sub', `${fmtPct(runtime.daily_return_pct)} · ${runtime.daily_date || '-'}`);
+      setText('metric-cash-position-value', fmtMoney(runtime.cash));
+      setText('metric-cash-position-sub', `持仓占比 ${ratio.toFixed(2)}%`);
+      setText('metric-position-order-value', String(runtime.position_count ?? '-'));
+      setText('metric-position-order-sub', `今日订单 ${runtime.daily_order_count || 0} 笔`);
+      setText('metric-market-regime-value', regime.regime || '-');
+      setText('metric-market-regime-sub', `状态分 ${regime.score ?? '-'}`);
+      setText('metric-target-position-value', strategy.target_position == null ? '-' : (Number(strategy.target_position) * 100).toFixed(2) + '%');
+      setText('metric-target-position-sub', `策略视图 ${strategy.view || '-'}`);
+      setText('liveLatestTime', runtime.latest_time || '-');
+      setText('liveLatestTotal', fmtMoney(runtime.latest_total));
+      setText('liveDailyPnl', fmtMoney(runtime.daily_pnl));
+      const pnlEl = document.getElementById('metric-daily-pnl-value');
+      if (pnlEl) pnlEl.style.color = pnlColor;
+      const livePnlEl = document.getElementById('liveDailyPnl');
+      if (livePnlEl) livePnlEl.style.color = pnlColor;
+      setHtml('latestOrdersBody', renderOrdersRows(data.orders || []));
+      setHtml('positionsBody', renderPositionRows(data.positions || []));
+      syncChatContext(data);
+      setBadge('实时已连接', 'good');
+      if (liveRefreshNote) liveRefreshNote.textContent = `最近刷新 ${new Date().toLocaleTimeString('zh-CN', {hour12: false})}`;
+    }
+    function localAnswer(question) {
+      const q = question.toLowerCase();
+      const r = chatContext.runtime || {};
+      const strategy = chatContext.strategy || {};
+      const regime = chatContext.market_regime || {};
+      if (q.includes('赚') || q.includes('亏') || q.includes('收益') || q.includes('盈亏')) {
+        return `截至 ${r.latest_time || '最新记录'}，账户总资产 ${fmtMoney(r.latest_total)}，今日自然口径盈亏 ${fmtMoney(r.daily_pnl)}，收益率 ${fmtPct(r.daily_return_pct)}。今日订单 ${r.daily_order_count || 0} 笔。`;
+      }
+      if (q.includes('持仓') || q.includes('仓位') || q.includes('股票')) {
+        const rows = (chatContext.positions || []).slice(0, 8);
+        const holding = rows.map((x) => `${x.label || x.code} ${x.qty}股，均价${fmtMoney(x.avg_price)}，可卖${x.available}`).join('\n');
+        return `当前持仓数量 ${r.position_count || rows.length} 个，现金 ${fmtMoney(r.cash)}，策略目标仓位 ${strategy.target_position == null ? '暂无' : (Number(strategy.target_position) * 100).toFixed(2) + '%'}。\n${holding || '暂无持仓。'}`;
+      }
+      if (q.includes('订单') || q.includes('交易') || q.includes('买') || q.includes('卖')) {
+        const rows = ((chatContext.trade_audit || {}).recent_orders || chatContext.orders || []).slice(0, 8);
+        const orderText = rows.map((x) => `${x.ts_readable || x.time || ''} ${x.side} ${x.label || x.code} ${x.qty}股 @ ${fmtMoney(x.price)}：${x.reason || '-'}`).join('\n');
+        return `最近订单如下：\n${orderText || '暂无订单。'}\n系统会检查 T+1、整手、现金、费用、滑点和交易时段边界。`;
+      }
+      if (q.includes('赚最多') || q.includes('最赚钱') || q.includes('盈亏榜') || q.includes('哪只股票')) {
+        const winners = ((chatContext.trade_audit || {}).top_winners || []).slice(0, 5);
+        const winnerText = winners.map((x) => `${x.label || x.code}：总盈亏 ${fmtMoney(x.total_pnl)}，已实现 ${fmtMoney(x.realized_pnl)}，未实现 ${fmtMoney(x.unrealized_pnl)}`).join('\n');
+        const invalid = (chatContext.trade_audit || {}).invalid_order_count ?? '-';
+        return `${winnerText || '暂无单票盈亏数据。'}\n当前审计显示非交易时段订单 ${invalid} 笔。`;
+      }
+      if (q.includes('智能体') || q.includes('架构') || q.includes('流程') || q.includes('agent')) {
+        const activity = (chatContext.agent_activity || []).slice(0, 6).map((x) => `${x.agent}: ${x.events}条记录`).join('，');
+        return `系统由调度层、数据层、CIO 决策大脑、金融专家复审、机会捕手、风控守护者和模拟券商组成。\n近期智能体活跃：${activity || '暂无统计'}。`;
+      }
+      if (q.includes('模型') || q.includes('llm') || q.includes('大模型') || q.includes('deepseek') || q.includes('kimi')) {
+        const models = Object.entries(chatContext.agent_models || {}).map(([k, v]) => `${k}: ${v}`).join('\n');
+        return `当前模型配置：\n${models || '暂无模型配置'}\n公开静态网页不会直接携带 API Key；真正的大模型问答应通过后端代理转发。`;
+      }
+      if (q.includes('时间') || q.includes('交易时段') || q.includes('收盘') || q.includes('15')) {
+        const sessions = (chatContext.trading_sessions || []).map((x) => x.join('-')).join('，');
+        return `系统交易窗口按 A 股时间控制：${sessions || '09:30-11:30，13:00-15:00'}。收盘后不会再触发交易任务。`;
+      }
+      if (q.includes('风险') || q.includes('风控') || q.includes('稳定')) {
+        const flags = (regime.risk_flags || []).join('，') || '暂无显著风险标签';
+        return `当前市场状态：${regime.regime || '-'}，状态分 ${regime.score || '-'}。风险标签：${flags}。系统通过目标仓位、T+1、止损、回撤检查和订单编译来降低不稳定交易。`;
+      }
+      return `我可以基于当前页面证据回答。当前总资产 ${fmtMoney(r.latest_total)}，今日盈亏 ${fmtMoney(r.daily_pnl)}，持仓 ${r.position_count || 0} 个。你也可以问：今天赚了吗、当前持仓、用了哪些智能体、模型怎么接入、交易时段怎么控制。`;
+    }
+    function resolveEndpoint() {
+      if (window.RELLM_CHAT_ENDPOINT) return window.RELLM_CHAT_ENDPOINT;
+      const host = location.hostname || '';
+      const isStaticPages = host.endsWith('github.io');
+      if (!isStaticPages && location.protocol.startsWith('http')) {
+        return location.origin.replace(/\/$/, '') + '/api/chat';
+      }
+      return '';
+    }
+    function resolveRuntimeEndpoint() {
+      if (window.RELLM_CHAT_ENDPOINT) {
+        return window.RELLM_CHAT_ENDPOINT.replace(/\/api\/chat$/, '/api/runtime');
+      }
+      const host = location.hostname || '';
+      const isStaticPages = host.endsWith('github.io');
+      if (!isStaticPages && location.protocol.startsWith('http')) {
+        return location.origin.replace(/\/$/, '') + '/api/runtime';
+      }
+      return '';
+    }
+    async function refreshRuntime() {
+      const endpoint = resolveRuntimeEndpoint();
+      if (!endpoint) {
+        setBadge('静态快照', 'neutral');
+        if (liveRefreshNote) liveRefreshNote.textContent = '当前页面没有配置实时接口';
+        return;
+      }
+      try {
+        const res = await fetch(endpoint, {headers: {'Cache-Control': 'no-store'}});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (!data || data.ok === false) throw new Error(data && data.error ? data.error : 'runtime_unavailable');
+        updateRuntimeView(data);
+      } catch (err) {
+        setBadge('实时断开', 'bad');
+        if (liveRefreshNote) liveRefreshNote.textContent = '实时接口暂时不可用，已保留页面快照';
+      }
+    }
+    async function answer(question) {
+      const endpoint = resolveEndpoint();
+      if (endpoint) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question, context: chatContext})
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.answer) return data.answer;
+            if (data.content) return data.content;
+            if (data.error) return localAnswer(question) + '\n\n后端返回：' + data.error;
+            return localAnswer(question);
+          }
+        } catch (err) {
+          return localAnswer(question) + '\n\n后端大模型接口暂时不可用，已切换为本页证据回答。';
+        }
+      }
+      return localAnswer(question);
+    }
+    aiFab.addEventListener('click', () => {
+      aiPanel.classList.add('open');
+      setTimeout(() => aiInput.focus(), 80);
+    });
+    aiClose.addEventListener('click', () => aiPanel.classList.remove('open'));
+    aiChips.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      aiInput.value = button.textContent.trim();
+      aiForm.requestSubmit();
+    });
+    aiForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const question = aiInput.value.trim();
+      if (!question) return;
+      aiInput.value = '';
+      addMsg('user', question);
+      const pending = addMsg('assistant', '正在读取运行证据...');
+      pending.textContent = await answer(question);
+    });
+    refreshRuntime();
+    window.setInterval(refreshRuntime, 30000);
+    
+  </script>
+</body>
+</html>
