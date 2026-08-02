@@ -845,6 +845,27 @@ tbody tr:last-child td {
   padding: 14px 16px;
 }
 
+.battle-panel-chart {
+  min-height: 420px;
+}
+
+.battle-panel-holdings {
+  min-height: 420px;
+}
+
+.battle-panel-feed {
+  min-height: 336px;
+}
+
+.battle-panel-log,
+.battle-panel-trade {
+  min-height: 232px;
+}
+
+.battle-panel-market {
+  min-height: 420px;
+}
+
 .battle-panel-title {
   margin-bottom: 12px;
   font-size: 14px;
@@ -929,6 +950,49 @@ tbody tr:last-child td {
   font-size: 12.5px;
 }
 
+.battle-table tbody tr:hover {
+  background: #fbfdff;
+}
+
+.battle-table-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.battle-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.battle-toolbar-note {
+  color: #97a4b8;
+  font-size: 12px;
+}
+
+.battle-search,
+.battle-select {
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(24, 33, 43, 0.08);
+  background: #fff;
+  color: #7b8798;
+  font: inherit;
+  font-size: 12px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.battle-search {
+  width: 180px;
+}
+
 .battle-feed {
   display: grid;
   gap: 8px;
@@ -978,6 +1042,14 @@ tbody tr:last-child td {
 .battle-log-agent {
   font-weight: 900;
   color: #2680c0;
+}
+
+.battle-subcode {
+  display: block;
+  margin-top: 2px;
+  color: #95a1b4;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .battle-strategy-board {
@@ -1053,6 +1125,31 @@ tbody tr:last-child td {
   color: #725415;
   background: rgba(216, 162, 79, 0.2);
   border-color: rgba(216, 162, 79, 0.24);
+}
+
+body.battle-mode .svg-chart {
+  background:
+    linear-gradient(180deg, rgba(250, 252, 255, 0.8), rgba(255, 255, 255, 0.95));
+  border-radius: 16px;
+}
+
+body.battle-mode .battle-panel-title {
+  color: #2c3a52;
+}
+
+body.battle-mode .battle-panel-holdings .battle-table,
+body.battle-mode .battle-panel-trade .battle-table {
+  table-layout: fixed;
+}
+
+body.battle-mode .battle-panel-holdings .battle-table td:first-child,
+body.battle-mode .battle-panel-holdings .battle-table th:first-child {
+  width: 34%;
+}
+
+body.battle-mode .battle-panel-trade .battle-table td,
+body.battle-mode .battle-panel-trade .battle-table th {
+  font-size: 12px;
 }
 
 .chat-form {
@@ -1141,6 +1238,15 @@ tbody tr:last-child td {
 
   .battle-index-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .battle-table-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .battle-table-toolbar {
+    justify-content: flex-start;
   }
 
   .shell {

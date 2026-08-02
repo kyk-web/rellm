@@ -487,7 +487,7 @@ function renderIndexStrip(data) {
 function renderMiniHoldings(data) {
   return topHoldings(data, 6).map((item) => `
     <tr>
-      <td>${item.name}</td>
+      <td><strong>${item.name}</strong><span class="battle-subcode">${item.code}</span></td>
       <td>${item.qty}</td>
       <td>${fmtMoney(item.cost)}</td>
       <td>${fmtMoney(item.last)}</td>
@@ -549,7 +549,7 @@ function renderTradeMini(data) {
 function renderMarketTape(data) {
   return topHoldings(data, 13).map((item, index) => `
     <tr>
-      <td>${index + 1}</td>
+      <td>${index < 2 ? "⭐" : index < 6 ? "☆" : ""}</td>
       <td>${item.code}</td>
       <td>${item.name}</td>
       <td>${fmtMoney(item.last)}</td>
@@ -604,11 +604,11 @@ function renderReferenceDashboard(data) {
       ${renderStrategyBoard(data)}
 
       <section class="battle-main-grid">
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-chart">
           <div class="battle-panel-title">📈 净值曲线</div>
           ${makeLineChart(data.weekly_daily_results)}
         </article>
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-holdings">
           <div class="battle-panel-title">📊 当前持仓</div>
           <table class="battle-table compact">
             <thead>
@@ -620,26 +620,26 @@ function renderReferenceDashboard(data) {
       </section>
 
       <section class="battle-triple-grid">
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-feed">
           <div class="battle-panel-title">🧠 CIO 大脑（Tool-Call）</div>
           <div class="battle-feed">${renderDecisionFeed(data)}</div>
         </article>
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-feed">
           <div class="battle-panel-title">🧩 长期记忆</div>
           <div class="battle-feed">${renderMemoryFeed(data)}</div>
         </article>
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-feed">
           <div class="battle-panel-title">📰 最新新闻</div>
           <div class="battle-feed">${renderNewsFeed(data)}</div>
         </article>
       </section>
 
       <section class="battle-main-grid">
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-log">
           <div class="battle-panel-title">🤖 Agent 流水</div>
           <div class="battle-log">${renderAgentFlow(data)}</div>
         </article>
-        <article class="battle-panel">
+        <article class="battle-panel battle-panel-trade">
           <div class="battle-panel-title">🧾 成交</div>
           <table class="battle-table compact">
             <thead>
@@ -650,11 +650,20 @@ function renderReferenceDashboard(data) {
         </article>
       </section>
 
-      <section class="battle-panel">
-        <div class="battle-panel-title">🌐 全市场实时行情（提交版观察池）</div>
+      <section class="battle-panel battle-panel-market">
+        <div class="battle-table-topbar">
+          <div class="battle-panel-title">🌐 全市场实时行情（点列头排序）</div>
+          <div class="battle-table-toolbar">
+            <span class="battle-toolbar-note">⭐ = 当前观察池</span>
+            <input class="battle-search" value="代码或名称模糊搜索" readonly />
+            <span class="battle-select">成交额 ▾</span>
+            <span class="battle-select">↓ 降序 ▾</span>
+            <span class="battle-select">200 ▾</span>
+          </div>
+        </div>
         <table class="battle-table">
           <thead>
-            <tr><th>#</th><th>代码</th><th>名称</th><th>现价</th><th>涨跌幅</th><th>数量</th><th>成交额/市值</th></tr>
+            <tr><th></th><th>代码</th><th>名称</th><th>现价</th><th>涨跌幅</th><th>数量</th><th>成交额/市值</th></tr>
           </thead>
           <tbody>${renderMarketTape(data)}</tbody>
         </table>
