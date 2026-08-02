@@ -689,6 +689,342 @@ tbody tr:last-child td {
   font-size: 11px;
 }
 
+.battle-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.battle-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 10px 0 2px;
+}
+
+.battle-title h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.battle-title p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.battle-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.battle-pill {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.battle-pill.soft {
+  background: rgba(255, 229, 229, 0.82);
+  color: #b44949;
+}
+
+.battle-pill.dark {
+  background: #10172a;
+  color: #fff;
+}
+
+.battle-pill.warn {
+  background: #ffb100;
+  color: #fff;
+}
+
+.battle-pill.danger {
+  background: #ff4d67;
+  color: #fff;
+}
+
+.battle-pill.info {
+  background: #4c87ff;
+  color: #fff;
+}
+
+.battle-pill.good {
+  background: #16b27f;
+  color: #fff;
+}
+
+.battle-pill.hot {
+  background: #db174d;
+  color: #fff;
+}
+
+.battle-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.battle-stat,
+.battle-panel {
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.battle-stat {
+  padding: 18px 20px;
+}
+
+.battle-stat span,
+.battle-stat em,
+.battle-panel-title,
+.battle-index-card span,
+.battle-index-card em,
+.battle-strategy-main span,
+.battle-strategy-facts span {
+  color: var(--muted);
+}
+
+.battle-stat strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 23px;
+  line-height: 1.15;
+}
+
+.battle-stat em {
+  display: block;
+  margin-top: 6px;
+  font-style: normal;
+  font-size: 13px;
+}
+
+.battle-stat.up strong {
+  color: var(--good);
+}
+
+.battle-stat.down strong {
+  color: var(--bad);
+}
+
+.battle-panel {
+  padding: 18px;
+}
+
+.battle-panel-title {
+  margin-bottom: 14px;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.battle-index-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.battle-index-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.battle-index-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.battle-index-card em {
+  display: block;
+  margin-top: 6px;
+  font-style: normal;
+  font-size: 13px;
+}
+
+.battle-breadth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+}
+
+.battle-breadth strong,
+.battle-breadth em {
+  font-style: normal;
+}
+
+.battle-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 18px;
+}
+
+.battle-triple-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.battle-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.battle-table th,
+.battle-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 13px;
+}
+
+.battle-table th {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.battle-table.compact td,
+.battle-table.compact th {
+  font-size: 12.5px;
+}
+
+.battle-feed {
+  display: grid;
+  gap: 10px;
+  max-height: 332px;
+  overflow: auto;
+}
+
+.battle-feed-item {
+  padding: 12px 13px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+}
+
+.battle-feed-meta {
+  color: #86a0b7;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.battle-feed-item p {
+  margin: 0;
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+.battle-log {
+  display: grid;
+  gap: 8px;
+  max-height: 248px;
+  overflow: auto;
+}
+
+.battle-log-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr auto;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.battle-log-agent {
+  font-weight: 900;
+  color: #2680c0;
+}
+
+.battle-strategy-board {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 248, 236, 0.9)),
+    radial-gradient(circle at 8% 0%, rgba(36, 56, 76, 0.08), transparent 24rem);
+}
+
+.battle-strategy-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
+  gap: 14px;
+}
+
+.battle-strategy-main,
+.battle-strategy-facts div {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid var(--line);
+}
+
+.battle-strategy-main strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 32px;
+  line-height: 1.05;
+}
+
+.battle-strategy-main p {
+  margin: 12px 0 0;
+  line-height: 1.75;
+}
+
+.battle-strategy-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.battle-strategy-facts strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 19px;
+}
+
+.battle-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.battle-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  border: 1px solid transparent;
+}
+
+.battle-chip.theme {
+  color: #075e52;
+  background: rgba(21, 115, 82, 0.12);
+  border-color: rgba(21, 115, 82, 0.18);
+}
+
+.battle-chip.keyword {
+  color: #725415;
+  background: rgba(216, 162, 79, 0.2);
+  border-color: rgba(216, 162, 79, 0.24);
+}
+
 .chat-form {
   display: grid;
   gap: 12px;
@@ -760,6 +1096,23 @@ tbody tr:last-child td {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .battle-hero,
+  .battle-main-grid,
+  .battle-triple-grid,
+  .battle-strategy-top,
+  .battle-stat-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .battle-pills {
+    justify-content: flex-start;
+  }
+
+  .battle-index-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .shell {
     padding: 18px;
   }
@@ -782,6 +1135,15 @@ tbody tr:last-child td {
 
   .market-side-facts,
   .market-index-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-index-grid,
+  .battle-strategy-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-log-row {
     grid-template-columns: 1fr;
   }
 

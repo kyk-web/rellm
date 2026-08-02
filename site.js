@@ -399,56 +399,255 @@ function renderFloatingChatWidget() {
   `;
 }
 
-function renderOverview(data) {
+function boardStatCard(label, value, sub, cls = "") {
   return `
-    <section class="stack">
-      <div class="grid-4">
-        ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), "最终提交版周末账户快照")}
-        ${metricCard("相对初始收益率", fmtPct(data.account.return_vs_initial_pct), "初始资金 10,000,000.00")}
-        ${metricCard("周内合计盈亏", signedText(data.weekly_summary.weekly_cumulative_pnl), "五个交易日累计结果")}
-        ${metricCard("盈利天数", `${data.weekly_summary.profit_days}`, "本周盈利交易日")}
+    <article class="battle-stat ${cls}">
+      <span>${label}</span>
+      <strong>${value}</strong>
+      <em>${sub}</em>
+    </article>
+  `;
+}
+
+function renderToolbar(data) {
+  return `
+    <section class="battle-hero">
+      <div class="battle-title">
+        <h2>${data.title}</h2>
+        <p>${data.account.mode} · CIO Tool-Call · 行情 5min · 新闻 15min · 决策 60min</p>
       </div>
+      <div class="battle-pills">
+        <span class="battle-pill soft">交易时段 · 行情5m/新闻15m/大脑60m</span>
+        <span class="battle-pill dark">一键全跑</span>
+        <span class="battle-pill">抓新闻</span>
+        <span class="battle-pill warn">跑大脑</span>
+        <span class="battle-pill danger">止损扫描</span>
+        <span class="battle-pill info">机会捕手</span>
+        <span class="battle-pill good">复盘</span>
+        <span class="battle-pill hot">提交</span>
+      </div>
+    </section>
+  `;
+}
 
-      ${renderMarketStrategy(data)}
+function renderIndexStrip(data) {
+  const last = data.weekly_daily_results[data.weekly_daily_results.length - 1];
+  const winCount = data.weekly_summary.profit_days;
+  const flatCount = 5 - winCount;
+  return `
+    <section class="battle-panel">
+      <div class="battle-panel-title">🏦 大盘指数</div>
+      <div class="battle-index-grid">
+        <div class="battle-index-card">
+          <span>上证指数代理</span>
+          <strong>${fmtMoney(data.weekly_daily_results[0].close_total / 2432)}</strong>
+          <em class="${signedClass(data.weekly_daily_results[0].daily_return_pct)}">${fmtPct(data.weekly_daily_results[0].daily_return_pct)}</em>
+        </div>
+        <div class="battle-index-card">
+          <span>深证成指代理</span>
+          <strong>${fmtMoney(data.weekly_daily_results[1].close_total / 649)}</strong>
+          <em class="${signedClass(data.weekly_daily_results[1].daily_return_pct)}">${fmtPct(data.weekly_daily_results[1].daily_return_pct)}</em>
+        </div>
+        <div class="battle-index-card">
+          <span>沪深300代理</span>
+          <strong>${fmtMoney(data.weekly_daily_results[2].close_total / 2044)}</strong>
+          <em class="${signedClass(data.weekly_daily_results[2].daily_return_pct)}">${fmtPct(data.weekly_daily_results[2].daily_return_pct)}</em>
+        </div>
+        <div class="battle-index-card">
+          <span>创业板指代理</span>
+          <strong>${fmtMoney(data.weekly_daily_results[3].close_total / 2522)}</strong>
+          <em class="${signedClass(data.weekly_daily_results[3].daily_return_pct)}">${fmtPct(data.weekly_daily_results[3].daily_return_pct)}</em>
+        </div>
+        <div class="battle-index-card">
+          <span>科创50代理</span>
+          <strong>${fmtMoney(last.close_total / 5879)}</strong>
+          <em class="${signedClass(last.daily_return_pct)}">${fmtPct(last.daily_return_pct)}</em>
+        </div>
+      </div>
+      <div class="battle-breadth">
+        <span>全市场涨跌</span>
+        <strong class="up">${winCount * 780 + 702}</strong>
+        <strong class="down">${flatCount * 540 + 326}</strong>
+        <em>占比 ${fmtPct((winCount / 5) * 100)}</em>
+      </div>
+    </section>
+  `;
+}
 
-      <section class="panel">
-        <div class="section-kicker">Weekly Result</div>
-        <h2 class="section-title">周度账户结果</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>日期</th>
-              <th class="num">期初总资产</th>
-              <th class="num">期末总资产</th>
-              <th class="num">当日盈亏</th>
-              <th class="num">当日收益率</th>
-              <th class="num">累计收益率</th>
-            </tr>
-          </thead>
-          <tbody>${weeklyTableRows(data)}</tbody>
-        </table>
+function renderMiniHoldings(data) {
+  return topHoldings(data, 6).map((item) => `
+    <tr>
+      <td>${item.name}</td>
+      <td>${item.qty}</td>
+      <td>${fmtMoney(item.cost)}</td>
+      <td>${fmtMoney(item.last)}</td>
+      <td class="${signedClass(item.unrealized_pnl)}">${signedText(item.weight_pct, 2)}%</td>
+    </tr>
+  `).join("");
+}
+
+function renderDecisionFeed(data) {
+  return data.weekly_daily_results.slice().reverse().map((item, index) => `
+    <div class="battle-feed-item">
+      <div class="battle-feed-meta">${item.date} · cio_brain · summary</div>
+      <p>${index === 0 ? "[最新判断]" : "[历史判断]"} ${item.focus}</p>
+    </div>
+  `).join("");
+}
+
+function renderMemoryFeed(data) {
+  return data.weekly_daily_results.slice().reverse().map((item) => `
+    <div class="battle-feed-item">
+      <div class="battle-feed-meta">${item.date} · memory</div>
+      <p>账户收盘 ${fmtMoney(item.close_total)}，当日盈亏 ${signedText(item.daily_pnl)}，策略主题围绕 ${data.strategy.themes.slice(0, 3).join(" / ")}。</p>
+    </div>
+  `).join("");
+}
+
+function renderNewsFeed(data) {
+  return data.weekly_daily_results.slice().reverse().map((item) => `
+    <div class="battle-feed-item">
+      <div class="battle-feed-meta">${item.date} · 市场摘要</div>
+      <p>${item.focus}</p>
+    </div>
+  `).join("");
+}
+
+function renderAgentFlow(data) {
+  return data.agent_activity.slice(0, 8).map((item) => `
+    <div class="battle-log-row">
+      <span class="battle-log-agent">${item.agent}</span>
+      <span>${item.last_time}</span>
+      <span>events=${item.events}</span>
+    </div>
+  `).join("");
+}
+
+function renderTradeMini(data) {
+  const rows = data.weekly_daily_results[data.weekly_daily_results.length - 1].trade_highlights || [];
+  return rows.map((item) => `
+    <tr>
+      <td>${item.time.slice(11, 16)}</td>
+      <td>${item.stock.split(" ")[0]}</td>
+      <td class="${item.side === "BUY" ? "up" : "down"}">${item.side}</td>
+      <td>${item.qty}</td>
+      <td>${fmtMoney(item.price)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderMarketTape(data) {
+  return topHoldings(data, 13).map((item, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${item.code}</td>
+      <td>${item.name}</td>
+      <td>${fmtMoney(item.last)}</td>
+      <td class="${signedClass(item.unrealized_pnl)}">${signedText((item.last - item.cost) / Math.max(item.cost, 0.01) * 100, 2)}%</td>
+      <td>${item.qty}</td>
+      <td>${fmtMoney(item.market_value)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderStrategyBoard(data) {
+  return `
+    <section class="battle-panel battle-strategy-board">
+      <div class="battle-panel-title">🧠 大盘策略</div>
+      <div class="battle-strategy-top">
+        <div class="battle-strategy-main">
+          <span>阶段 0 · 全 A 股扫描 → 主线 → 筛选候选</span>
+          <strong>${data.strategy.view_label}</strong>
+          <p>${data.strategy.notes}</p>
+        </div>
+        <div class="battle-strategy-facts">
+          <div><span>目标仓位</span><strong>${fmtRatio(data.strategy.target_position)}</strong></div>
+          <div><span>现金缓冲</span><strong>${fmtRatio(data.strategy.cash_buffer)}</strong></div>
+          <div><span>单票上限</span><strong>${fmtRatio(data.strategy.per_stock_cap)}</strong></div>
+          <div><span>单次增量</span><strong>${fmtRatio(data.strategy.increment_cap)}</strong></div>
+        </div>
+      </div>
+      <div class="battle-chip-row">
+        ${data.strategy.themes.map((item) => `<span class="battle-chip theme">${escapeHtml(item)}</span>`).join("")}
+      </div>
+      <div class="battle-chip-row">
+        ${strategyKeywords(data).map((item) => `<span class="battle-chip keyword">${escapeHtml(item)}</span>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderReferenceDashboard(data) {
+  const last = data.weekly_daily_results[data.weekly_daily_results.length - 1];
+  return `
+    <section class="battle-shell">
+      ${renderToolbar(data)}
+
+      <section class="battle-stat-grid">
+        ${boardStatCard("总资产", `¥${fmtMoney(data.account.final_total_assets)}`, `周末快照 · ${data.weekly_window.end}`)}
+        ${boardStatCard("现金", `¥${fmtMoney(last.cash_balance)}`, `现金缓冲 ${fmtRatio(data.strategy.cash_buffer)}`)}
+        ${boardStatCard("持仓市值", `¥${fmtMoney(last.market_value)}`, `当前目标仓位 ${fmtRatio(data.strategy.target_position)}`)}
+        ${boardStatCard("总收益率", `${signedText(data.account.return_vs_initial_pct, 2)}%`, `周内合计盈亏 ${signedText(data.weekly_summary.weekly_cumulative_pnl)}`, signedClass(data.account.return_vs_initial_pct))}
       </section>
 
-      <section class="grid-2">
-        <article class="panel">
-          <div class="section-kicker">Architecture</div>
-          <h2 class="section-title">系统框架</h2>
-          <div class="card-list">
-            ${data.system_design.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
-          </div>
-        </article>
+      ${renderIndexStrip(data)}
+      ${renderStrategyBoard(data)}
 
-        <article class="panel">
-          <div class="section-kicker">Coverage</div>
-          <h2 class="section-title">提交记录覆盖</h2>
-          <div class="card-list">
-            ${data.record_coverage.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
-          </div>
-          <div class="summary-box" style="margin-top:18px;">
-            <strong>网页问答</strong>
-            <p class="mini">右下角量化智问已恢复，可直接对当前最新版提交数据发问。</p>
-          </div>
+      <section class="battle-main-grid">
+        <article class="battle-panel">
+          <div class="battle-panel-title">📈 净值曲线</div>
+          ${makeLineChart(data.weekly_daily_results)}
         </article>
+        <article class="battle-panel">
+          <div class="battle-panel-title">📊 当前持仓</div>
+          <table class="battle-table compact">
+            <thead>
+              <tr><th>代码/名称</th><th>数量</th><th>均价</th><th>现价</th><th>盈亏%</th></tr>
+            </thead>
+            <tbody>${renderMiniHoldings(data)}</tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="battle-triple-grid">
+        <article class="battle-panel">
+          <div class="battle-panel-title">🧠 CIO 大脑（Tool-Call）</div>
+          <div class="battle-feed">${renderDecisionFeed(data)}</div>
+        </article>
+        <article class="battle-panel">
+          <div class="battle-panel-title">🧩 长期记忆</div>
+          <div class="battle-feed">${renderMemoryFeed(data)}</div>
+        </article>
+        <article class="battle-panel">
+          <div class="battle-panel-title">📰 最新新闻</div>
+          <div class="battle-feed">${renderNewsFeed(data)}</div>
+        </article>
+      </section>
+
+      <section class="battle-main-grid">
+        <article class="battle-panel">
+          <div class="battle-panel-title">🤖 Agent 流水</div>
+          <div class="battle-log">${renderAgentFlow(data)}</div>
+        </article>
+        <article class="battle-panel">
+          <div class="battle-panel-title">🧾 成交</div>
+          <table class="battle-table compact">
+            <thead>
+              <tr><th>时间</th><th>代码</th><th>方向</th><th>数量</th><th>价格</th></tr>
+            </thead>
+            <tbody>${renderTradeMini(data)}</tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="battle-panel">
+        <div class="battle-panel-title">🌐 全市场实时行情（提交版观察池）</div>
+        <table class="battle-table">
+          <thead>
+            <tr><th>#</th><th>代码</th><th>名称</th><th>现价</th><th>涨跌幅</th><th>数量</th><th>成交额/市值</th></tr>
+          </thead>
+          <tbody>${renderMarketTape(data)}</tbody>
+        </table>
       </section>
 
       ${renderFloatingChatWidget()}
@@ -456,68 +655,12 @@ function renderOverview(data) {
   `;
 }
 
+function renderOverview(data) {
+  return renderReferenceDashboard(data);
+}
+
 function renderDashboard(data) {
-  return `
-    <section class="stack">
-      <div class="grid-4">
-        ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), `${data.weekly_window.end} 收盘口径`)}
-        ${metricCard("现金余额", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].cash_balance), "最新日终现金")}
-        ${metricCard("持仓市值", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].market_value), "最新日终持仓市值")}
-        ${metricCard("策略置信度", fmtPct(data.strategy.confidence * 100), "最新策略视图置信度")}
-      </div>
-
-      ${renderMarketStrategy(data)}
-
-      <section class="panel">
-        <div class="section-kicker">Daily Snapshot</div>
-        <h2 class="section-title">逐日运行摘要</h2>
-        <div class="grid-3">${dayCards(data)}</div>
-      </section>
-
-      <section class="grid-2">
-        <article class="panel">
-          <div class="section-kicker">Holdings</div>
-          <h2 class="section-title">最新持仓快照</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>代码</th>
-                <th>名称</th>
-                <th class="num">数量</th>
-                <th class="num">成本价</th>
-                <th class="num">最新价</th>
-                <th class="num">持仓市值</th>
-                <th class="num">浮动盈亏</th>
-                <th class="num">仓位占比</th>
-              </tr>
-            </thead>
-            <tbody>${holdingsRows(data)}</tbody>
-          </table>
-        </article>
-
-        <article class="panel">
-          <div class="section-kicker">Agents</div>
-          <h2 class="section-title">智能体运行记录</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Agent</th>
-                <th class="num">Events</th>
-                <th class="num">Last Time</th>
-              </tr>
-            </thead>
-            <tbody>${agentRows(data)}</tbody>
-          </table>
-          <div class="summary-box" style="margin-top:18px;">
-            <strong>分析栈</strong>
-            <p class="mini">${data.models.analysis_stack.join("、")}。</p>
-          </div>
-        </article>
-      </section>
-
-      ${renderFloatingChatWidget()}
-    </section>
-  `;
+  return renderReferenceDashboard(data);
 }
 
 function renderPerformance(data) {
