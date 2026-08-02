@@ -1,7 +1,7 @@
 async function loadReport() {
   const response = await fetch("contest_report_latest.json", { cache: "no-store" });
   if (!response.ok) {
-    throw new Error(`failed_to_load_report:${response.status}`);
+    throw new Error(`页面数据加载失败：${response.status}`);
   }
   return response.json();
 }
@@ -25,6 +25,20 @@ function signedText(value, digits = 2) {
   const num = Number(value);
   const prefix = num >= 0 ? "+" : "";
   return `${prefix}${num.toFixed(digits)}`;
+}
+
+function plainText(value) {
+  return String(value || "")
+    .replaceAll("risk_on", "市场情绪偏积极")
+    .replaceAll("risk_off", "市场情绪偏谨慎")
+    .replace(/risk_budget_rebalance:\s*current_gross=.*?target_gross=.*?$/g, "为了把仓位降回目标范围，执行了仓位调整")
+    .replaceAll("MA5/20/60", "5日、20日、60日均线");
+}
+
+function tradeSideText(side) {
+  if (side === "BUY") return "买入";
+  if (side === "SELL") return "卖出";
+  return side;
 }
 
 function metricCard(label, value, sub, extraClass = "") {
@@ -144,7 +158,7 @@ function dayCards(data) {
     <article class="day-card">
       <div class="section-kicker">${item.date}</div>
       <h3>${signedText(item.daily_pnl)} / ${fmtPct(item.daily_return_pct)}</h3>
-      <p class="mini">${item.focus}</p>
+      <p class="mini">${plainText(item.focus)}</p>
       <div class="list-row">
         <span class="pill">期末总资产 ${fmtMoney(item.close_total)}</span>
         <span class="pill">现金 ${fmtMoney(item.cash_balance)}</span>
@@ -159,7 +173,7 @@ function replayCards(data) {
     <section class="panel">
       <div class="section-kicker">${day.date}</div>
       <h2 class="section-title">${signedText(day.daily_pnl)} / ${fmtPct(day.daily_return_pct)}</h2>
-      <p class="lead">${day.focus}</p>
+      <p class="lead">${plainText(day.focus)}</p>
       <div class="grid-4">
         ${metricCard("期初总资产", fmtMoney(day.open_total), "当日开盘资产口径")}
         ${metricCard("期末总资产", fmtMoney(day.close_total), "当日收盘资产口径")}
@@ -170,8 +184,8 @@ function replayCards(data) {
         ${day.trade_highlights.map((trade) => `
           <article class="timeline-item">
             <div class="timeline-meta">${trade.time}</div>
-            <strong>${trade.stock} · ${trade.side} · ${trade.qty} 股 @ ${fmtMoney(trade.price)}</strong>
-            <p>${trade.reason}</p>
+            <strong>${trade.stock} · ${tradeSideText(trade.side)} · ${trade.qty} 股 · 价格 ${fmtMoney(trade.price)}</strong>
+            <p>${plainText(trade.reason)}</p>
           </article>
         `).join("")}
       </div>
@@ -241,7 +255,7 @@ function renderMarketStrategyCompact(data) {
           <em>·</em>
           <strong>总仓位 ${Math.round(data.strategy.target_position * 100)}%</strong>
         </div>
-        <p class="strategy-card-note">${biasLabel}。${data.strategy.notes}</p>
+        <p class="strategy-card-note">${biasLabel}。${plainText(data.strategy.notes)}</p>
       </div>
 
       <div class="strategy-card-block">
@@ -285,7 +299,7 @@ function renderOverviewSummary(data) {
   const lastDay = data.weekly_daily_results[data.weekly_daily_results.length - 1];
   return `
     <article class="panel">
-      <div class="section-kicker">Weekly Summary</div>
+      <div class="section-kicker">本周结论</div>
       <h2 class="section-title">周度结论</h2>
       <div class="card-list">
         <div class="info-card">
@@ -294,7 +308,7 @@ function renderOverviewSummary(data) {
         </div>
         <div class="info-card">
           <h3>最佳交易日</h3>
-          <p class="mini">${bestDay.date} 贡献最高，当日盈亏 ${signedText(bestDay.daily_pnl)}，核心说明为“${bestDay.focus}”。</p>
+          <p class="mini">${bestDay.date} 贡献最高，当日盈亏 ${signedText(bestDay.daily_pnl)}，核心说明为“${plainText(bestDay.focus)}”。</p>
         </div>
         <div class="info-card">
           <h3>最新账户状态</h3>
@@ -308,7 +322,7 @@ function renderOverviewSummary(data) {
 function renderOverviewSupport(data) {
   return `
     <article class="panel">
-      <div class="section-kicker">Submission Scope</div>
+      <div class="section-kicker">提交说明</div>
       <h2 class="section-title">提交内容与分析栈</h2>
       <div class="card-list">
         <div class="info-card">
@@ -348,7 +362,7 @@ function renderOverview(data) {
       </section>
 
       <section class="panel">
-        <div class="section-kicker">Weekly Result</div>
+        <div class="section-kicker">周度结果</div>
         <h2 class="section-title">周度账户结果</h2>
         <table>
           <thead>
@@ -367,7 +381,7 @@ function renderOverview(data) {
 
       <section class="grid-2">
         <article class="panel">
-          <div class="section-kicker">Architecture</div>
+          <div class="section-kicker">系统结构</div>
           <h2 class="section-title">系统框架</h2>
           <div class="card-list">
             ${data.system_design.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
@@ -389,18 +403,18 @@ function renderDashboard(data) {
         ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), "2026-07-31 收盘口径")}
         ${metricCard("现金余额", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].cash_balance), "最新日终现金")}
         ${metricCard("持仓市值", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].market_value), "最新日终持仓市值")}
-        ${metricCard("策略置信度", fmtPct(data.strategy.confidence * 100), "最新策略视图置信度")}
+        ${metricCard("策略把握度", fmtPct(data.strategy.confidence * 100), "当前策略判断的把握程度")}
       </div>
 
       <section class="panel">
-        <div class="section-kicker">Daily Snapshot</div>
+        <div class="section-kicker">每日摘要</div>
         <h2 class="section-title">逐日运行摘要</h2>
         <div class="grid-3">${dayCards(data)}</div>
       </section>
 
       <section class="grid-2">
         <article class="panel">
-          <div class="section-kicker">Holdings</div>
+          <div class="section-kicker">持仓情况</div>
           <h2 class="section-title">最新持仓快照</h2>
           <table>
             <thead>
@@ -420,14 +434,14 @@ function renderDashboard(data) {
         </article>
 
         <article class="panel">
-          <div class="section-kicker">Agents</div>
+          <div class="section-kicker">运行记录</div>
           <h2 class="section-title">智能体运行记录</h2>
           <table>
             <thead>
               <tr>
-                <th>Agent</th>
-                <th class="num">Events</th>
-                <th class="num">Last Time</th>
+                <th>智能体</th>
+                <th class="num">运行次数</th>
+                <th class="num">最近时间</th>
               </tr>
             </thead>
             <tbody>${agentRows(data)}</tbody>
@@ -449,14 +463,14 @@ function renderPerformance(data) {
     <section class="stack">
       <section class="grid-2">
         <article class="panel">
-          <div class="section-kicker">Equity Curve</div>
+          <div class="section-kicker">账户走势</div>
           <h2 class="section-title">周度净值曲线</h2>
           ${makeLineChart(data.weekly_daily_results)}
           <p class="chart-note">展示窗口：${data.weekly_window.start} 至 ${data.weekly_window.end}</p>
         </article>
 
         <article class="panel">
-          <div class="section-kicker">Daily PnL</div>
+          <div class="section-kicker">单日盈亏</div>
           <h2 class="section-title">单日盈亏贡献</h2>
           ${makeBarChart(data.weekly_daily_results)}
           <p class="chart-note">周内最大正贡献来自 2026-07-30，当日盈亏 ${signedText(8216.58)}。</p>
@@ -475,20 +489,20 @@ function renderPerformance(data) {
 
       <section class="grid-2">
         <article class="panel">
-          <div class="section-kicker">Interpretation</div>
+          <div class="section-kicker">每日解读</div>
           <h2 class="section-title">结果解释</h2>
           <div class="card-list">
             ${data.weekly_daily_results.map((item) => `
               <div class="info-card">
                 <h3>${item.date}</h3>
-                <p class="mini">${item.focus}</p>
+                <p class="mini">${plainText(item.focus)}</p>
               </div>
             `).join("")}
           </div>
         </article>
 
         <article class="panel">
-          <div class="section-kicker">Constraints</div>
+          <div class="section-kicker">执行约束</div>
           <h2 class="section-title">策略执行约束</h2>
           <div class="card-list">
             ${data.execution_constraints.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
@@ -517,7 +531,7 @@ function renderReplay(data) {
 function renderChatPanel(data) {
   return `
     <section class="panel">
-      <div class="section-kicker">LLM Q&A</div>
+      <div class="section-kicker">智能问答</div>
       <h2 class="section-title">网页智能问答</h2>
       <p class="lead">可直接询问周度盈亏、最新持仓、当日交易或策略摘要，页面会调用网页后台大模型接口进行回答。</p>
       <div class="chat-card">
@@ -547,7 +561,7 @@ function localAnswer(question, data) {
     return `最新持仓快照日期为 ${data.latest_holdings_date}。持仓市值前五分别是 ${data.latest_holdings.slice(0, 5).map((item) => `${item.code} ${item.name} ${fmtMoney(item.market_value)}`).join("；")}。`;
   }
   if (/策略|仓位/.test(q)) {
-    return `当前公开页展示的最新策略为“${data.strategy.view_label}”，目标仓位 ${fmtPct(data.strategy.target_position * 100)}，现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}，主题包括 ${data.strategy.themes.join("、")}。`;
+    return `当前网页展示的策略判断是“${plainText(data.strategy.view_label)}”，目标仓位 ${fmtPct(data.strategy.target_position * 100)}，现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}，主线方向包括 ${data.strategy.themes.join("、")}。`;
   }
   if (/周|结果|收益/.test(q)) {
     return `展示窗口为 ${data.weekly_window.start} 至 ${data.weekly_window.end}。周末总资产 ${fmtMoney(data.account.final_total_assets)}，周内合计盈亏 ${signedText(data.weekly_summary.weekly_cumulative_pnl)}，相对初始收益率 ${fmtPct(data.account.return_vs_initial_pct)}。`;
@@ -587,7 +601,7 @@ async function bindChat(data) {
       });
       const payload = await response.json();
       if (payload && payload.ok && payload.answer) {
-        statusEl.textContent = `接口状态：已返回${payload.model ? ` · ${payload.model}` : ""}`;
+        statusEl.textContent = `接口状态：已返回${payload.model ? ` · 模型 ${payload.model}` : ""}`;
         answerEl.textContent = payload.answer;
         return;
       }
@@ -620,7 +634,7 @@ async function main() {
   } catch (error) {
     root.innerHTML = `
       <section class="panel">
-        <div class="section-kicker">Load Error</div>
+        <div class="section-kicker">加载失败</div>
         <h2 class="section-title">页面数据暂时不可用</h2>
         <p class="lead">请确认 <code>contest_report_latest.json</code> 可被当前静态站点正常访问。</p>
         <p class="footer-note">${String(error && error.message ? error.message : error)}</p>
