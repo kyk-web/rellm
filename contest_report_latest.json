@@ -14,8 +14,7 @@
   },
   "weekly_summary": {
     "weekly_cumulative_pnl": 12121.56,
-    "profit_days": 4,
-    "drawdown_days": 1
+    "profit_days": 4
   },
   "strategy": {
     "view": "bullish",

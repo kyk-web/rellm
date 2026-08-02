@@ -191,7 +191,7 @@ function renderOverview(data) {
         ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), "最终提交版周末账户快照")}
         ${metricCard("相对初始收益率", fmtPct(data.account.return_vs_initial_pct), "初始资金 10,000,000.00")}
         ${metricCard("周内合计盈亏", signedText(data.weekly_summary.weekly_cumulative_pnl), "五个交易日累计结果")}
-        ${metricCard("盈利 / 回撤天数", `${data.weekly_summary.profit_days} / ${data.weekly_summary.drawdown_days}`, "本周盈利日与回撤日")}
+        ${metricCard("盈利天数", `${data.weekly_summary.profit_days}`, "本周盈利交易日")}
       </div>
 
       <section class="grid-2">
