@@ -212,8 +212,9 @@ function candidatePool(data) {
 
 function renderMarketStrategyCompact(data) {
   const cycleLabel = `cyc_${String(data.generated_at || "").slice(0, 10).replaceAll("-", "")}`;
-  const biasLabel = data.strategy.view === "bullish" ? "看多" : data.strategy.view === "bearish" ? "看空" : "中性";
+  const biasLabel = data.strategy.view === "bullish" ? "市场偏强，适合做多" : data.strategy.view === "bearish" ? "市场偏弱，先控制仓位" : "市场震荡，先稳一点";
   const biasClass = data.strategy.view === "bullish" ? "bullish" : data.strategy.view === "bearish" ? "bearish" : "neutral";
+  const plainViewLabel = data.strategy.view === "bullish" ? "当前判断：市场偏强，可以积极一些" : data.strategy.view === "bearish" ? "当前判断：市场偏弱，应以防守为主" : "当前判断：市场没有明显方向，先稳健运行";
   const indicators = [
     ["策略置信度", fmtPct(data.strategy.confidence * 100)],
     ["目标总仓位", fmtPct(data.strategy.target_position * 100)],
@@ -236,11 +237,11 @@ function renderMarketStrategyCompact(data) {
       <div class="strategy-card-block">
         <div class="strategy-card-label">市场状态 / 目标总仓位</div>
         <div class="strategy-bias ${biasClass}">
-          <span>${biasLabel}</span>
+          <span>${plainViewLabel}</span>
           <em>·</em>
           <strong>总仓位 ${Math.round(data.strategy.target_position * 100)}%</strong>
         </div>
-        <p class="strategy-card-note">${data.strategy.notes}</p>
+        <p class="strategy-card-note">${biasLabel}。${data.strategy.notes}</p>
       </div>
 
       <div class="strategy-card-block">
@@ -273,7 +274,7 @@ function renderMarketStrategyCompact(data) {
       </div>
 
       <div class="strategy-card-summary">
-        <p>${data.strategy.view} 仓位 ${data.strategy.target_position.toFixed(2)} 主线[${data.strategy.themes.join("、")}] 关键词[${keywords.join("、")}] 周内候选 ${pool.length} 只。</p>
+        <p>${plainViewLabel}，目标仓位 ${Math.round(data.strategy.target_position * 100)}%，当前主线是 ${data.strategy.themes.join("、")}，关键词包括 ${keywords.join("、")}，周内候选股票共 ${pool.length} 只。</p>
       </div>
     </section>
   `;
