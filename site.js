@@ -6,43 +6,25 @@ async function loadReport() {
   return response.json();
 }
 
-const CHAT_ENDPOINTS = [
-  "https://rellm-quant-agent.vercel.app/api/chat",
-  "https://rellm-quant-agent-4chjr1u0k-kyk-quant-lab.vercel.app/api/chat",
-];
-
 function fmtMoney(value) {
-  return Number(value || 0).toLocaleString("zh-CN", {
+  return Number(value).toLocaleString("zh-CN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 }
 
 function fmtPct(value) {
-  return `${Number(value || 0).toFixed(4)}%`;
-}
-
-function fmtRatio(value) {
-  return `${(Number(value || 0) * 100).toFixed(2)}%`;
+  return `${Number(value).toFixed(4)}%`;
 }
 
 function signedClass(value) {
-  return Number(value || 0) >= 0 ? "up" : "down";
+  return Number(value) >= 0 ? "up" : "down";
 }
 
 function signedText(value, digits = 2) {
-  const num = Number(value || 0);
+  const num = Number(value);
   const prefix = num >= 0 ? "+" : "";
   return `${prefix}${num.toFixed(digits)}`;
-}
-
-function escapeHtml(value) {
-  return String(value == null ? "" : value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function metricCard(label, value, sub, extraClass = "") {
@@ -68,24 +50,17 @@ function makeLineChart(points) {
   const xStep = (width - padX * 2) / Math.max(points.length - 1, 1);
   const yOf = (value) => padTop + ((max - value) / range) * (height - padTop - padBottom);
   const polyline = points.map((item, index) => `${padX + index * xStep},${yOf(item.close_total)}`).join(" ");
-  const area = `${padX},${height - padBottom} ${polyline} ${padX + (points.length - 1) * xStep},${height - padBottom}`;
 
   const labels = points.map((item, index) => `
     <text x="${padX + index * xStep}" y="${height - 10}" text-anchor="middle" fill="#637083" font-size="12">${item.date.slice(5)}</text>
-    <circle cx="${padX + index * xStep}" cy="${yOf(item.close_total)}" r="4.2" fill="#f04343" stroke="#ffffff" stroke-width="2"></circle>
+    <circle cx="${padX + index * xStep}" cy="${yOf(item.close_total)}" r="4.5" fill="#9f4b23"></circle>
   `).join("");
-  const gridLines = [0, 0.25, 0.5, 0.75, 1].map((t) => {
-    const y = padTop + t * (height - padTop - padBottom);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="rgba(24,33,43,0.08)" />`;
-  }).join("");
 
   return `
     <svg class="svg-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="周度净值曲线">
-      ${gridLines}
       <line x1="${padX}" y1="${height - padBottom}" x2="${width - padX}" y2="${height - padBottom}" stroke="rgba(24,33,43,0.16)" />
       <line x1="${padX}" y1="${padTop}" x2="${padX}" y2="${height - padBottom}" stroke="rgba(24,33,43,0.16)" />
-      <polygon points="${area}" fill="rgba(240,67,67,0.14)"></polygon>
-      <polyline points="${polyline}" fill="none" stroke="#f04343" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      <polyline points="${polyline}" fill="none" stroke="#9f4b23" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
       ${labels}
       <text x="${padX - 8}" y="${padTop + 4}" text-anchor="end" fill="#637083" font-size="12">${fmtMoney(max)}</text>
       <text x="${padX - 8}" y="${height - padBottom + 4}" text-anchor="end" fill="#637083" font-size="12">${fmtMoney(min)}</text>
@@ -204,486 +179,184 @@ function replayCards(data) {
   `).join("");
 }
 
-function bestDay(data) {
-  return [...data.weekly_daily_results].sort((a, b) => b.daily_pnl - a.daily_pnl)[0];
-}
-
-function worstDay(data) {
-  return [...data.weekly_daily_results].sort((a, b) => a.daily_pnl - b.daily_pnl)[0];
-}
-
-function topHoldings(data, count = 8) {
-  return [...data.latest_holdings]
-    .sort((a, b) => b.market_value - a.market_value)
-    .slice(0, count);
-}
-
-function strategyKeywords(data) {
-  const raw = [];
-  for (const item of data.strategy.themes || []) {
-    raw.push(item);
-    for (const sep of ["/", "、", "+", "，", ","]) {
-      if (String(item).includes(sep)) {
-        raw.push(...String(item).split(sep));
-      }
-    }
-  }
-  const result = [];
-  for (const item of raw) {
-    const text = String(item || "").trim();
-    if (text && !result.includes(text)) {
-      result.push(text);
-    }
-  }
-  return result.slice(0, 14);
-}
-
-function marketIndexCards(data) {
-  const best = bestDay(data);
-  const lastHoldings = topHoldings(data, 1)[0];
-  const cards = [
-    {
-      label: "初始资金",
-      value: fmtMoney(data.account.initial_capital),
-      meta: "统一提交口径"
-    },
-    {
-      label: "周末总资产",
-      value: fmtMoney(data.account.final_total_assets),
-      meta: data.weekly_window.end
-    },
-    {
-      label: "周内合计盈亏",
-      value: signedText(data.weekly_summary.weekly_cumulative_pnl),
-      meta: `${data.weekly_summary.profit_days} / 5 个交易日盈利`
-    },
-    {
-      label: "最佳单日",
-      value: signedText(best.daily_pnl),
-      meta: best.date
-    },
-    {
-      label: "核心持仓",
-      value: lastHoldings ? `${lastHoldings.code}` : "-",
-      meta: lastHoldings ? `${lastHoldings.name} ${fmtMoney(lastHoldings.market_value)}` : "暂无"
-    }
+function renderMarketStrategyCompact(data) {
+  const highlights = [
+    `目标仓位 ${fmtPct(data.strategy.target_position * 100)}`,
+    `现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}`,
+    `单票上限 ${fmtPct(data.strategy.per_stock_cap * 100)}`,
+    `单次增量 ${fmtPct(data.strategy.increment_cap * 100)}`
   ];
-  return cards.map((item) => `
-    <div class="market-index">
-      <span>${item.label}</span>
-      <strong>${item.value}</strong>
-      <em>${item.meta}</em>
-    </div>
-  `).join("");
-}
-
-function renderMarketStrategy(data) {
-  const best = bestDay(data);
-  const worst = worstDay(data);
-  const holdings = topHoldings(data, 10);
-  const cycle = `cyc_${(data.weekly_window.end || "").replaceAll("-", "") || "latest"}`;
-  const stanceClass = data.strategy.view === "bullish" ? "good" : data.strategy.view === "bearish" ? "bad" : "neutral";
-
   return `
-    <section class="panel market-strategy">
-      <div class="market-head">
-        <div>
-          <div class="section-kicker">大盘策略</div>
-          <h2 class="section-title">阶段 0 · 全 A 股扫描 → 主线 → 筛选候选</h2>
-        </div>
-        <div class="cycle-code">周期<br><strong>${cycle}</strong></div>
+    <section class="panel market-compact">
+      <div class="section-kicker">大盘策略</div>
+      <h2 class="section-title">${data.strategy.view_label}</h2>
+      <p class="lead">${data.strategy.notes}</p>
+      <div class="pill-row">
+        ${highlights.map((item) => `<span class="pill">${item}</span>`).join("")}
       </div>
-
-      <div class="market-hero-card">
-        <div class="market-stance">
-          <span>市场状态 / 基础目标总仓位</span>
-          <strong class="${stanceClass}">${data.strategy.view_label}</strong>
-          <p>${data.strategy.notes}</p>
-        </div>
-        <div class="market-side-facts">
-          <div><span>目标仓位</span><strong>${fmtRatio(data.strategy.target_position)}</strong></div>
-          <div><span>现金缓冲</span><strong>${fmtRatio(data.strategy.cash_buffer)}</strong></div>
-          <div><span>单票上限</span><strong>${fmtRatio(data.strategy.per_stock_cap)}</strong></div>
-          <div><span>单次增量</span><strong>${fmtRatio(data.strategy.increment_cap)}</strong></div>
-        </div>
-      </div>
-
-      <div class="market-index-wrap">
-        <div class="market-index-grid">
-          ${marketIndexCards(data)}
-        </div>
-      </div>
-
-      <section class="grid-2" style="margin-top:16px;">
-        <article class="market-block flat">
-          <h3>主线主题</h3>
-          <p class="strategy-subtitle">按照最新版提交口径，当前周度策略围绕以下主线进行筛选与配置。</p>
-          <div class="strategy-chip-row">
-            ${data.strategy.themes.map((item) => `<span class="theme-chip">${escapeHtml(item)}</span>`).join("")}
-          </div>
-          <div class="strategy-chip-row" style="margin-top:12px;">
-            ${strategyKeywords(data).map((item) => `<span class="keyword-chip">${escapeHtml(item)}</span>`).join("")}
+      <div class="market-compact-grid">
+        <article class="info-card">
+          <h3>当前主线</h3>
+          <div class="pill-row compact-row">
+            ${data.strategy.themes.map((item) => `<span class="tag-chip">${item}</span>`).join("")}
           </div>
         </article>
-
-        <article class="market-block flat">
-          <h3>候选与核心持仓</h3>
-          <p class="strategy-subtitle">展示最新版记录下的核心持仓候选，用于说明主题如何落到具体标的。</p>
-          <div class="candidate-pool">
-            ${holdings.map((item) => `<span>${escapeHtml(`${item.code} ${item.name}`)}</span>`).join("")}
-          </div>
-        </article>
-      </section>
-
-      <section class="grid-2" style="margin-top:12px;">
-        <article class="market-block flat">
+        <article class="info-card">
           <h3>执行约束</h3>
-          <ul class="evidence-list">
-            ${data.execution_constraints.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-          </ul>
+          <p class="mini">${data.execution_constraints.slice(0, 3).join("；")}。</p>
         </article>
-
-        <article class="market-block flat">
-          <h3>本周策略节奏</h3>
-          <ul class="evidence-list">
-            <li>最佳交易日为 ${best.date}，当日盈亏 ${signedText(best.daily_pnl)}，重点是 ${escapeHtml(best.focus)}</li>
-            <li>波动最大回撤日为 ${worst.date}，当日盈亏 ${signedText(worst.daily_pnl)}，说明执行层在该日更偏收缩。</li>
-            <li>周末总资产 ${fmtMoney(data.account.final_total_assets)}，相对初始收益率 ${fmtPct(data.account.return_vs_initial_pct)}。</li>
-          </ul>
-        </article>
-      </section>
-
-      <div class="market-hero-card" style="margin-top:16px;">
-        <div class="market-stance">
-          <span>LLM / 策略问答</span>
-          <strong class="neutral">量化智问</strong>
-          <p>右下角小插件已恢复，优先调用网页后台大模型接口；如果接口短时不可用，再回退到当前页面证据回答，不会改写策略或交易结果。</p>
-        </div>
-        <div class="market-side-facts">
-          <div><span>问答范围</span><strong>盈亏 / 持仓 / 交易 / 策略</strong></div>
-          <div><span>数据窗口</span><strong>${data.weekly_window.start} 至 ${data.weekly_window.end}</strong></div>
-          <div><span>分析栈</span><strong>${escapeHtml((data.models.analysis_stack || []).slice(0, 3).join(" / "))}</strong></div>
-          <div><span>记录口径</span><strong>仅使用最新版提交数据</strong></div>
-        </div>
       </div>
-    </section>
-  `;
-}
-
-function renderFloatingChatWidget() {
-  return `
-    <button class="ai-fab" id="aiFab" type="button" aria-label="打开量化智问">
-      <span class="ai-orb" aria-hidden="true"></span>
-      <span><strong>量化智问</strong><span>RELLM MULTI-AGENT</span></span>
-    </button>
-    <aside class="ai-panel" id="aiPanel" aria-label="量化智问问答界面">
-      <header class="ai-head">
-        <div class="ai-brand">
-          <span class="ai-orb" aria-hidden="true"></span>
-          <div>
-            <h3>量化智问</h3>
-            <p>多智能体 · 运行记录 · 策略解释</p>
-          </div>
-        </div>
-        <button class="ai-close" id="aiClose" type="button" aria-label="关闭">×</button>
-      </header>
-      <div class="ai-body" id="aiBody">
-        <div class="ai-msg assistant">你好，我是量化智问。我可以解释当前页面里的收益、持仓、交易、策略和智能体记录。优先走网页后台大模型接口，接口暂不可用时会切换到页面证据回答。</div>
-        <div class="ai-chips" id="aiChips">
-          <button class="ai-chip" type="button">本周哪一天盈利最多？</button>
-          <button class="ai-chip" type="button">当前最新持仓是什么？</button>
-          <button class="ai-chip" type="button">现在的策略仓位怎样？</button>
-          <button class="ai-chip" type="button">系统用了哪些分析栈？</button>
-          <button class="ai-chip" type="button">这周总体收益如何？</button>
-        </div>
-      </div>
-      <form class="ai-form" id="aiForm">
-        <input class="ai-input" id="aiInput" autocomplete="off" placeholder="问问收益、持仓、策略或交易记录..." />
-        <button class="ai-send" type="submit">发送</button>
-        <div class="ai-footnote" id="aiStatus">优先调用网页后台大模型接口，不写入网页中的任何密钥。</div>
-      </form>
-    </aside>
-  `;
-}
-
-function boardStatCard(label, value, sub, cls = "") {
-  return `
-    <article class="battle-stat ${cls}">
-      <span>${label}</span>
-      <strong>${value}</strong>
-      <em>${sub}</em>
-    </article>
-  `;
-}
-
-function renderToolbar(data) {
-  return `
-    <section class="battle-hero">
-      <div class="battle-title">
-        <h2>📍 Quant Agent Battle v2</h2>
-        <p>${data.account.mode} · +1 · CIO Tool-Call · 行情 5min · 新闻 15min · 决策 60min</p>
-      </div>
-      <div class="battle-pills">
-        <span class="battle-pill soft">交易时段 · 行情5m/新闻15m/大脑60m</span>
-        <span class="battle-pill dark">一键全跑</span>
-        <span class="battle-pill">抓新闻</span>
-        <span class="battle-pill warn">跑大脑</span>
-        <span class="battle-pill danger">止损扫描</span>
-        <span class="battle-pill info">机会捕手</span>
-        <span class="battle-pill good">复盘</span>
-        <span class="battle-pill hot">提交</span>
-        <span class="battle-pill pale">☑ 自动刷新</span>
-        <span class="battle-pill mini">5s</span>
-        <span class="battle-pill">刷新</span>
-      </div>
-    </section>
-  `;
-}
-
-function renderIndexStrip(data) {
-  const last = data.weekly_daily_results[data.weekly_daily_results.length - 1];
-  const winCount = data.weekly_summary.profit_days;
-  const flatCount = 5 - winCount;
-  return `
-    <section class="battle-panel">
-      <div class="battle-panel-title">🏦 大盘指数</div>
-      <div class="battle-index-grid">
-        <div class="battle-index-card">
-          <span>上证指数代理</span>
-          <strong>${fmtMoney(data.weekly_daily_results[0].close_total / 2432)}</strong>
-          <em class="${signedClass(data.weekly_daily_results[0].daily_return_pct)}">${fmtPct(data.weekly_daily_results[0].daily_return_pct)}</em>
-        </div>
-        <div class="battle-index-card">
-          <span>深证成指代理</span>
-          <strong>${fmtMoney(data.weekly_daily_results[1].close_total / 649)}</strong>
-          <em class="${signedClass(data.weekly_daily_results[1].daily_return_pct)}">${fmtPct(data.weekly_daily_results[1].daily_return_pct)}</em>
-        </div>
-        <div class="battle-index-card">
-          <span>沪深300代理</span>
-          <strong>${fmtMoney(data.weekly_daily_results[2].close_total / 2044)}</strong>
-          <em class="${signedClass(data.weekly_daily_results[2].daily_return_pct)}">${fmtPct(data.weekly_daily_results[2].daily_return_pct)}</em>
-        </div>
-        <div class="battle-index-card">
-          <span>创业板指代理</span>
-          <strong>${fmtMoney(data.weekly_daily_results[3].close_total / 2522)}</strong>
-          <em class="${signedClass(data.weekly_daily_results[3].daily_return_pct)}">${fmtPct(data.weekly_daily_results[3].daily_return_pct)}</em>
-        </div>
-        <div class="battle-index-card">
-          <span>科创50代理</span>
-          <strong>${fmtMoney(last.close_total / 5879)}</strong>
-          <em class="${signedClass(last.daily_return_pct)}">${fmtPct(last.daily_return_pct)}</em>
-        </div>
-      </div>
-      <div class="battle-breadth">
-        <span>全市场涨跌</span>
-        <strong class="up">${winCount * 780 + 702}</strong>
-        <strong class="down">${flatCount * 540 + 326}</strong>
-        <em>占比 ${fmtPct((winCount / 5) * 100)}</em>
-      </div>
-    </section>
-  `;
-}
-
-function renderMiniHoldings(data) {
-  return topHoldings(data, 6).map((item) => `
-    <tr>
-      <td><strong>${item.name}</strong><span class="battle-subcode">${item.code}</span></td>
-      <td>${item.qty}</td>
-      <td>${fmtMoney(item.cost)}</td>
-      <td>${fmtMoney(item.last)}</td>
-      <td class="${signedClass(item.unrealized_pnl)}">${signedText(((item.last - item.cost) / Math.max(item.cost, 0.01)) * 100, 2)}%</td>
-    </tr>
-  `).join("");
-}
-
-function renderDecisionFeed(data) {
-  return data.weekly_daily_results.slice().reverse().map((item, index) => `
-    <div class="battle-feed-item">
-      <div class="battle-feed-meta">${item.date} · cio_brain · summary</div>
-      <p>${index === 0 ? "[最新判断]" : "[历史判断]"} ${item.focus}</p>
-    </div>
-  `).join("");
-}
-
-function renderMemoryFeed(data) {
-  return data.weekly_daily_results.slice().reverse().map((item) => `
-    <div class="battle-feed-item">
-      <div class="battle-feed-meta">${item.date} · memory</div>
-      <p>账户收盘 ${fmtMoney(item.close_total)}，当日盈亏 ${signedText(item.daily_pnl)}，策略主题围绕 ${data.strategy.themes.slice(0, 3).join(" / ")}。</p>
-    </div>
-  `).join("");
-}
-
-function renderNewsFeed(data) {
-  return data.weekly_daily_results.slice().reverse().map((item) => `
-    <div class="battle-feed-item">
-      <div class="battle-feed-meta">${item.date} · 市场摘要</div>
-      <p>${item.focus}</p>
-    </div>
-  `).join("");
-}
-
-function renderAgentFlow(data) {
-  return data.agent_activity.slice(0, 8).map((item) => `
-    <div class="battle-log-row">
-      <span class="battle-log-agent">${item.agent}</span>
-      <span>${item.last_time}</span>
-      <span>summary=${item.events}</span>
-    </div>
-  `).join("");
-}
-
-function renderTradeMini(data) {
-  const rows = data.weekly_daily_results[data.weekly_daily_results.length - 1].trade_highlights || [];
-  return rows.map((item) => `
-    <tr>
-      <td>${item.time.slice(11, 16)}</td>
-      <td>${item.stock.split(" ")[0]}</td>
-      <td class="${item.side === "BUY" ? "up" : "down"}">${item.side}</td>
-      <td>${item.qty}</td>
-      <td>${fmtMoney(item.price)}</td>
-    </tr>
-  `).join("");
-}
-
-function renderMarketTape(data) {
-  return topHoldings(data, 13).map((item, index) => `
-    <tr>
-      <td>${index < 2 ? "⭐" : index < 6 ? "☆" : ""}</td>
-      <td>${item.code}</td>
-      <td>${item.name}</td>
-      <td>${fmtMoney(item.last)}</td>
-      <td class="${signedClass(item.unrealized_pnl)}">${signedText((item.last - item.cost) / Math.max(item.cost, 0.01) * 100, 2)}%</td>
-      <td>${item.qty}</td>
-      <td>${fmtMoney(item.market_value)}</td>
-    </tr>
-  `).join("");
-}
-
-function renderStrategyBoard(data) {
-  return `
-    <section class="battle-panel battle-strategy-board">
-      <div class="battle-panel-title">🧠 大盘策略</div>
-      <div class="battle-strategy-top">
-        <div class="battle-strategy-main">
-          <span>阶段 0 · 全 A 股扫描 → 主线 → 筛选候选</span>
-          <strong>${data.strategy.view_label}</strong>
-          <p>${data.strategy.notes}</p>
-        </div>
-        <div class="battle-strategy-facts">
-          <div><span>目标仓位</span><strong>${fmtRatio(data.strategy.target_position)}</strong></div>
-          <div><span>现金缓冲</span><strong>${fmtRatio(data.strategy.cash_buffer)}</strong></div>
-          <div><span>单票上限</span><strong>${fmtRatio(data.strategy.per_stock_cap)}</strong></div>
-          <div><span>单次增量</span><strong>${fmtRatio(data.strategy.increment_cap)}</strong></div>
-        </div>
-      </div>
-      <div class="battle-chip-row">
-        ${data.strategy.themes.map((item) => `<span class="battle-chip theme">${escapeHtml(item)}</span>`).join("")}
-      </div>
-      <div class="battle-chip-row">
-        ${strategyKeywords(data).map((item) => `<span class="battle-chip keyword">${escapeHtml(item)}</span>`).join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderReferenceDashboard(data) {
-  const last = data.weekly_daily_results[data.weekly_daily_results.length - 1];
-  return `
-    <section class="battle-shell">
-      ${renderToolbar(data)}
-
-      <section class="battle-stat-grid">
-        ${boardStatCard("总资产", `¥${fmtMoney(data.account.final_total_assets)}`, `周末快照 · ${data.weekly_window.end}`)}
-        ${boardStatCard("现金", `¥${fmtMoney(last.cash_balance)}`, `现金缓冲 ${fmtRatio(data.strategy.cash_buffer)}`)}
-        ${boardStatCard("持仓市值", `¥${fmtMoney(last.market_value)}`, `当前目标仓位 ${fmtRatio(data.strategy.target_position)}`)}
-        ${boardStatCard("总收益率", `${signedText(data.account.return_vs_initial_pct, 2)}%`, `周内合计盈亏 ${signedText(data.weekly_summary.weekly_cumulative_pnl)}`, signedClass(data.account.return_vs_initial_pct))}
-      </section>
-
-      ${renderIndexStrip(data)}
-      ${renderStrategyBoard(data)}
-
-      <section class="battle-main-grid">
-        <article class="battle-panel battle-panel-chart">
-          <div class="battle-panel-title">📈 净值曲线</div>
-          ${makeLineChart(data.weekly_daily_results)}
-        </article>
-        <article class="battle-panel battle-panel-holdings">
-          <div class="battle-panel-title">📊 当前持仓</div>
-          <table class="battle-table compact">
-            <thead>
-              <tr><th>代码/名称</th><th>数量</th><th>均价</th><th>现价</th><th>盈亏%</th></tr>
-            </thead>
-            <tbody>${renderMiniHoldings(data)}</tbody>
-          </table>
-        </article>
-      </section>
-
-      <section class="battle-triple-grid">
-        <article class="battle-panel battle-panel-feed">
-          <div class="battle-panel-title">🧠 CIO 大脑（Tool-Call）</div>
-          <div class="battle-feed">${renderDecisionFeed(data)}</div>
-        </article>
-        <article class="battle-panel battle-panel-feed">
-          <div class="battle-panel-title">🧩 长期记忆</div>
-          <div class="battle-feed">${renderMemoryFeed(data)}</div>
-        </article>
-        <article class="battle-panel battle-panel-feed">
-          <div class="battle-panel-title">📰 最新新闻</div>
-          <div class="battle-feed">${renderNewsFeed(data)}</div>
-        </article>
-      </section>
-
-      <section class="battle-main-grid">
-        <article class="battle-panel battle-panel-log">
-          <div class="battle-panel-title">🤖 Agent 流水</div>
-          <div class="battle-log">${renderAgentFlow(data)}</div>
-        </article>
-        <article class="battle-panel battle-panel-trade">
-          <div class="battle-panel-title">🧾 成交</div>
-          <table class="battle-table compact">
-            <thead>
-              <tr><th>时间</th><th>代码</th><th>方向</th><th>数量</th><th>价格</th></tr>
-            </thead>
-            <tbody>${renderTradeMini(data)}</tbody>
-          </table>
-        </article>
-      </section>
-
-      <section class="battle-panel battle-panel-market">
-        <div class="battle-table-topbar">
-          <div class="battle-panel-title">🌐 全市场实时行情（点列头排序）</div>
-          <div class="battle-table-toolbar">
-            <span class="battle-toolbar-note">⭐ = 当前观察池</span>
-            <input class="battle-search" value="代码或名称模糊搜索" readonly />
-            <span class="battle-select">成交额 ▾</span>
-            <span class="battle-select">↓ 降序 ▾</span>
-            <span class="battle-select">200 ▾</span>
-          </div>
-        </div>
-        <table class="battle-table">
-          <thead>
-            <tr><th></th><th>代码</th><th>名称</th><th>现价</th><th>涨跌幅</th><th>数量</th><th>成交额/市值</th></tr>
-          </thead>
-          <tbody>${renderMarketTape(data)}</tbody>
-        </table>
-      </section>
-
-      ${renderFloatingChatWidget()}
     </section>
   `;
 }
 
 function renderOverview(data) {
-  return renderReferenceDashboard(data);
+  return `
+    <section class="stack">
+      <div class="grid-4">
+        ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), "最终提交版周末账户快照")}
+        ${metricCard("相对初始收益率", fmtPct(data.account.return_vs_initial_pct), "初始资金 10,000,000.00")}
+        ${metricCard("周内合计盈亏", signedText(data.weekly_summary.weekly_cumulative_pnl), "五个交易日累计结果")}
+        ${metricCard("盈利天数", `${data.weekly_summary.profit_days}`, "本周盈利交易日")}
+      </div>
+
+      ${renderMarketStrategyCompact(data)}
+
+      <section class="grid-2">
+        <article class="panel">
+          <div class="section-kicker">Strategy</div>
+          <h2 class="section-title">${data.strategy.view_label}</h2>
+          <p class="lead">${data.strategy.notes}</p>
+          <div class="pill-row">
+            <span class="pill">目标仓位 ${fmtPct(data.strategy.target_position * 100)}</span>
+            <span class="pill">现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}</span>
+            <span class="pill">单票上限 ${fmtPct(data.strategy.per_stock_cap * 100)}</span>
+            <span class="pill">单次增量 ${fmtPct(data.strategy.increment_cap * 100)}</span>
+          </div>
+          <div class="card-list" style="margin-top:16px;">
+            ${data.execution_constraints.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="section-kicker">Themes</div>
+          <h2 class="section-title">本周主题主线</h2>
+          <div class="card-list">
+            ${data.strategy.themes.map((item) => `<div class="info-card"><h3>${item}</h3><p class="mini">纳入最终提交版策略执行与复盘说明。</p></div>`).join("")}
+          </div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="section-kicker">Weekly Result</div>
+        <h2 class="section-title">周度账户结果</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th class="num">期初总资产</th>
+              <th class="num">期末总资产</th>
+              <th class="num">当日盈亏</th>
+              <th class="num">当日收益率</th>
+              <th class="num">累计收益率</th>
+            </tr>
+          </thead>
+          <tbody>${weeklyTableRows(data)}</tbody>
+        </table>
+      </section>
+
+      <section class="grid-2">
+        <article class="panel">
+          <div class="section-kicker">Architecture</div>
+          <h2 class="section-title">系统框架</h2>
+          <div class="card-list">
+            ${data.system_design.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="section-kicker">Coverage</div>
+          <h2 class="section-title">提交记录覆盖</h2>
+          <div class="card-list">
+            ${data.record_coverage.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
+          </div>
+          <div class="summary-box" style="margin-top:18px;">
+            <strong>网页问答</strong>
+            <p class="mini">页面已接入网页后台大模型接口，可基于当前展示数据回答周度结果、持仓、交易和策略摘要问题。</p>
+          </div>
+        </article>
+      </section>
+
+      ${renderChatPanel(data)}
+    </section>
+  `;
 }
 
 function renderDashboard(data) {
-  return renderReferenceDashboard(data);
+  return `
+    <section class="stack">
+      <div class="grid-4">
+        ${metricCard("周末总资产", fmtMoney(data.account.final_total_assets), "2026-07-31 收盘口径")}
+        ${metricCard("现金余额", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].cash_balance), "最新日终现金")}
+        ${metricCard("持仓市值", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].market_value), "最新日终持仓市值")}
+        ${metricCard("策略置信度", fmtPct(data.strategy.confidence * 100), "最新策略视图置信度")}
+      </div>
+
+      ${renderMarketStrategyCompact(data)}
+
+      <section class="panel">
+        <div class="section-kicker">Daily Snapshot</div>
+        <h2 class="section-title">逐日运行摘要</h2>
+        <div class="grid-3">${dayCards(data)}</div>
+      </section>
+
+      <section class="grid-2">
+        <article class="panel">
+          <div class="section-kicker">Holdings</div>
+          <h2 class="section-title">最新持仓快照</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>代码</th>
+                <th>名称</th>
+                <th class="num">数量</th>
+                <th class="num">成本价</th>
+                <th class="num">最新价</th>
+                <th class="num">持仓市值</th>
+                <th class="num">浮动盈亏</th>
+                <th class="num">仓位占比</th>
+              </tr>
+            </thead>
+            <tbody>${holdingsRows(data)}</tbody>
+          </table>
+        </article>
+
+        <article class="panel">
+          <div class="section-kicker">Agents</div>
+          <h2 class="section-title">智能体运行记录</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th class="num">Events</th>
+                <th class="num">Last Time</th>
+              </tr>
+            </thead>
+            <tbody>${agentRows(data)}</tbody>
+          </table>
+          <div class="summary-box" style="margin-top:18px;">
+            <strong>分析栈</strong>
+            <p class="mini">${data.models.analysis_stack.join("、")}。</p>
+          </div>
+        </article>
+      </section>
+
+      ${renderChatPanel(data)}
+    </section>
+  `;
 }
 
 function renderPerformance(data) {
-  const best = bestDay(data);
   return `
     <section class="stack">
       <section class="grid-2">
@@ -698,11 +371,9 @@ function renderPerformance(data) {
           <div class="section-kicker">Daily PnL</div>
           <h2 class="section-title">单日盈亏贡献</h2>
           ${makeBarChart(data.weekly_daily_results)}
-          <p class="chart-note">周内最大正贡献来自 ${best.date}，当日盈亏 ${signedText(best.daily_pnl)}。</p>
+          <p class="chart-note">周内最大正贡献来自 2026-07-30，当日盈亏 ${signedText(8216.58)}。</p>
         </article>
       </section>
-
-      ${renderMarketStrategy(data)}
 
       <section class="grid-3">
         ${data.weekly_daily_results.map((item) => `
@@ -741,7 +412,7 @@ function renderPerformance(data) {
         </article>
       </section>
 
-      ${renderFloatingChatWidget()}
+      ${renderChatPanel(data)}
     </section>
   `;
 }
@@ -749,44 +420,74 @@ function renderPerformance(data) {
 function renderReplay(data) {
   return `
     <section class="stack">
-      ${renderMarketStrategy(data)}
       ${replayCards(data)}
-      ${renderFloatingChatWidget()}
+      ${renderChatPanel(data)}
+    </section>
+  `;
+}
+
+function renderChatPanel(data) {
+  return `
+    <section class="panel">
+      <div class="section-kicker">LLM Q&A</div>
+      <h2 class="section-title">网页智能问答</h2>
+      <p class="lead">可直接询问周度盈亏、最新持仓、当日交易或策略摘要，页面会调用网页后台大模型接口进行回答。</p>
+      <div class="chat-card">
+        <form class="chat-form" id="chat-form">
+          <textarea id="chat-question" placeholder="例如：上周哪一天盈利最多？最新持仓里银行股占比如何？"></textarea>
+          <div class="chat-actions">
+            <button class="button" type="submit">提交问题</button>
+            <span class="chat-status" id="chat-status">接口状态：待提问</span>
+          </div>
+        </form>
+        <div class="chat-answer" id="chat-answer">这里会显示网页问答结果。</div>
+      </div>
+      <p class="footer-note">问答基于当前公开页展示数据与网页后台模型接口，不写入交易结果，也不修改策略参数。</p>
     </section>
   `;
 }
 
 function localAnswer(question, data) {
   const q = String(question || "");
-  const best = bestDay(data);
+  const bestDay = [...data.weekly_daily_results].sort((a, b) => b.daily_pnl - a.daily_pnl)[0];
   const lastDay = data.weekly_daily_results[data.weekly_daily_results.length - 1];
-  const worst = worstDay(data);
 
   if (/盈利最多|赚得最多|最好/.test(q)) {
-    return `${best.date} 盈利最多，当日盈亏 ${signedText(best.daily_pnl)}，当日收益率 ${fmtPct(best.daily_return_pct)}。`;
-  }
-  if (/亏损最多|最差|回撤/.test(q)) {
-    return `${worst.date} 波动最弱，当日盈亏 ${signedText(worst.daily_pnl)}，重点记录为：${worst.focus}`;
+    return `${bestDay.date} 盈利最多，当日盈亏 ${signedText(bestDay.daily_pnl)}，当日收益率 ${fmtPct(bestDay.daily_return_pct)}。`;
   }
   if (/最新持仓|持仓/.test(q)) {
     return `最新持仓快照日期为 ${data.latest_holdings_date}。持仓市值前五分别是 ${data.latest_holdings.slice(0, 5).map((item) => `${item.code} ${item.name} ${fmtMoney(item.market_value)}`).join("；")}。`;
   }
-  if (/策略|仓位|大盘/.test(q)) {
-    return `当前公开页展示的最新策略为“${data.strategy.view_label}”，目标仓位 ${fmtRatio(data.strategy.target_position)}，现金缓冲 ${fmtRatio(data.strategy.cash_buffer)}，主题包括 ${data.strategy.themes.join("、")}。`;
-  }
-  if (/智能体|分析栈|模型/.test(q)) {
-    return `当前展示页的分析栈包括 ${data.models.analysis_stack.join("、")}，智能体活跃记录中最新的是 ${data.agent_activity[0].agent}，最近时间 ${data.agent_activity[0].last_time}。`;
+  if (/策略|仓位/.test(q)) {
+    return `当前公开页展示的最新策略为“${data.strategy.view_label}”，目标仓位 ${fmtPct(data.strategy.target_position * 100)}，现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}，主题包括 ${data.strategy.themes.join("、")}。`;
   }
   if (/周|结果|收益/.test(q)) {
     return `展示窗口为 ${data.weekly_window.start} 至 ${data.weekly_window.end}。周末总资产 ${fmtMoney(data.account.final_total_assets)}，周内合计盈亏 ${signedText(data.weekly_summary.weekly_cumulative_pnl)}，相对初始收益率 ${fmtPct(data.account.return_vs_initial_pct)}。`;
   }
-  return `最新日终结果来自 ${lastDay.date}，期末总资产 ${fmtMoney(lastDay.close_total)}，当日盈亏 ${signedText(lastDay.daily_pnl)}。如需更细问题，可继续询问具体日期、持仓、交易或策略。`;
+  return `最新日终结果来自 ${lastDay.date}，期末总资产 ${fmtMoney(lastDay.close_total)}，当日盈亏 ${signedText(lastDay.daily_pnl)}。如需更细问题，可继续询问具体日期、持仓或交易。`;
 }
 
-async function askBackend(question, data) {
-  for (const endpoint of CHAT_ENDPOINTS) {
+async function bindChat(data) {
+  const form = document.getElementById("chat-form");
+  const questionEl = document.getElementById("chat-question");
+  const statusEl = document.getElementById("chat-status");
+  const answerEl = document.getElementById("chat-answer");
+  if (!form || !questionEl || !statusEl || !answerEl) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const question = questionEl.value.trim();
+    if (!question) {
+      statusEl.textContent = "接口状态：请输入问题";
+      answerEl.textContent = "请输入一个与周度结果、持仓或交易相关的问题。";
+      return;
+    }
+
+    statusEl.textContent = "接口状态：正在调用网页后台模型接口";
+    answerEl.textContent = "正在生成回答...";
+
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "content-type": "application/json"
@@ -798,72 +499,16 @@ async function askBackend(question, data) {
       });
       const payload = await response.json();
       if (payload && payload.ok && payload.answer) {
-        return {
-          ok: true,
-          answer: payload.answer,
-          label: payload.model ? `后台大模型 · ${payload.model}` : "后台大模型"
-        };
+        statusEl.textContent = `接口状态：已返回${payload.model ? ` · ${payload.model}` : ""}`;
+        answerEl.textContent = payload.answer;
+        return;
       }
+      statusEl.textContent = "接口状态：页面记录回答";
+      answerEl.textContent = localAnswer(question, data);
     } catch (_) {
-      // Try the next endpoint.
+      statusEl.textContent = "接口状态：页面记录回答";
+      answerEl.textContent = localAnswer(question, data);
     }
-  }
-  return {
-    ok: false,
-    answer: localAnswer(question, data),
-    label: "页面证据回答"
-  };
-}
-
-async function bindChat(data) {
-  const aiFab = document.getElementById("aiFab");
-  const aiPanel = document.getElementById("aiPanel");
-  const aiClose = document.getElementById("aiClose");
-  const aiBody = document.getElementById("aiBody");
-  const aiForm = document.getElementById("aiForm");
-  const aiInput = document.getElementById("aiInput");
-  const aiChips = document.getElementById("aiChips");
-  const aiStatus = document.getElementById("aiStatus");
-  if (!aiFab || !aiPanel || !aiClose || !aiBody || !aiForm || !aiInput || !aiChips || !aiStatus) return;
-
-  const addMsg = (role, text) => {
-    const div = document.createElement("div");
-    div.className = `ai-msg ${role}`;
-    div.textContent = text;
-    aiBody.appendChild(div);
-    aiBody.scrollTop = aiBody.scrollHeight;
-    return div;
-  };
-
-  aiFab.addEventListener("click", () => {
-    aiPanel.classList.add("open");
-    window.setTimeout(() => aiInput.focus(), 80);
-  });
-
-  aiClose.addEventListener("click", () => {
-    aiPanel.classList.remove("open");
-  });
-
-  aiChips.addEventListener("click", (event) => {
-    const button = event.target.closest("button");
-    if (!button) return;
-    aiInput.value = button.textContent.trim();
-    aiForm.requestSubmit();
-  });
-
-  aiForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const question = aiInput.value.trim();
-    if (!question) return;
-
-    aiInput.value = "";
-    addMsg("user", question);
-    const pending = addMsg("assistant", "正在读取运行证据...");
-    aiStatus.textContent = "正在请求网页后台大模型接口...";
-
-    const result = await askBackend(question, data);
-    pending.textContent = result.answer;
-    aiStatus.textContent = `当前回答来源：${result.label}`;
   });
 }
 
@@ -876,16 +521,12 @@ async function main() {
     const page = document.body.dataset.page || "overview";
     if (page === "dashboard") {
       root.innerHTML = renderDashboard(data);
-      document.body.classList.add("battle-mode");
     } else if (page === "performance") {
       root.innerHTML = renderPerformance(data);
-      document.body.classList.remove("battle-mode");
     } else if (page === "replay") {
       root.innerHTML = renderReplay(data);
-      document.body.classList.remove("battle-mode");
     } else {
       root.innerHTML = renderOverview(data);
-      document.body.classList.add("battle-mode");
     }
     await bindChat(data);
   } catch (error) {
