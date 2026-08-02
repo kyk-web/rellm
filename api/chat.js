@@ -25,7 +25,22 @@ function allowedOrigin(req) {
 }
 
 function briefContext(context) {
-  const payload = {
+  const hasWeeklyReport = Array.isArray(context?.weekly_daily_results);
+  const payload = hasWeeklyReport ? {
+    generated_at: context?.generated_at,
+    title: context?.title,
+    subtitle: context?.subtitle,
+    weekly_window: context?.weekly_window || {},
+    account: context?.account || {},
+    weekly_summary: context?.weekly_summary || {},
+    strategy: context?.strategy || {},
+    execution_constraints: context?.execution_constraints || [],
+    weekly_daily_results: (context?.weekly_daily_results || []).slice(0, 5),
+    latest_holdings: (context?.latest_holdings || []).slice(0, 10),
+    agent_activity: (context?.agent_activity || []).slice(0, 8),
+    models: context?.models || {},
+    record_coverage: context?.record_coverage || [],
+  } : {
     generated_at: context?.generated_at,
     runtime: context?.runtime || {},
     strategy: context?.strategy || {},
@@ -83,13 +98,13 @@ async function callModel(question, context) {
   const endpoint = process.env.CODEBUDDY_ENDPOINT || "https://www.codebuddy.cn/v2/chat/completions";
   const model = process.env.CHAT_MODEL || "deepseek-v4-pro";
   const system = [
-    "你是“量化智问”，服务于 A 股多智能体量化系统展示页。",
-    "你只能基于用户问题和提供的运行证据回答，不要编造收益、持仓或订单。",
+    "你是“量化智问”，服务于 A 股多智能体量化系统最终提交版展示页。",
+    "你只能基于用户问题和提供的页面记录回答，不要编造收益、持仓或订单。",
     "回答要简洁、正式、中文为主；涉及金额保留两位小数。",
     "不要输出或索要任何 API Key、令牌、密码。",
     "如果证据不足，直接说明当前页面证据不足。",
   ].join("");
-  const user = `# 用户问题\n${question}\n\n# 当前页面运行证据 JSON\n${briefContext(context)}`;
+  const user = `# 用户问题\n${question}\n\n# 当前页面记录 JSON\n${briefContext(context)}`;
 
   const upstream = await fetch(endpoint, {
     method: "POST",
