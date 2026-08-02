@@ -68,17 +68,24 @@ function makeLineChart(points) {
   const xStep = (width - padX * 2) / Math.max(points.length - 1, 1);
   const yOf = (value) => padTop + ((max - value) / range) * (height - padTop - padBottom);
   const polyline = points.map((item, index) => `${padX + index * xStep},${yOf(item.close_total)}`).join(" ");
+  const area = `${padX},${height - padBottom} ${polyline} ${padX + (points.length - 1) * xStep},${height - padBottom}`;
 
   const labels = points.map((item, index) => `
     <text x="${padX + index * xStep}" y="${height - 10}" text-anchor="middle" fill="#637083" font-size="12">${item.date.slice(5)}</text>
-    <circle cx="${padX + index * xStep}" cy="${yOf(item.close_total)}" r="4.5" fill="#9f4b23"></circle>
+    <circle cx="${padX + index * xStep}" cy="${yOf(item.close_total)}" r="4.2" fill="#f04343" stroke="#ffffff" stroke-width="2"></circle>
   `).join("");
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map((t) => {
+    const y = padTop + t * (height - padTop - padBottom);
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="rgba(24,33,43,0.08)" />`;
+  }).join("");
 
   return `
     <svg class="svg-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="周度净值曲线">
+      ${gridLines}
       <line x1="${padX}" y1="${height - padBottom}" x2="${width - padX}" y2="${height - padBottom}" stroke="rgba(24,33,43,0.16)" />
       <line x1="${padX}" y1="${padTop}" x2="${padX}" y2="${height - padBottom}" stroke="rgba(24,33,43,0.16)" />
-      <polyline points="${polyline}" fill="none" stroke="#9f4b23" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      <polygon points="${area}" fill="rgba(240,67,67,0.14)"></polygon>
+      <polyline points="${polyline}" fill="none" stroke="#f04343" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
       ${labels}
       <text x="${padX - 8}" y="${padTop + 4}" text-anchor="end" fill="#637083" font-size="12">${fmtMoney(max)}</text>
       <text x="${padX - 8}" y="${height - padBottom + 4}" text-anchor="end" fill="#637083" font-size="12">${fmtMoney(min)}</text>
@@ -413,8 +420,8 @@ function renderToolbar(data) {
   return `
     <section class="battle-hero">
       <div class="battle-title">
-        <h2>${data.title}</h2>
-        <p>${data.account.mode} · CIO Tool-Call · 行情 5min · 新闻 15min · 决策 60min</p>
+        <h2>📍 Quant Agent Battle v2</h2>
+        <p>${data.account.mode} · +1 · CIO Tool-Call · 行情 5min · 新闻 15min · 决策 60min</p>
       </div>
       <div class="battle-pills">
         <span class="battle-pill soft">交易时段 · 行情5m/新闻15m/大脑60m</span>
@@ -425,6 +432,9 @@ function renderToolbar(data) {
         <span class="battle-pill info">机会捕手</span>
         <span class="battle-pill good">复盘</span>
         <span class="battle-pill hot">提交</span>
+        <span class="battle-pill pale">☑ 自动刷新</span>
+        <span class="battle-pill mini">5s</span>
+        <span class="battle-pill">刷新</span>
       </div>
     </section>
   `;
@@ -481,7 +491,7 @@ function renderMiniHoldings(data) {
       <td>${item.qty}</td>
       <td>${fmtMoney(item.cost)}</td>
       <td>${fmtMoney(item.last)}</td>
-      <td class="${signedClass(item.unrealized_pnl)}">${signedText(item.weight_pct, 2)}%</td>
+      <td class="${signedClass(item.unrealized_pnl)}">${signedText(((item.last - item.cost) / Math.max(item.cost, 0.01)) * 100, 2)}%</td>
     </tr>
   `).join("");
 }
@@ -518,7 +528,7 @@ function renderAgentFlow(data) {
     <div class="battle-log-row">
       <span class="battle-log-agent">${item.agent}</span>
       <span>${item.last_time}</span>
-      <span>events=${item.events}</span>
+      <span>summary=${item.events}</span>
     </div>
   `).join("");
 }
@@ -857,12 +867,16 @@ async function main() {
     const page = document.body.dataset.page || "overview";
     if (page === "dashboard") {
       root.innerHTML = renderDashboard(data);
+      document.body.classList.add("battle-mode");
     } else if (page === "performance") {
       root.innerHTML = renderPerformance(data);
+      document.body.classList.remove("battle-mode");
     } else if (page === "replay") {
       root.innerHTML = renderReplay(data);
+      document.body.classList.remove("battle-mode");
     } else {
       root.innerHTML = renderOverview(data);
+      document.body.classList.add("battle-mode");
     }
     await bindChat(data);
   } catch (error) {

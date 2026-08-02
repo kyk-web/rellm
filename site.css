@@ -29,6 +29,10 @@ body {
     linear-gradient(180deg, #f6f2ea 0%, #ede4d4 100%);
 }
 
+body.battle-mode {
+  background: #f5f7fb;
+}
+
 a {
   color: inherit;
 }
@@ -37,6 +41,16 @@ a {
   max-width: 1280px;
   margin: 0 auto;
   padding: 28px;
+}
+
+body.battle-mode .shell {
+  max-width: 1460px;
+  padding: 20px 22px 96px;
+}
+
+body.battle-mode .hero,
+body.battle-mode .topnav {
+  display: none;
 }
 
 .hero {
@@ -691,7 +705,7 @@ tbody tr:last-child td {
 
 .battle-shell {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .battle-hero {
@@ -699,19 +713,20 @@ tbody tr:last-child td {
   justify-content: space-between;
   gap: 18px;
   align-items: flex-start;
-  padding: 10px 0 2px;
+  padding: 2px 2px 0;
 }
 
 .battle-title h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
 }
 
 .battle-title p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.45;
+  font-size: 13px;
 }
 
 .battle-pills {
@@ -722,12 +737,13 @@ tbody tr:last-child td {
 }
 
 .battle-pill {
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 10px 13px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--line);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
+  box-shadow: 0 6px 14px rgba(24, 33, 43, 0.06);
 }
 
 .battle-pill.soft {
@@ -765,22 +781,32 @@ tbody tr:last-child td {
   color: #fff;
 }
 
+.battle-pill.pale {
+  background: #ffffff;
+}
+
+.battle-pill.mini {
+  min-width: 48px;
+  text-align: center;
+  background: #fff;
+}
+
 .battle-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .battle-stat,
 .battle-panel {
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(24, 33, 43, 0.08);
+  box-shadow: 0 10px 28px rgba(24, 33, 43, 0.06);
 }
 
 .battle-stat {
-  padding: 18px 20px;
+  padding: 14px 18px;
 }
 
 .battle-stat span,
@@ -795,8 +821,8 @@ tbody tr:last-child td {
 
 .battle-stat strong {
   display: block;
-  margin-top: 8px;
-  font-size: 23px;
+  margin-top: 6px;
+  font-size: 20px;
   line-height: 1.15;
 }
 
@@ -816,12 +842,12 @@ tbody tr:last-child td {
 }
 
 .battle-panel {
-  padding: 18px;
+  padding: 14px 16px;
 }
 
 .battle-panel-title {
-  margin-bottom: 14px;
-  font-size: 15px;
+  margin-bottom: 12px;
+  font-size: 14px;
   font-weight: 900;
 }
 
@@ -832,15 +858,15 @@ tbody tr:last-child td {
 }
 
 .battle-index-card {
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.76);
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(24, 33, 43, 0.08);
+  background: #fff;
 }
 
 .battle-index-card strong {
   display: block;
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 18px;
 }
 
@@ -856,11 +882,11 @@ tbody tr:last-child td {
   flex-wrap: wrap;
   gap: 14px;
   align-items: center;
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--line);
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(24, 33, 43, 0.08);
 }
 
 .battle-breadth strong,
@@ -871,13 +897,13 @@ tbody tr:last-child td {
 .battle-main-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
-  gap: 18px;
+  gap: 14px;
 }
 
 .battle-triple-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .battle-table {
@@ -887,10 +913,10 @@ tbody tr:last-child td {
 
 .battle-table th,
 .battle-table td {
-  padding: 10px 8px;
+  padding: 8px 8px;
   border-bottom: 1px solid var(--line);
   text-align: left;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 
 .battle-table th {
@@ -905,16 +931,17 @@ tbody tr:last-child td {
 
 .battle-feed {
   display: grid;
-  gap: 10px;
-  max-height: 332px;
+  gap: 8px;
+  max-height: 360px;
   overflow: auto;
+  padding-right: 4px;
 }
 
 .battle-feed-item {
-  padding: 12px 13px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--line);
+  padding: 10px 11px;
+  border-radius: 12px;
+  background: #fbfcff;
+  border: 1px solid rgba(24, 33, 43, 0.08);
 }
 
 .battle-feed-meta {
@@ -925,26 +952,27 @@ tbody tr:last-child td {
 
 .battle-feed-item p {
   margin: 0;
-  line-height: 1.65;
-  font-size: 13px;
+  line-height: 1.55;
+  font-size: 12.5px;
 }
 
 .battle-log {
   display: grid;
   gap: 8px;
-  max-height: 248px;
+  max-height: 260px;
   overflow: auto;
+  padding-right: 4px;
 }
 
 .battle-log-row {
   display: grid;
   grid-template-columns: 1.2fr 1fr auto;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--line);
-  font-size: 13px;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: #fbfcff;
+  border: 1px solid rgba(24, 33, 43, 0.08);
+  font-size: 12.5px;
 }
 
 .battle-log-agent {
@@ -961,27 +989,29 @@ tbody tr:last-child td {
 .battle-strategy-top {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.85fr);
-  gap: 14px;
+  gap: 12px;
 }
 
 .battle-strategy-main,
 .battle-strategy-facts div {
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid var(--line);
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(24, 33, 43, 0.08);
 }
 
 .battle-strategy-main strong {
   display: block;
   margin-top: 8px;
-  font-size: 32px;
+  font-size: 28px;
   line-height: 1.05;
+  color: #1d2d5b;
 }
 
 .battle-strategy-main p {
-  margin: 12px 0 0;
-  line-height: 1.75;
+  margin: 10px 0 0;
+  line-height: 1.6;
+  font-size: 13px;
 }
 
 .battle-strategy-facts {
@@ -992,23 +1022,23 @@ tbody tr:last-child td {
 
 .battle-strategy-facts strong {
   display: block;
-  margin-top: 8px;
-  font-size: 19px;
+  margin-top: 6px;
+  font-size: 18px;
 }
 
 .battle-chip-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .battle-chip {
   display: inline-flex;
   align-items: center;
-  padding: 8px 11px;
+  padding: 7px 10px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 900;
   border: 1px solid transparent;
 }
