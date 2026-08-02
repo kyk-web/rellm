@@ -210,6 +210,58 @@ function renderMarketStrategyCompact(data) {
   `;
 }
 
+function renderOverviewSummary(data) {
+  const bestDay = [...data.weekly_daily_results].sort((a, b) => b.daily_pnl - a.daily_pnl)[0];
+  const lastDay = data.weekly_daily_results[data.weekly_daily_results.length - 1];
+  return `
+    <article class="panel">
+      <div class="section-kicker">Weekly Summary</div>
+      <h2 class="section-title">周度结论</h2>
+      <div class="card-list">
+        <div class="info-card">
+          <h3>本周表现</h3>
+          <p class="mini">周内合计盈亏 ${signedText(data.weekly_summary.weekly_cumulative_pnl)}，周末总资产 ${fmtMoney(data.account.final_total_assets)}，相对初始收益率 ${fmtPct(data.account.return_vs_initial_pct)}。</p>
+        </div>
+        <div class="info-card">
+          <h3>最佳交易日</h3>
+          <p class="mini">${bestDay.date} 贡献最高，当日盈亏 ${signedText(bestDay.daily_pnl)}，核心说明为“${bestDay.focus}”。</p>
+        </div>
+        <div class="info-card">
+          <h3>最新账户状态</h3>
+          <p class="mini">${lastDay.date} 收盘现金 ${fmtMoney(lastDay.cash_balance)}，持仓市值 ${fmtMoney(lastDay.market_value)}，维持受控仓位运行。</p>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderOverviewSupport(data) {
+  return `
+    <article class="panel">
+      <div class="section-kicker">Submission Scope</div>
+      <h2 class="section-title">提交内容与分析栈</h2>
+      <div class="card-list">
+        <div class="info-card">
+          <h3>记录覆盖</h3>
+          <p class="mini">${data.record_coverage.join("、")}。</p>
+        </div>
+        <div class="info-card">
+          <h3>网页问答</h3>
+          <p class="mini">页面已接入网页后台大模型接口，可基于当前展示数据回答周度结果、持仓、交易和策略摘要问题。</p>
+        </div>
+        <div class="info-card">
+          <h3>分析栈</h3>
+          <p class="mini">${data.models.analysis_stack.join("、")}。</p>
+        </div>
+      </div>
+      <div class="summary-box" style="margin-top:18px;">
+        <strong>页面分工</strong>
+        <p class="mini">总览页只保留结论、策略、框架和提交映射；运行细节放在看板、收益表现和交易复盘页单独展开。</p>
+      </div>
+    </article>
+  `;
+}
+
 function renderOverview(data) {
   return `
     <section class="stack">
@@ -220,31 +272,9 @@ function renderOverview(data) {
         ${metricCard("盈利天数", `${data.weekly_summary.profit_days}`, "本周盈利交易日")}
       </div>
 
-      ${renderMarketStrategyCompact(data)}
-
       <section class="grid-2">
-        <article class="panel">
-          <div class="section-kicker">Strategy</div>
-          <h2 class="section-title">${data.strategy.view_label}</h2>
-          <p class="lead">${data.strategy.notes}</p>
-          <div class="pill-row">
-            <span class="pill">目标仓位 ${fmtPct(data.strategy.target_position * 100)}</span>
-            <span class="pill">现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}</span>
-            <span class="pill">单票上限 ${fmtPct(data.strategy.per_stock_cap * 100)}</span>
-            <span class="pill">单次增量 ${fmtPct(data.strategy.increment_cap * 100)}</span>
-          </div>
-          <div class="card-list" style="margin-top:16px;">
-            ${data.execution_constraints.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="section-kicker">Themes</div>
-          <h2 class="section-title">本周主题主线</h2>
-          <div class="card-list">
-            ${data.strategy.themes.map((item) => `<div class="info-card"><h3>${item}</h3><p class="mini">纳入最终提交版策略执行与复盘说明。</p></div>`).join("")}
-          </div>
-        </article>
+        ${renderMarketStrategyCompact(data)}
+        ${renderOverviewSummary(data)}
       </section>
 
       <section class="panel">
@@ -274,17 +304,7 @@ function renderOverview(data) {
           </div>
         </article>
 
-        <article class="panel">
-          <div class="section-kicker">Coverage</div>
-          <h2 class="section-title">提交记录覆盖</h2>
-          <div class="card-list">
-            ${data.record_coverage.map((item) => `<div class="info-card"><h3>${item}</h3></div>`).join("")}
-          </div>
-          <div class="summary-box" style="margin-top:18px;">
-            <strong>网页问答</strong>
-            <p class="mini">页面已接入网页后台大模型接口，可基于当前展示数据回答周度结果、持仓、交易和策略摘要问题。</p>
-          </div>
-        </article>
+        ${renderOverviewSupport(data)}
       </section>
 
       ${renderChatPanel(data)}
@@ -301,8 +321,6 @@ function renderDashboard(data) {
         ${metricCard("持仓市值", fmtMoney(data.weekly_daily_results[data.weekly_daily_results.length - 1].market_value), "最新日终持仓市值")}
         ${metricCard("策略置信度", fmtPct(data.strategy.confidence * 100), "最新策略视图置信度")}
       </div>
-
-      ${renderMarketStrategyCompact(data)}
 
       <section class="panel">
         <div class="section-kicker">Daily Snapshot</div>
