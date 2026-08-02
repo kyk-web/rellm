@@ -304,28 +304,170 @@ tbody tr:last-child td {
 }
 
 .market-compact {
-  background: linear-gradient(135deg, rgba(255, 252, 247, 0.96), rgba(255, 246, 232, 0.9));
+  background: #fffdfb;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
 }
 
-.market-compact-grid {
+.screenshot-card {
+  padding: 28px 28px 22px;
+}
+
+.strategy-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.strategy-card-title {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 900;
+  color: #101828;
+}
+
+.strategy-card-cycle {
+  min-width: 112px;
+  text-align: right;
+  color: #98a2b3;
+  line-height: 1.3;
+}
+
+.strategy-card-cycle span,
+.strategy-card-label {
+  display: block;
+  font-size: 14px;
+  color: #98a2b3;
+}
+
+.strategy-card-cycle strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: #98a2b3;
+  font-weight: 500;
+}
+
+.strategy-card-block {
+  margin-top: 24px;
+}
+
+.strategy-bias {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.2;
+}
+
+.strategy-bias span,
+.strategy-bias strong {
+  font-weight: 900;
+}
+
+.strategy-bias em {
+  font-style: normal;
+  color: #344054;
+}
+
+.strategy-bias.bullish span {
+  color: #ef4444;
+}
+
+.strategy-bias.bearish span {
+  color: #157352;
+}
+
+.strategy-bias.neutral span {
+  color: #d97706;
+}
+
+.strategy-card-note {
+  margin: 12px 0 0;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.strategy-metric-list {
+  margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 16px;
+  gap: 8px;
 }
 
-.compact-row {
-  margin-top: 8px;
+.strategy-metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-.tag-chip {
-  padding: 8px 11px;
+.strategy-metric-item span {
+  color: #101828;
+}
+
+.strategy-metric-item strong {
+  color: #ef4444;
+  font-size: 18px;
+}
+
+.strategy-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.strategy-chip-group-secondary {
+  margin-top: 10px;
+}
+
+.strategy-chip-group-muted {
+  margin-top: 12px;
+}
+
+.strategy-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(36, 56, 76, 0.08);
-  border: 1px solid rgba(36, 56, 76, 0.12);
-  color: var(--accent-deep);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.theme-chip {
+  background: #dff7df;
+  color: #25734d;
+}
+
+.keyword-chip {
+  background: #fff3c4;
+  color: #8a6500;
+}
+
+.pool-chip {
+  background: #eef2ff;
+  color: #475467;
+}
+
+.strategy-card-summary {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.strategy-card-summary p {
+  margin: 0;
+  color: #344054;
+  line-height: 1.8;
 }
 
 .chat-form {
@@ -393,6 +535,15 @@ tbody tr:last-child td {
 
   .market-compact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .strategy-card-header {
+    flex-direction: column;
+  }
+
+  .strategy-card-cycle {
+    min-width: 0;
+    text-align: left;
   }
 
   .shell {

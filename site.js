@@ -179,32 +179,101 @@ function replayCards(data) {
   `).join("");
 }
 
+function strategyKeywordChips(themes) {
+  const mapping = {
+    "AI算力链": ["光模块", "CPO", "AI服务器"],
+    "半导体国产替代": ["存储芯片", "半导体设备"],
+    "机器人智能制造": ["机器人", "智能制造"],
+    "资源高股息": ["煤炭红利", "电力红利"],
+    "新能源龙头": ["新能源车", "锂电龙头"]
+  };
+  const values = [];
+  themes.forEach((theme) => {
+    (mapping[theme] || [theme]).forEach((item) => {
+      if (!values.includes(item)) values.push(item);
+    });
+  });
+  return values.slice(0, 10);
+}
+
+function candidatePool(data) {
+  const codes = [];
+  data.weekly_daily_results.forEach((day) => {
+    day.trade_highlights.forEach((trade) => {
+      const code = String(trade.stock).split(" ")[0];
+      if (/^\d{6}$/.test(code) && !codes.includes(code)) codes.push(code);
+    });
+  });
+  data.latest_holdings.forEach((item) => {
+    if (!codes.includes(item.code)) codes.push(item.code);
+  });
+  return codes.slice(0, 10);
+}
+
 function renderMarketStrategyCompact(data) {
-  const highlights = [
-    `目标仓位 ${fmtPct(data.strategy.target_position * 100)}`,
-    `现金缓冲 ${fmtPct(data.strategy.cash_buffer * 100)}`,
-    `单票上限 ${fmtPct(data.strategy.per_stock_cap * 100)}`,
-    `单次增量 ${fmtPct(data.strategy.increment_cap * 100)}`
+  const cycleLabel = `cyc_${String(data.generated_at || "").slice(0, 10).replaceAll("-", "")}`;
+  const biasLabel = data.strategy.view === "bullish" ? "看多" : data.strategy.view === "bearish" ? "看空" : "中性";
+  const biasClass = data.strategy.view === "bullish" ? "bullish" : data.strategy.view === "bearish" ? "bearish" : "neutral";
+  const indicators = [
+    ["策略置信度", fmtPct(data.strategy.confidence * 100)],
+    ["目标总仓位", fmtPct(data.strategy.target_position * 100)],
+    ["现金缓冲", fmtPct(data.strategy.cash_buffer * 100)],
+    ["单票上限", fmtPct(data.strategy.per_stock_cap * 100)],
+    ["单次增量", fmtPct(data.strategy.increment_cap * 100)]
   ];
+  const keywords = strategyKeywordChips(data.strategy.themes);
+  const pool = candidatePool(data);
   return `
-    <section class="panel market-compact">
-      <div class="section-kicker">大盘策略</div>
-      <h2 class="section-title">${data.strategy.view_label}</h2>
-      <p class="lead">${data.strategy.notes}</p>
-      <div class="pill-row">
-        ${highlights.map((item) => `<span class="pill">${item}</span>`).join("")}
+    <section class="panel market-compact screenshot-card">
+      <div class="strategy-card-header">
+        <div class="strategy-card-title">🌐 大盘策略（阶段 0 · 全 A 股扫描 → 主线 → 筛选候选）</div>
+        <div class="strategy-card-cycle">
+          <span>周期</span>
+          <strong>${cycleLabel}</strong>
+        </div>
       </div>
-      <div class="market-compact-grid">
-        <article class="info-card">
-          <h3>当前主线</h3>
-          <div class="pill-row compact-row">
-            ${data.strategy.themes.map((item) => `<span class="tag-chip">${item}</span>`).join("")}
-          </div>
-        </article>
-        <article class="info-card">
-          <h3>执行约束</h3>
-          <p class="mini">${data.execution_constraints.slice(0, 3).join("；")}。</p>
-        </article>
+
+      <div class="strategy-card-block">
+        <div class="strategy-card-label">市场状态 / 目标总仓位</div>
+        <div class="strategy-bias ${biasClass}">
+          <span>${biasLabel}</span>
+          <em>·</em>
+          <strong>总仓位 ${Math.round(data.strategy.target_position * 100)}%</strong>
+        </div>
+        <p class="strategy-card-note">${data.strategy.notes}</p>
+      </div>
+
+      <div class="strategy-card-block">
+        <div class="strategy-card-label">策略指标</div>
+        <div class="strategy-metric-list">
+          ${indicators.map(([label, value]) => `
+            <div class="strategy-metric-item">
+              <span>${label}</span>
+              <strong>${value}</strong>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="strategy-card-block">
+        <div class="strategy-card-label">当前投资主线 / 检索关键词</div>
+        <div class="strategy-chip-group">
+          ${data.strategy.themes.map((item) => `<span class="strategy-chip theme-chip">${item}</span>`).join("")}
+        </div>
+        <div class="strategy-chip-group strategy-chip-group-secondary">
+          ${keywords.map((item) => `<span class="strategy-chip keyword-chip">🔍 ${item}</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="strategy-card-block">
+        <div class="strategy-card-label">候选池（周内命中记录）</div>
+        <div class="strategy-chip-group strategy-chip-group-muted">
+          ${pool.map((item) => `<span class="strategy-chip pool-chip">${item}</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="strategy-card-summary">
+        <p>${data.strategy.view} 仓位 ${data.strategy.target_position.toFixed(2)} 主线[${data.strategy.themes.join("、")}] 关键词[${keywords.join("、")}] 周内候选 ${pool.length} 只。</p>
       </div>
     </section>
   `;
